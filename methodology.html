@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Technical Methodology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f3efe7;--bg2:#ede7dc;--bg3:#ddd5c6;--card:#fff;
+  --forest:#1a3830;--forest2:#244d42;
+  --text:#1a2e26;--t2:#3d5a50;--t3:#7a9890;
+  --gold:#a87218;--ab:#fdf5e4;--abr:#e8cc88;
+  --red:#9e2020;--rb:#fdf0ee;--rbr:#eeb0a8;
+  --green:#1a6438;--gb:#eaf6ef;--gbr:#88ccaa;
+  --orange:#b84018;--ob:#fdf2ee;--obr:#edb898;
+  --slate:#4a6268;--sb:#edf2f4;--sbr:#b8ccd4;
+  --sky:#145c8e;--skb:#eaf4fb;
+  --r:10px;--rs:7px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAV */
+nav{background:var(--forest);height:54px;display:flex;align-items:center;padding:0 24px;gap:18px;position:sticky;top:0;z-index:100}
+.n-logo{font-family:'Cormorant Garant',serif;font-size:19px;color:#fff}
+.n-logo b{color:#d4a84a}
+.n-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
+.n-tag{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap}
+.n-sp{flex:1}
+.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:rgba(255,255,255,.78);font-size:12.5px;font-weight:500;padding:6px 12px;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.back-btn:hover{background:rgba(255,255,255,.16);color:#fff;text-decoration:none}
+
+/* HERO */
+.hero{background:var(--forest);padding:52px 24px 60px;text-align:center}
+.h-eye{font-size:10.5px;font-weight:700;color:#d4a84a;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
+.h-title{font-family:'Cormorant Garant',serif;font-size:38px;color:#fff;line-height:1.18;margin-bottom:12px;max-width:680px;margin-left:auto;margin-right:auto}
+.h-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:600px;margin:0 auto;line-height:1.7}
+.h-version{display:inline-block;margin-top:18px;font-size:11.5px;color:rgba(255,255,255,.35);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px}
+
+/* LAYOUT */
+.page{max-width:860px;margin:0 auto;padding:52px 24px 80px}
+
+/* TOC */
+.toc{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);padding:22px 26px;margin-bottom:48px}
+.toc-title{font-family:'Cormorant Garant',serif;font-size:17px;margin-bottom:12px;color:var(--text)}
+.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+.toc-list li a{font-size:13px;color:var(--t2);display:flex;align-items:center;gap:6px;padding:3px 0}
+.toc-list li a:hover{color:var(--forest);text-decoration:none}
+.toc-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);width:22px;flex-shrink:0}
+
+/* SECTION */
+.sec{margin-bottom:52px;scroll-margin-top:72px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);font-weight:500;letter-spacing:1px;margin-bottom:5px}
+.sec-title{font-family:'Cormorant Garant',serif;font-size:28px;color:var(--text);margin-bottom:6px;line-height:1.2}
+.sec-sub{font-size:14px;color:var(--t2);margin-bottom:22px;max-width:680px;line-height:1.7}
+.sec-divider{height:1.5px;background:var(--bg3);margin-bottom:24px}
+
+/* PROSE */
+p{font-size:14px;color:var(--t2);line-height:1.78;margin-bottom:14px;max-width:720px}
+p strong{color:var(--text);font-weight:600}
+p:last-child{margin-bottom:0}
+
+/* FORMULA BLOCK */
+.formula{background:var(--forest);border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
+.formula pre{font-family:'JetBrains Mono',monospace;font-size:13px;color:#a8dcc8;line-height:1.8;white-space:pre}
+.formula .cmt{color:#4a8a72}
+.formula .val{color:#d4a84a}
+.formula .fn{color:#88ccee}
+
+/* DATA TABLE */
+.data-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px}
+.data-table th{background:var(--forest);color:#fff;padding:9px 14px;text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.3px}
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--bg3);color:var(--t2);vertical-align:top;line-height:1.6}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:nth-child(even) td{background:var(--bg2)}
+.data-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);font-weight:500;white-space:nowrap}
+
+/* THRESHOLD TABLE */
+.thresh-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+.thresh-table th{background:var(--forest);color:#fff;padding:10px 16px;text-align:left;font-size:12px;font-weight:600;letter-spacing:.3px}
+.thresh-table td{padding:11px 16px;border-bottom:1px solid var(--bg3);vertical-align:middle}
+.thresh-table tr:last-child td{border-bottom:none}
+.thresh-table .cond{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.rec-pill{font-size:11px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:5px;white-space:nowrap}
+.rp-pivot{background:var(--ob);color:var(--orange);border:1px solid var(--obr)}
+.rp-sunset{background:var(--rb);color:var(--red);border:1px solid var(--rbr)}
+.rp-invest{background:var(--gb);color:var(--green);border:1px solid var(--gbr)}
+.rp-maintain{background:var(--sb);color:var(--slate);border:1px solid var(--sbr)}
+
+/* CALLOUT */
+.callout{border-radius:var(--rs);padding:14px 18px;margin:18px 0}
+.callout p{margin-bottom:0;max-width:none}
+.callout-warn{background:var(--ab);border:1.5px solid var(--abr)}
+.callout-warn p{color:var(--text)}
+.callout-info{background:var(--skb);border:1.5px solid #b8d8f0}
+.callout-info p{color:var(--text)}
+.callout-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.callout-warn .callout-label{color:var(--gold)}
+.callout-info .callout-label{color:var(--sky)}
+
+/* NORMALIZATION DIAGRAM */
+.norm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.norm-card{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:14px 16px}
+.nc-dim{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:6px}
+.nc-formula{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--forest);background:var(--bg2);border-radius:4px;padding:6px 9px;margin-bottom:8px;line-height:1.6}
+.nc-range{font-size:11.5px;color:var(--t2);line-height:1.6}
+.nc-range span{font-family:'JetBrains Mono',monospace;font-size:11px}
+
+/* SOURCE CARDS */
+.source-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.src-item{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:14px 18px}
+.src-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.src-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.src-name{font-size:14px;font-weight:600;color:var(--text)}
+.src-type{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-left:8px}
+.src-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:6px}
+.src-used{font-size:12px;color:var(--t3);border-top:1px solid var(--bg3);padding-top:8px;margin-top:6px}
+.src-used strong{color:var(--text)}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:flex-start;gap:0;margin:22px 0;overflow-x:auto;padding-bottom:4px}
+.pipe-step{flex:1;min-width:120px}
+.pipe-box{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:12px 14px;text-align:center;position:relative}
+.pipe-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-bottom:4px}
+.pipe-label{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4}
+.pipe-sub{font-size:10.5px;color:var(--t3);margin-top:3px;line-height:1.4}
+.pipe-arrow{display:flex;align-items:center;justify-content:center;padding:0 6px;color:var(--t3);font-size:18px;flex-shrink:0;margin-top:18px}
+
+/* LIMITATION BOX */
+.limit-list{list-style:none;margin-top:14px}
+.limit-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--bg3)}
+.limit-item:last-child{border-bottom:none}
+.li-icon{font-size:15px;flex-shrink:0;margin-top:2px}
+.li-text{font-size:13.5px;color:var(--t2);line-height:1.7}
+.li-text strong{color:var(--text)}
+
+/* WORKED EXAMPLE */
+.example-box{background:var(--card);border:2px solid var(--forest);border-radius:var(--r);padding:22px 24px;margin:20px 0}
+.ex-title{font-family:'Cormorant Garant',serif;font-size:18px;margin-bottom:14px;color:var(--text)}
+.ex-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bg2);font-size:13px}
+.ex-row:last-child{border-bottom:none;padding-top:10px;font-weight:600}
+.ex-dim{color:var(--t2)}
+.ex-calc{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3)}
+.ex-result{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--forest);font-weight:600}
+
+/* FOOTER */
+footer{background:#111c27;padding:28px 24px;text-align:center;border-top:1px solid rgba(255,255,255,.07)}
+.ft-credit{font-size:12.5px;color:rgba(255,255,255,.4);line-height:1.7}
+.ft-link{color:#d4a84a;text-decoration:none;font-weight:600}
+.ft-link:hover{text-decoration:underline}
+
+@media(max-width:660px){
+  .norm-grid{grid-template-columns:1fr}
+  .toc-list{grid-template-columns:1fr}
+  .pipeline{flex-direction:column}
+  .pipe-arrow{transform:rotate(90deg);margin:0 auto}
+  .h-title{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="n-logo">Meridian<b>.</b></div>
+  <div class="n-sep"></div>
+  <div class="n-tag">Technical Methodology</div>
+  <div class="n-sp"></div>
+  <a href="index.html" class="back-btn">← Back to Dashboard</a>
+</nav>
+
+<div class="hero">
+  <div class="h-eye">Technical Documentation</div>
+  <div class="h-title">How Meridian arrives at its scores and recommendations</div>
+  <div class="h-sub">A full account of the data sources, normalization logic, composite scoring formula, classification thresholds, and the honest limits of what these outputs can and cannot claim.</div>
+  <div class="h-version">Version 1.0 · Published 2025 · Subject to revision as underlying data sources update</div>
+</div>
+
+<div class="page">
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#overview"><span class="toc-num">1.</span> Overview & Design Intent</a></li>
+      <li><a href="#pipeline"><span class="toc-num">2.</span> Data Pipeline</a></li>
+      <li><a href="#sources"><span class="toc-num">3.</span> Primary Data Sources</a></li>
+      <li><a href="#dimensions"><span class="toc-num">4.</span> The Five Scoring Dimensions</a></li>
+      <li><a href="#normalization"><span class="toc-num">5.</span> Normalization Functions</a></li>
+      <li><a href="#composite"><span class="toc-num">6.</span> Composite Score Formula</a></li>
+      <li><a href="#classification"><span class="toc-num">7.</span> Classification Thresholds</a></li>
+      <li><a href="#tasks"><span class="toc-num">8.</span> Task-Level Scoring</a></li>
+      <li><a href="#critical"><span class="toc-num">9.</span> "Critical Now" Logic</a></li>
+      <li><a href="#worked-example"><span class="toc-num">10.</span> Worked Example: Accounting</a></li>
+      <li><a href="#estimated"><span class="toc-num">11.</span> What Is Estimated vs. Sourced</a></li>
+      <li><a href="#limitations"><span class="toc-num">12.</span> Limitations & Appropriate Use</a></li>
+    </ul>
+  </div>
+
+
+  <!-- 1. OVERVIEW -->
+  <div class="sec" id="overview">
+    <div class="sec-num">01</div>
+    <div class="sec-title">Overview & Design Intent</div>
+    <div class="sec-divider"></div>
+    <p>Meridian is a strategic planning tool designed to help higher education administrators — provosts, deans, and department chairs — identify which academic programs face the greatest disruption from AI, and what kind of response is warranted. The tool covers 113 US degree programs across 12 academic fields.</p>
+    <p>The core output is a <strong>recommendation category</strong> (Urgent Pivot, Invest & Grow, Sunset, or Maintain) derived from a <strong>weighted composite risk score</strong>. That score combines five empirically grounded dimensions: task automation potential, curriculum half-life, faculty AI readiness, regional labor market strength, and employment outlook.</p>
+    <p>The tool is designed for <strong>strategic conversation and prioritization</strong>, not for certified institutional assessments. The scores identify which programs deserve closer scrutiny and what kind of intervention is likely appropriate. They are not substitutes for formal curriculum review, accreditation analysis, or institution-specific labor market research.</p>
+    <div class="callout callout-warn">
+      <div class="callout-label">Important framing</div>
+      <p>The <em>framework</em> is grounded in peer-reviewed research and federal data. The program-level numerical values involve methodological judgment in applying national occupational scores to specific academic programs. Both the framework and its limitations are documented fully below.</p>
+    </div>
+  </div>
+
+
+  <!-- 2. PIPELINE -->
+  <div class="sec" id="pipeline">
+    <div class="sec-num">02</div>
+    <div class="sec-title">Data Pipeline</div>
+    <div class="sec-divider"></div>
+    <p>Each program in Meridian is identified by its <strong>6-digit CIP code</strong> (Classification of Instructional Programs, published by NCES). The CIP code is mapped to one or more <strong>SOC codes</strong> (Standard Occupational Classification) using the NCES CIP-SOC crosswalk. SOC codes are the unit of analysis in both the Eloundou et al. and Felten et al. AI exposure research, the O*NET task database, and BLS employment projections.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 1</div>
+          <div class="pipe-label">CIP Code</div>
+          <div class="pipe-sub">6-digit program identifier (NCES)</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 2</div>
+          <div class="pipe-label">SOC Code(s)</div>
+          <div class="pipe-sub">CIP-SOC Crosswalk (NCES)</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 3</div>
+          <div class="pipe-label">AI Exposure Score</div>
+          <div class="pipe-sub">Eloundou et al. & Felten et al.</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 4</div>
+          <div class="pipe-label">Task Breakdown</div>
+          <div class="pipe-sub">O*NET task statements & scores</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 5</div>
+          <div class="pipe-label">Employment Data</div>
+          <div class="pipe-sub">BLS OEWS projections</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="pipe-box">
+          <div class="pipe-num">Step 6</div>
+          <div class="pipe-label">Composite Score</div>
+          <div class="pipe-sub">Weighted formula → recommendation</div>
+        </div>
+      </div>
+    </div>
+
+    <p>Where a CIP code maps to multiple SOC codes (common for broad programs like Psychology or Business), exposure scores are weighted by the relative share of graduates entering each occupation, using IPEDS completion-to-employment flow data where available and professional judgment otherwise.</p>
+  </div>
+
+
+  <!-- 3. SOURCES -->
+  <div class="sec" id="sources">
+    <div class="sec-num">03</div>
+    <div class="sec-title">Primary Data Sources</div>
+    <div class="sec-divider"></div>
+    <p>All five sources below are publicly available, freely downloadable, and either peer-reviewed or published by US federal agencies. No proprietary vendor data is used.</p>
+
+    <div class="source-list">
+      <div class="src-item">
+        <div class="src-header">
+          <div class="src-icon">📄</div>
+          <div>
+            <span class="src-name">Eloundou, Manning, Mishkin & Rock (2023)</span>
+            <span class="src-type">Peer-reviewed</span>
+          </div>
+        </div>
+        <div class="src-desc">"GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models." arXiv:2303.10130. Published by OpenAI researchers. This paper provides occupation-level GPT-4 exposure scores (α and β) for every SOC code, where α captures tasks directly automatable by GPT-4 alone, and β captures tasks automatable with GPT-4 plus complementary tools. Meridian uses the β score as the primary exposure estimate, as it better reflects the near-term deployment reality of AI-augmented workflows rather than the model in isolation.</div>
+        <div class="src-used"><strong>Used for:</strong> Primary AI exposure score (0–1 scale) by SOC code. Mapped to CIP programs via the NCES crosswalk.</div>
+      </div>
+
+      <div class="src-item">
+        <div class="src-header">
+          <div class="src-icon">📄</div>
+          <div>
+            <span class="src-name">Felten, Raj & Seamans (2023)</span>
+            <span class="src-type">Peer-reviewed</span>
+          </div>
+        </div>
+        <div class="src-desc">Princeton AI Exposure Index. Constructs an AI occupational exposure score by linking 10 AI application areas to 52 human abilities in O*NET, then mapping those abilities to occupations. Provides a complementary exposure estimate developed through a different methodological pathway than Eloundou et al. When the two sources diverge significantly for a given SOC code, the program's exposure score reflects the midpoint with a notation in the task breakdown.</div>
+        <div class="src-used"><strong>Used for:</strong> Cross-validation of Eloundou et al. scores. Final exposure score is a weighted average of both where both are available (60% Eloundou β, 40% Felten index), reflecting the greater occupational coverage of the Eloundou dataset.</div>
+      </div>
+
+      <div class="src-item">
+        <div class="src-header">
+          <div class="src-icon">🏛️</div>
+          <div>
+            <span class="src-name">O*NET Bulk Data (U.S. Department of Labor)</span>
+            <span class="src-type">Federal database</span>
+          </div>
+        </div>
+        <div class="src-desc">The Occupational Information Network (O*NET), maintained by the U.S. Department of Labor's Employment and Training Administration. O*NET provides structured task statements for every SOC occupation, each rated for importance (1–5) and frequency (1–5) by incumbent workers. Task statements are also categorized by the type of work activity they represent. Available at onetcenter.org/db_releases.html.</div>
+        <div class="src-used"><strong>Used for:</strong> Task-level breakdowns shown in each program's detail drawer. Task selection prioritizes statements with importance ≥ 3.0 and frequency ≥ 2.5. AI impact classification (Replaces vs. Assists) is assigned based on whether the task's core cognitive demand is primarily pattern recognition and generation (Replaces) or judgment, physical action, and relational interaction (Assists).</div>
+      </div>
+
+      <div class="src-item">
+        <div class="src-header">
+          <div class="src-icon">🏛️</div>
+          <div>
+            <span class="src-name">BLS Occupational Employment & Wage Statistics (OEWS)</span>
+            <span class="src-type">Federal database</span>
+          </div>
+        </div>
+        <div class="src-desc">Published by the U.S. Bureau of Labor Statistics. Provides current employment levels, wages, and 10-year projected growth or decline by SOC code, nationally and by metropolitan statistical area. Employment projections are published biennially in the BLS Occupational Outlook Handbook. Available at bls.gov/oes and bls.gov/ooh.</div>
+        <div class="src-used"><strong>Used for:</strong> Employment outlook dimension (empOut field). Expressed as projected 10-year percentage change in employment. Negative values indicate projected job loss; positive values indicate projected growth. Also used to construct the regional multiplier, which adjusts national exposure scores by local labor market demand relative to national average for that occupation cluster.</div>
+      </div>
+
+      <div class="src-item">
+        <div class="src-header">
+          <div class="src-icon">🏛️</div>
+          <div>
+            <span class="src-name">NCES IPEDS & CIP-SOC Crosswalk</span>
+            <span class="src-type">Federal database</span>
+          </div>
+        </div>
+        <div class="src-desc">The National Center for Education Statistics Integrated Postsecondary Education Data System (IPEDS) provides enrollment, completions, and program cost data by 6-digit CIP code across all US institutions. The CIP-SOC crosswalk is an NCES-published bridge table mapping every academic program to its most common target occupation(s). Available at nces.ed.gov/ipeds and nces.ed.gov/ipeds/cipcode.</div>
+        <div class="src-used"><strong>Used for:</strong> Program identification (CIP codes), enrollment context, and as the bridge linking academic programs to occupational data. Faculty AI readiness national estimates are calibrated against IPEDS survey data on instructional staff professional development activities where available.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4. DIMENSIONS -->
+  <div class="sec" id="dimensions">
+    <div class="sec-num">04</div>
+    <div class="sec-title">The Five Scoring Dimensions</div>
+    <div class="sec-divider"></div>
+    <p>Each program is scored on five dimensions, each expressed on a <strong>0–1 risk scale</strong> where 0 represents no risk and 1 represents maximum risk. The dimensions are then combined into a weighted composite score.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Variable</th>
+          <th>Default Weight</th>
+          <th>What it measures</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task Automation Potential</td>
+          <td>task</td>
+          <td>40%</td>
+          <td>The fraction of occupation-level tasks that are automatable by current AI, drawn from Eloundou et al. β scores and cross-validated with the Felten index. This is the single strongest predictor of near-term disruption and receives the highest default weight.</td>
+        </tr>
+        <tr>
+          <td>Curriculum Half-Life</td>
+          <td>halfLife</td>
+          <td>20%</td>
+          <td>An estimate of years until 40% or more of the program's target tasks are automated at scale — the point at which a curriculum trained to current standards becomes substantially misaligned with employer needs. Shorter half-lives represent higher risk. Derived from task automation timelines in the AI progress literature combined with O*NET task frequency data.</td>
+        </tr>
+        <tr>
+          <td>Faculty AI Readiness</td>
+          <td>faculty</td>
+          <td>15%</td>
+          <td>The estimated percentage of current faculty in a given program area who have meaningful AI fluency — defined as the ability to integrate AI tools into instruction and assess AI-generated work critically. This dimension captures the implementation constraint: programs that need to change may not be able to change quickly if faculty are not prepared. National estimates calibrated to IPEDS professional development data and published faculty survey research.</td>
+        </tr>
+        <tr>
+          <td>Regional Labor Market</td>
+          <td>region</td>
+          <td>15%</td>
+          <td>A multiplier reflecting how local employer demand for a program's target occupations compares to the national average. A value above 1.0 means regional demand exceeds the national average (lower effective risk); below 1.0 means demand is weaker regionally (higher effective risk). Derived from BLS OEWS metro-level employment concentration data for the top 20 US metro labor markets, then averaged as a national representative figure.</td>
+        </tr>
+        <tr>
+          <td>Employment Outlook</td>
+          <td>empOut</td>
+          <td>10%</td>
+          <td>BLS 10-year projected employment growth (positive) or decline (negative) for the primary SOC code(s) associated with the program. Expressed as a decimal (e.g., −0.12 = 12% projected decline). This dimension directly captures whether the labor market is contracting independent of AI, which compounds risk when combined with high exposure.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <div class="callout-label">On weight selection</div>
+      <p>The 40/20/15/15/10 default weighting reflects a deliberate emphasis on task automation as the primary signal, consistent with the Eloundou et al. and Felten et al. research design. The remaining weights distribute influence across implementation capacity (faculty), market context (regional, employment), and timing (half-life). Users can adjust all weights in the Methodology panel. Presets are available for task-heavy, labor-market-focused, and faculty-readiness-focused analyses.</p>
+    </div>
+  </div>
+
+
+  <!-- 5. NORMALIZATION -->
+  <div class="sec" id="normalization">
+    <div class="sec-num">05</div>
+    <div class="sec-title">Normalization Functions</div>
+    <div class="sec-divider"></div>
+    <p>Each dimension is measured in different units (fractions, years, percentages, multipliers). Before combining them, each is normalized to a <strong>0–1 risk scale</strong> using the functions below. The exact functions used in the application's source code are reproduced here verbatim.</p>
+
+    <div class="formula">
+      <pre><span class="cmt">// Task Automation Potential — already on 0-1 scale from source research</span>
+<span class="fn">task</span>   = p.exposure
+<span class="cmt">           Range: [0.0, 1.0] — no transformation needed</span>
+
+<span class="cmt">// Curriculum Half-Life — years until 40%+ of tasks automated</span>
+<span class="fn">hl</span>     = <span class="fn">min</span>(<span class="val">1</span>, <span class="fn">max</span>(<span class="val">0</span>, <span class="val">1</span> - (p.halfLife - <span class="val">0.5</span>) / <span class="val">14.5</span>))
+<span class="cmt">           0.5 years → risk = 1.0 (maximum urgency)
+           15 years  → risk = 0.0 (no near-term urgency)
+           Linear interpolation between these bounds</span>
+
+<span class="cmt">// Faculty AI Readiness — inverted: lower readiness = higher risk</span>
+<span class="fn">fac</span>    = <span class="val">1</span> - (effectiveFacultyReady(p) / <span class="val">100</span>)
+<span class="cmt">           0% ready  → risk = 1.0
+           100% ready → risk = 0.0</span>
+
+<span class="cmt">// Regional Labor Market — inverted multiplier</span>
+<span class="fn">reg</span>    = <span class="fn">max</span>(<span class="val">0</span>, <span class="val">1</span> - (p.region - <span class="val">0.8</span>) / <span class="val">0.4</span>)
+<span class="cmt">           region ≤ 0.8 → risk = 1.0 (very weak local market)
+           region ≥ 1.2 → risk = 0.0 (strong local market)
+           Linear between 0.8 and 1.2</span>
+
+<span class="cmt">// Employment Outlook — converts projected growth/decline to risk</span>
+<span class="fn">emp</span>    = <span class="fn">max</span>(<span class="val">0</span>, <span class="fn">min</span>(<span class="val">1</span>, -p.empOut / <span class="val">0.15</span>))
+<span class="cmt">           empOut ≤ -0.15 (15%+ decline)  → risk = 1.0
+           empOut ≥  0.00 (stable/growing) → risk = 0.0
+           Linear interpolation between these bounds</span></pre>
+    </div>
+
+    <div class="norm-grid">
+      <div class="norm-card">
+        <div class="nc-dim">Half-Life Normalization</div>
+        <div class="nc-formula">risk = clamp(0, 1 − (hl − 0.5) / 14.5, 1)</div>
+        <div class="nc-range">
+          <span>0.5 yr</span> → risk 1.00 &nbsp;|&nbsp; <span>5 yr</span> → risk 0.66<br>
+          <span>8 yr</span> → risk 0.48 &nbsp;|&nbsp; <span>15 yr</span> → risk 0.00
+        </div>
+      </div>
+      <div class="norm-card">
+        <div class="nc-dim">Regional Multiplier Normalization</div>
+        <div class="nc-formula">risk = clamp(0, 1 − (region − 0.8) / 0.4, 1)</div>
+        <div class="nc-range">
+          <span>0.80×</span> → risk 1.00 &nbsp;|&nbsp; <span>1.00×</span> → risk 0.50<br>
+          <span>1.10×</span> → risk 0.25 &nbsp;|&nbsp; <span>1.20×</span> → risk 0.00
+        </div>
+      </div>
+      <div class="norm-card">
+        <div class="nc-dim">Employment Outlook Normalization</div>
+        <div class="nc-formula">risk = clamp(0, −empOut / 0.15, 1)</div>
+        <div class="nc-range">
+          <span>−15%</span> → risk 1.00 &nbsp;|&nbsp; <span>−8%</span> → risk 0.53<br>
+          <span>0%</span> → risk 0.00 &nbsp;|&nbsp; <span>+15%</span> → risk 0.00
+        </div>
+      </div>
+      <div class="norm-card">
+        <div class="nc-dim">Faculty Readiness Normalization</div>
+        <div class="nc-formula">risk = 1 − (facultyReady / 100)</div>
+        <div class="nc-range">
+          <span>10%</span> ready → risk 0.90<br>
+          <span>40%</span> ready → risk 0.60<br>
+          <span>70%</span> ready → risk 0.30
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 6. COMPOSITE SCORE -->
+  <div class="sec" id="composite">
+    <div class="sec-num">06</div>
+    <div class="sec-title">Composite Score Formula</div>
+    <div class="sec-divider"></div>
+    <p>The composite risk score is a <strong>weighted linear combination</strong> of the five normalized dimensions. This is the exact formula used in the application source code:</p>
+
+    <div class="formula">
+      <pre><span class="fn">compositeScore</span>(p) =
+    task  × w.task         <span class="cmt">// Task Automation Potential × weight</span>
+  + hl    × w.halfLife     <span class="cmt">// Curriculum Half-Life × weight</span>
+  + fac   × w.faculty      <span class="cmt">// Faculty Readiness Gap × weight</span>
+  + reg   × w.regional     <span class="cmt">// Regional Labor Market × weight</span>
+  + emp   × w.employment   <span class="cmt">// Employment Outlook × weight</span>
+
+<span class="cmt">// Default weights (must sum to 1.0):</span>
+w = { task: <span class="val">0.40</span>, halfLife: <span class="val">0.20</span>, faculty: <span class="val">0.15</span>, regional: <span class="val">0.15</span>, employment: <span class="val">0.10</span> }
+
+<span class="cmt">// Result range: [0.0, 1.0]
+// Higher score = greater overall risk</span></pre>
+    </div>
+
+    <p>The composite score integrates all five dimensions into a single 0–1 risk value. It is <strong>not</strong> the same as the raw AI exposure percentage shown on each card — the exposure score is just one of the five inputs. The composite score can be higher or lower than the raw exposure depending on the other dimensions. The program detail drawer shows both figures and notes when they diverge significantly.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-label">On the choice of linear weighting</div>
+      <p>A weighted linear model was chosen over more complex aggregation methods (multiplicative, fuzzy, or non-linear) for three reasons: interpretability (administrators can directly see how changing a weight changes the output), auditability (the calculation can be reproduced manually), and appropriate epistemic humility (the data quality does not justify the precision implied by a non-linear model). Users are encouraged to test multiple presets before drawing conclusions about borderline programs.</p>
+    </div>
+  </div>
+
+
+  <!-- 7. CLASSIFICATION -->
+  <div class="sec" id="classification">
+    <div class="sec-num">07</div>
+    <div class="sec-title">Classification Thresholds</div>
+    <div class="sec-divider"></div>
+    <p>The composite score is mapped to one of four recommendation categories using the following decision rules, applied <strong>in order</strong>. The mechanism field (whether AI primarily <em>replaces</em> or <em>augments</em> the target occupation) modifies the first check:</p>
+
+    <table class="thresh-table">
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Condition</th>
+          <th>Output</th>
+          <th>Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1st</td>
+          <td class="cond">mechanism = "rep" AND compositeScore &gt; 0.67</td>
+          <td><span class="rec-pill rp-sunset">🌅 Sunset</span></td>
+          <td>AI is replacing — not augmenting — the core tasks, and the composite risk is high. Employer demand for graduates is expected to contract. The program requires wind-down planning.</td>
+        </tr>
+        <tr>
+          <td>2nd</td>
+          <td class="cond">compositeScore &gt; 0.57</td>
+          <td><span class="rec-pill rp-pivot">⚡ Urgent Pivot</span></td>
+          <td>High composite risk, but AI augments rather than fully replaces workers. Graduates remain in demand if they can manage AI tools. The curriculum must shift from task execution to task direction and oversight.</td>
+        </tr>
+        <tr>
+          <td>3rd</td>
+          <td class="cond">compositeScore &lt; 0.30</td>
+          <td><span class="rec-pill rp-invest">🌱 Invest & Grow</span></td>
+          <td>Low composite risk. The program trains students for work AI cannot easily replicate — physical skill, direct care, human judgment. Employer demand is typically stable or growing. Expand capacity.</td>
+        </tr>
+        <tr>
+          <td>4th</td>
+          <td class="cond">Otherwise (0.30 ≤ score ≤ 0.57)</td>
+          <td><span class="rec-pill rp-maintain">🔒 Maintain</span></td>
+          <td>Moderate risk. AI will change some tasks but is unlikely to reshape the field fundamentally in the near term. Monitor annually. Add AI fluency modules without wholesale redesign.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">On threshold sensitivity</div>
+      <p>Programs with composite scores near the boundaries (particularly in the 0.54–0.60 and 0.28–0.33 ranges) should be treated as uncertain. A small change in methodology weights — or the arrival of updated source data — could shift these programs between categories. The Methodology panel's weight sliders allow users to test the sensitivity of borderline programs to different assumptions.</p>
+    </div>
+  </div>
+
+
+  <!-- 8. TASK SCORING -->
+  <div class="sec" id="tasks">
+    <div class="sec-num">08</div>
+    <div class="sec-title">Task-Level Scoring</div>
+    <div class="sec-divider"></div>
+    <p>Each program's detail drawer shows a breakdown of 4–6 representative tasks for the target occupation, each rated for its individual AI impact score and classified as either <strong>AI Replaces</strong> or <strong>AI Assists</strong>.</p>
+
+    <p>Task statements are drawn directly from O*NET for the relevant SOC code(s). The individual task-level AI impact score (0–1) represents the probability that AI can perform that specific task at human-level quality within the current generation of tools. This is assigned using the following classification criteria:</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Task characteristic</th>
+          <th>Classification</th>
+          <th>Basis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Pattern recognition, text generation, data processing, code generation, translation, scheduling, routing</td>
+          <td>AI Replaces (score 0.65–0.98)</td>
+          <td>Tasks well within demonstrated GPT-4 class capability. Score calibrated to Eloundou et al. β scores for the task category.</td>
+        </tr>
+        <tr>
+          <td>Analysis, research, synthesis, recommendation with human review</td>
+          <td>AI Assists (score 0.40–0.75)</td>
+          <td>Tasks where AI substantially accelerates completion but human judgment remains essential for quality assurance. Score reflects degree of AI contribution.</td>
+        </tr>
+        <tr>
+          <td>Physical manipulation, direct patient/client interaction, novel judgment calls, real-time situational response</td>
+          <td>AI Assists (score 0.02–0.25)</td>
+          <td>Tasks dependent on embodied action, social presence, or contextual judgment that current AI cannot replicate. Low scores reflect near-zero automation probability with current technology.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>The <strong>mechanism field</strong> (rep = Replaces, aug = Augments) at the program level is assigned based on whether the <em>modal task</em> — the highest-frequency, highest-importance task — falls in the Replaces or Assists category. A program classified as "rep" has its primary recurring work targeted for substitution, not enhancement.</p>
+  </div>
+
+
+  <!-- 9. CRITICAL NOW -->
+  <div class="sec" id="critical">
+    <div class="sec-num">09</div>
+    <div class="sec-title">"Critical Now" Logic</div>
+    <div class="sec-divider"></div>
+    <p>The <strong>🚨 Critical Now</strong> filter surfaces programs that meet all three of the following conditions simultaneously:</p>
+
+    <div class="formula">
+      <pre><span class="fn">isCritical</span>(p) =
+    p.exposure          ≥ <span class="val">0.65</span>   <span class="cmt">// High raw AI exposure</span>
+    AND p.halfLife      ≤ <span class="val">3.0</span>    <span class="cmt">// Short runway — less than 3 years</span>
+    AND facultyReady(p) ≤ <span class="val">35</span>     <span class="cmt">// Faculty not prepared to respond</span></pre>
+    </div>
+
+    <p>This combination is particularly actionable because it identifies programs where the <strong>problem is urgent</strong> (high exposure, short runway) and the <strong>institution's ability to respond is constrained</strong> (low faculty readiness). A program that needs a curriculum overhaul in under three years but has fewer than a third of its faculty with relevant AI fluency cannot respond at the pace the situation requires without deliberate faculty development investment starting now.</p>
+
+    <p>The three thresholds were set to reflect meaningful operational significance rather than statistical significance: 65% exposure represents a clear majority of tasks affected; 3 years reflects the outer edge of a standard annual curriculum review cycle; 35% faculty readiness represents the range at which a critical mass for change cannot easily be assembled without a structured development program.</p>
+  </div>
+
+
+  <!-- 10. WORKED EXAMPLE -->
+  <div class="sec" id="worked-example">
+    <div class="sec-num">10</div>
+    <div class="sec-title">Worked Example: Accounting</div>
+    <div class="sec-divider"></div>
+    <p>The following traces the full calculation for the Accounting program (CIP 52.0301, SOC 13-2011 Accountants and Auditors) using default weights.</p>
+
+    <p><strong>Raw input values:</strong> exposure = 0.83, halfLife = 1.8 years, facultyReady = 22%, region = 0.90×, empOut = −0.02 (2% projected decline), mechanism = aug.</p>
+
+    <p><strong>Step 1 — Normalize each dimension:</strong></p>
+
+    <div class="formula">
+      <pre>task  = <span class="val">0.83</span>                                          <span class="cmt">→ 0.83</span>
+hl    = min(1, max(0, 1 - (1.8 - 0.5) / 14.5))       <span class="cmt">→ 1 - (1.3/14.5) = 1 - 0.090 = 0.910</span>
+fac   = 1 - (22 / 100)                                <span class="cmt">→ 0.780</span>
+reg   = max(0, 1 - (0.90 - 0.8) / 0.4)               <span class="cmt">→ 1 - (0.10/0.4) = 1 - 0.25 = 0.750</span>
+emp   = max(0, min(1, -(-0.02) / 0.15))               <span class="cmt">→ 0.02/0.15 = 0.133</span></pre>
+    </div>
+
+    <p><strong>Step 2 — Apply default weights and sum:</strong></p>
+
+    <div class="example-box">
+      <div class="ex-title">Accounting — Composite Score Calculation</div>
+      <div class="ex-row">
+        <span class="ex-dim">Task Automation (0.83)</span>
+        <span class="ex-calc">0.83 × 0.40</span>
+        <span class="ex-result">= 0.332</span>
+      </div>
+      <div class="ex-row">
+        <span class="ex-dim">Curriculum Half-Life (0.91)</span>
+        <span class="ex-calc">0.91 × 0.20</span>
+        <span class="ex-result">= 0.182</span>
+      </div>
+      <div class="ex-row">
+        <span class="ex-dim">Faculty Readiness Gap (0.78)</span>
+        <span class="ex-calc">0.78 × 0.15</span>
+        <span class="ex-result">= 0.117</span>
+      </div>
+      <div class="ex-row">
+        <span class="ex-dim">Regional Labor Market (0.75)</span>
+        <span class="ex-calc">0.75 × 0.15</span>
+        <span class="ex-result">= 0.113</span>
+      </div>
+      <div class="ex-row">
+        <span class="ex-dim">Employment Outlook (0.13)</span>
+        <span class="ex-calc">0.13 × 0.10</span>
+        <span class="ex-result">= 0.013</span>
+      </div>
+      <div class="ex-row" style="border-top:2px solid var(--forest)">
+        <span class="ex-dim">Composite Score</span>
+        <span class="ex-calc">sum of above</span>
+        <span class="ex-result" style="font-size:16px;color:var(--orange)">= 0.757</span>
+      </div>
+    </div>
+
+    <p><strong>Step 3 — Classify:</strong> mechanism = "aug" (not "rep"), so the Sunset check does not apply. compositeScore 0.757 > 0.57 → <strong>⚡ Urgent Pivot.</strong></p>
+
+    <p>Note that the composite score (0.757) is meaningfully higher than the raw exposure score (0.83) when all dimensions are combined — in this case the short half-life and low faculty readiness amplify the risk. The dashboard shows both numbers in the detail drawer and flags when they diverge by more than 5 percentage points.</p>
+  </div>
+
+
+  <!-- 11. ESTIMATED VS SOURCED -->
+  <div class="sec" id="estimated">
+    <div class="sec-num">11</div>
+    <div class="sec-title">What Is Estimated vs. Directly Sourced</div>
+    <div class="sec-divider"></div>
+    <p>This distinction is the most important one for anyone evaluating the tool's credibility. Being precise about it is more useful than overstating the rigor.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Element</th>
+          <th>Status</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Scoring framework</td>
+          <td>✓ Directly sourced</td>
+          <td>The five-dimension framework and its components are grounded in Eloundou et al., Felten et al., O*NET, BLS, and NCES — all cited, peer-reviewed or federal.</td>
+        </tr>
+        <tr>
+          <td>SOC-level AI exposure scores</td>
+          <td>✓ Directly sourced</td>
+          <td>Drawn from Eloundou et al. (2023) β scores and Felten et al. index, both published in paper appendices. The weighted average methodology is documented in Section 3.</td>
+        </tr>
+        <tr>
+          <td>CIP-to-SOC mapping</td>
+          <td>✓ Directly sourced</td>
+          <td>NCES CIP-SOC crosswalk, publicly available.</td>
+        </tr>
+        <tr>
+          <td>O*NET task statements</td>
+          <td>✓ Directly sourced</td>
+          <td>Task text and importance/frequency ratings are drawn verbatim from O*NET bulk data files.</td>
+        </tr>
+        <tr>
+          <td>BLS employment projections</td>
+          <td>✓ Directly sourced</td>
+          <td>10-year projected growth/decline drawn from BLS Occupational Outlook Handbook by SOC code.</td>
+        </tr>
+        <tr>
+          <td>Program-level exposure scores</td>
+          <td>~ Informed estimate</td>
+          <td>Translating a SOC-level score to a CIP-level score requires judgment about which SOC codes best represent a program's graduates, and how to weight multiple SOC codes. This step involves methodological judgment that introduces estimation error.</td>
+        </tr>
+        <tr>
+          <td>Curriculum half-life values</td>
+          <td>~ Informed estimate</td>
+          <td>Derived from AI progress timelines in the literature and O*NET task frequency data, but no published half-life database exists. These are calibrated estimates, not direct measurements.</td>
+        </tr>
+        <tr>
+          <td>Faculty AI readiness figures</td>
+          <td>~ Informed estimate</td>
+          <td>National estimates calibrated to IPEDS professional development data and Educause faculty survey research, but institutional variation is high. These national averages may differ substantially from any specific institution's actual figures — which is why the CSV import feature exists.</td>
+        </tr>
+        <tr>
+          <td>Regional multipliers</td>
+          <td>~ Informed estimate</td>
+          <td>Derived from BLS OEWS metro-level employment data averaged across the top 20 US metro labor markets. Represents a typical national figure, not your specific region. Users with local labor market data should override via CSV import.</td>
+        </tr>
+        <tr>
+          <td>Task-level AI impact scores</td>
+          <td>~ Informed estimate</td>
+          <td>Assigned using the classification criteria in Section 8, calibrated to Eloundou et al. β scores by task category. Individual task scores are judgments, not measurements, and are most reliable as directional indicators of relative impact across tasks within a program.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- 12. LIMITATIONS -->
+  <div class="sec" id="limitations">
+    <div class="sec-num">12</div>
+    <div class="sec-title">Limitations & Appropriate Use</div>
+    <div class="sec-divider"></div>
+    <p>The following limitations apply to all uses of Meridian and should be communicated to any audience relying on its outputs.</p>
+
+    <ul class="limit-list">
+      <li class="limit-item">
+        <div class="li-icon">⏱</div>
+        <div class="li-text"><strong>Point-in-time data, no automatic refresh.</strong> All underlying data sources — AI exposure research, BLS projections, O*NET task data — change over time. Meridian reflects a fixed snapshot at the time of publication (2025). The AI capability landscape in particular evolves rapidly. Scores should be reviewed and recalibrated against updated source data at intervals of no more than 18 months. Programs near category boundaries (within ±0.05 of a threshold) are most sensitive to this staleness risk.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">📍</div>
+        <div class="li-text"><strong>National scores, not institutional scores.</strong> All estimates represent national averages. Faculty readiness, regional labor market strength, and enrollment patterns vary substantially across institutions. The CSV import feature exists specifically to address this — institutions with local data should overlay it to produce more accurate institution-specific scores.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">🎓</div>
+        <div class="li-text"><strong>Program categories are not programs.</strong> Meridian scores "Accounting" as a category. The actual curriculum at any given institution may differ substantially from the national average — some accounting programs may already be heavily AI-integrated, others may not. Scores describe the modal program, not every program.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">⚖️</div>
+        <div class="li-text"><strong>Classification thresholds are not natural laws.</strong> The 0.57 and 0.30 thresholds are defensible choices, not empirically derived cutoffs. A program scoring 0.56 is not meaningfully different from one scoring 0.58 — but one will appear as "Maintain" and the other as "Urgent Pivot." Use the Methodology panel to test sensitivity around borderline programs before making planning decisions based on them.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">🚫</div>
+        <div class="li-text"><strong>This tool does not predict the future of AI.</strong> The scores are grounded in the current generation of AI capabilities. They do not attempt to forecast capabilities two or three generations out, which would require speculative assumptions well beyond what the cited research supports.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">🏛️</div>
+        <div class="li-text"><strong>Not a substitute for formal review.</strong> Meridian is designed to help leaders identify where to focus and what questions to ask. Decisions about program restructuring, resource reallocation, or sunset planning should involve formal curriculum review, accreditation consultation, faculty governance, and institution-specific enrollment and labor market analysis.</div>
+      </li>
+      <li class="limit-item">
+        <div class="li-icon">📊</div>
+        <div class="li-text"><strong>Not for citation as a primary source.</strong> The tool may be cited as an analytical instrument in planning documents. Specific numerical claims (e.g., "Accounting has a 0.83 AI exposure score") should be attributed to the underlying sources (Eloundou et al., BLS) rather than to Meridian, with a note that the program-level figure involves methodological judgment in applying those sources.</div>
+      </li>
+    </ul>
+
+    <div class="callout callout-warn" style="margin-top:28px">
+      <div class="callout-label">Suggested citation language for institutional documents</div>
+      <p>"Program AI exposure scores are derived from a composite index informed by Eloundou et al. (2023), the Felten, Raj &amp; Seamans Princeton AI Exposure Index, O*NET task data, and BLS employment projections, aggregated using the Meridian analytical framework (George, 2025). Individual program-level scores involve methodological judgment in applying national occupational data to specific academic programs and should be interpreted as directional indicators rather than precise measurements."</p>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+<footer>
+  <div class="ft-credit">
+    Conceptualized &amp; Designed by <a href="https://www.linkedin.com/in/beingbabu/" target="_blank" rel="noopener noreferrer" class="ft-link">Professor Babu George</a><br>
+    Meridian is an open educational resource. This methodology document may be reproduced freely with attribution.
+  </div>
+</footer>
+
+</body>
+</html>

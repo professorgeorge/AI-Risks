@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — AI Readiness for Academic Programs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f3efe7;--bg2:#ede7dc;--bg3:#ddd5c6;
+  --card:#ffffff;
+  --forest:#1a3830;--forest2:#244d42;
+  --text:#1a2e26;--t2:#3d5a50;--t3:#7a9890;
+  --gold:#a87218;--ab:#fdf5e4;--abr:#e8cc88;
+  --red:#9e2020;--rb:#fdf0ee;--rbr:#eeb0a8;
+  --green:#1a6438;--gb:#eaf6ef;--gbr:#88ccaa;
+  --orange:#b84018;--ob:#fdf2ee;--obr:#edb898;
+  --slate:#4a6268;--sb:#edf2f4;--sbr:#b8ccd4;
+  --sky:#145c8e;--skb:#eaf4fb;
+  --r:10px;--rs:7px;
+  --sh:0 2px 8px rgba(26,46,38,.07);
+  --sh2:0 6px 28px rgba(26,46,38,.13);
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#nav{background:var(--forest);height:54px;display:flex;align-items:center;padding:0 24px;gap:18px;position:sticky;top:0;z-index:600}
+.n-logo{font-family:'Cormorant Garant',serif;font-size:19px;color:#fff;cursor:pointer}
+.n-logo b{color:#d4a84a}
+.n-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
+.n-tag{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap}
+.n-sp{flex:1}
+.n-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:rgba(255,255,255,.78);font-family:'Instrument Sans',sans-serif;font-size:12.5px;font-weight:500;padding:6px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.n-btn:hover{background:rgba(255,255,255,.16);color:#fff}
+#hero{background:var(--forest);padding:44px 24px 52px;text-align:center}
+.h-eye{font-size:10.5px;font-weight:700;color:#d4a84a;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:11px}
+.h-title{font-family:'Cormorant Garant',serif;font-size:38px;color:#fff;line-height:1.18;margin-bottom:12px;max-width:660px;margin-left:auto;margin-right:auto}
+.h-title em{color:#d4a84a;font-style:normal}
+.h-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:530px;margin:0 auto 26px;line-height:1.65}
+.sw{max-width:580px;margin:0 auto;position:relative}
+.srch{width:100%;background:#fff;border:none;border-radius:40px;font-family:'Instrument Sans',sans-serif;font-size:15px;color:var(--text);padding:13px 50px 13px 20px;box-shadow:0 4px 20px rgba(0,0,0,.24);outline:none;transition:box-shadow .2s}
+.srch:focus{box-shadow:0 4px 28px rgba(0,0,0,.33),0 0 0 3px rgba(240,192,80,.28)}
+.srch::placeholder{color:#a0b0bc}
+.s-ico{position:absolute;right:15px;top:50%;transform:translateY(-50%);color:#a0b0bc;pointer-events:none}
+.h-stats{display:flex;gap:26px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.hs{text-align:center}.hs-v{font-family:'Cormorant Garant',serif;font-size:23px;color:#d4a84a;display:block}
+.hs-l{font-size:10px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:1px}
+#main{max-width:1200px;margin:0 auto;padding:30px 22px}
+#ftiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:28px}
+.ftile{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:11px 12px;cursor:pointer;transition:all .15s}
+.ftile:hover{border-color:var(--abr);background:var(--ab);box-shadow:var(--sh)}
+.ftile.on{border-color:var(--amber);background:var(--ab)}
+.ft-ic{font-size:17px;margin-bottom:3px;display:block}
+.ft-nm{font-size:12px;font-weight:600;display:block;line-height:1.3}
+.ft-ct{font-size:10px;color:var(--t3);margin-top:1px;display:block}
+.fbar{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.fbar-lbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.9px}
+.fb{background:var(--card);border:1.5px solid var(--bg3);border-radius:20px;color:var(--t2);font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.fb:hover{border-color:var(--abr)}
+.fb.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.fb.pv.on{background:var(--orange);border-color:var(--orange)}
+.fb.iv.on{background:var(--green);border-color:var(--green)}
+.fb.ss.on{background:var(--red);border-color:var(--red)}
+.fb.mt.on{background:var(--slate);border-color:var(--slate)}
+.sh-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.sh-t{font-family:'Cormorant Garant',serif;font-size:20px}
+.sh-ct-badge{font-size:12px;color:var(--t3);background:var(--bg2);border:1px solid var(--bg3);border-radius:16px;padding:3px 10px}
+.clr-btn{background:none;border:none;color:var(--amber);font-family:'Instrument Sans',sans-serif;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+#pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pc{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);padding:15px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.pc.pivot::before{background:var(--orange)}.pc.sunset::before{background:var(--red)}
+.pc.invest::before{background:var(--green)}.pc.maintain::before{background:var(--slate)}
+.pc:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.pc.cmp-sel{border-color:var(--sky)!important;box-shadow:0 0 0 2px rgba(21,101,160,.25)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.pc-nm{font-size:13.5px;font-weight:600;line-height:1.3;flex:1;padding-right:6px}
+.pc-fi{font-size:10px;color:var(--t3);margin-top:2px}
+.rbadge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 7px;border-radius:4px;flex-shrink:0}
+.rb-pivot{background:var(--ob);color:var(--orange);border:1px solid var(--obr)}
+.rb-sunset{background:var(--rb);color:var(--red);border:1px solid var(--rbr)}
+.rb-invest{background:var(--gb);color:var(--green);border:1px solid var(--gbr)}
+.rb-maintain{background:var(--sb);color:var(--slate);border:1px solid var(--sbr)}
+.pc-meter{margin:9px 0 8px}
+.pm-row{display:flex;justify-content:space-between;margin-bottom:3px}
+.pm-lbl{font-size:10.5px;color:var(--t3)}.pm-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500}
+.pm-bar{height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.pm-fill{height:100%;border-radius:2px}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.ptag{font-size:10px;color:var(--t3);background:var(--bg2);border-radius:4px;padding:2px 6px}
+.ov-badge{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--skb);color:var(--sky);border:1px solid #b8d8f0}
+.cmp-btn{position:absolute;bottom:9px;right:10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 7px;border-radius:4px;background:var(--skb);color:var(--sky);border:1px solid #b8d8f0;cursor:pointer;display:none;transition:all .15s}
+.pc:hover .cmp-btn{display:block}
+.pc.cmp-sel .cmp-btn{display:block;background:var(--sky);color:#fff;border-color:var(--sky)}
+#drbg{position:fixed;inset:0;background:rgba(27,45,62,.3);z-index:700;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+#drbg.on{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:0;width:490px;height:100vh;background:var(--card);border-left:1.5px solid var(--bg3);z-index:800;overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);box-shadow:-5px 0 32px rgba(27,45,62,.11)}
+#drawer.on{transform:translateX(0)}
+.dr-top{padding:18px 20px 14px;border-bottom:1px solid var(--bg2);position:sticky;top:0;background:var(--card);z-index:5}
+.dr-cls{position:absolute;top:14px;right:14px;width:27px;height:27px;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;transition:all .15s}
+.dr-cls:hover{background:var(--bg3)}
+.dr-fi{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:3px}
+.dr-title{font-family:'Cormorant Garant',serif;font-size:21px;line-height:1.2;margin-bottom:8px;padding-right:34px}
+.dr-bgs{display:flex;gap:5px;flex-wrap:wrap}
+.dr-bd{padding:0 0 44px}
+.dr-sec{padding:15px 20px;border-bottom:1px solid var(--bg2)}.dr-sec:last-child{border-bottom:none}
+.dr-stitle{font-size:9.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:11px}
+.verdict{border-radius:var(--rs);padding:12px 14px;line-height:1.65}
+.vr-pivot{background:var(--ob);border:1.5px solid var(--obr)}.vr-sunset{background:var(--rb);border:1.5px solid var(--rbr)}
+.vr-invest{background:var(--gb);border:1.5px solid var(--gbr)}.vr-maintain{background:var(--sb);border:1.5px solid var(--sbr)}
+.vr-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.vr-pivot .vr-lbl{color:var(--orange)}.vr-sunset .vr-lbl{color:var(--red)}
+.vr-invest .vr-lbl{color:var(--green)}.vr-maintain .vr-lbl{color:var(--slate)}
+.vr-txt{font-size:13px;color:var(--text);line-height:1.65}
+.score-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:11px}
+.ss-it{background:var(--bg);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:9px 11px;text-align:center}
+.ss-lbl{font-size:9.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.ss-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500}
+.ss-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.mech-box{border-radius:var(--rs);padding:10px 13px;font-size:12.5px;line-height:1.65}
+.mb-rep{background:var(--rb);border:1.5px solid var(--rbr)}.mb-aug{background:var(--skb);border:1.5px solid #b8d8f0}
+.mb-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.mb-rep .mb-lbl{color:var(--red)}.mb-aug .mb-lbl{color:var(--sky)}
+.task-row{padding:8px 0;border-bottom:1px solid var(--bg2)}.task-row:last-child{border-bottom:none}
+.tr-top{display:flex;align-items:center;margin-bottom:4px}
+.tr-nm{font-size:12px;color:var(--t2);flex:1}
+.tr-tag{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 5px;border-radius:3px;margin-left:6px;flex-shrink:0}
+.tt-rep{background:var(--rb);color:var(--red)}.tt-aug{background:var(--skb);color:var(--sky)}
+.tr-bar{display:flex;align-items:center;gap:6px}
+.tr-bg{flex:1;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.tr-fg{height:100%;border-radius:2px}
+.tr-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);width:26px;text-align:right}
+.ai-row{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--bg2)}.ai-row:last-child{border-bottom:none}
+.ai-pr{font-size:8.5px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px;white-space:nowrap}
+.pr-urgent{background:var(--rb);color:var(--red)}.pr-high{background:var(--ob);color:var(--orange)}
+.pr-medium{background:var(--ab);color:var(--amber)}.pr-low{background:var(--sb);color:var(--slate)}
+.ai-nm{font-size:12.5px;font-weight:500;margin-bottom:1px}.ai-ty{font-size:10.5px;color:var(--t3)}
+.info-box{background:var(--bg);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:11px 13px;font-size:12.5px;color:var(--t2);line-height:1.65}
+#meth-bg,#cmp-bg,#csv-bg{position:fixed;inset:0;background:rgba(27,45,62,.38);z-index:900;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center}
+#meth-bg.on,#cmp-bg.on,#csv-bg.on{opacity:1;pointer-events:auto}
+.modal{background:var(--card);border-radius:14px;box-shadow:0 14px 52px rgba(27,45,62,.22);transform:scale(.97);transition:transform .22s cubic-bezier(.16,1,.3,1);max-height:88vh;overflow-y:auto;position:relative}
+#meth-bg.on .modal,#cmp-bg.on .modal,#csv-bg.on .modal{transform:scale(1)}
+.modal-cls{position:absolute;top:13px;right:13px;width:27px;height:27px;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:13px;transition:all .15s;z-index:5}
+.modal-cls:hover{background:var(--bg3)}
+#meth-modal{width:520px;padding:22px 24px}
+.mm-title{font-family:'Cormorant Garant',serif;font-size:19px;margin-bottom:3px}
+.mm-sub{font-size:12.5px;color:var(--t3);margin-bottom:18px;line-height:1.55}
+.preset-row{display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap}
+.preset{background:var(--bg2);border:1.5px solid var(--bg3);border-radius:6px;font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:600;color:var(--t2);padding:5px 11px;cursor:pointer;transition:all .15s}
+.preset:hover{border-color:var(--abr)}
+.preset.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.slider-grp{margin-bottom:16px}
+.sl-head{display:flex;justify-content:space-between;margin-bottom:4px}
+.sl-lbl{font-size:13px;font-weight:500}
+.sl-pct{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);font-weight:500}
+.sl-desc{font-size:11px;color:var(--t3);margin-bottom:6px;line-height:1.5}
+input[type=range]{width:100%;height:5px;-webkit-appearance:none;appearance:none;background:var(--bg3);border-radius:3px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.wt-total{text-align:center;padding:10px;background:var(--bg2);border-radius:var(--rs);font-size:12.5px;color:var(--t3);margin-top:5px}
+.mm-apply{width:100%;margin-top:14px;background:var(--forest);color:#fff;border:none;border-radius:var(--rs);font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:600;padding:11px;cursor:pointer;transition:background .15s}
+.mm-apply:hover{background:var(--forest2)}
+#cmp-modal{width:820px;max-width:95vw;padding:22px 24px}
+.cm-title{font-family:'Cormorant Garant',serif;font-size:19px;margin-bottom:3px}
+.cm-sub{font-size:12.5px;color:var(--t3);margin-bottom:18px}
+.cm-metric{padding:10px 0;border-bottom:1px solid var(--bg2)}.cm-metric:last-child{border-bottom:none}
+.cm-m-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.cm-col{background:var(--bg2);border-radius:var(--rs);padding:10px 12px}
+.cm-col-nm{font-size:11.5px;font-weight:600;margin-bottom:6px;line-height:1.3}
+.cm-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;margin-bottom:2px}
+.cm-bar-bg{height:4px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:4px}
+.cm-bar-fg{height:100%;border-radius:3px}
+#csv-modal{width:480px;padding:22px 24px}
+.csvm-title{font-family:'Cormorant Garant',serif;font-size:19px;margin-bottom:3px}
+.csvm-sub{font-size:12.5px;color:var(--t3);margin-bottom:16px;line-height:1.55}
+.csv-fmt{background:var(--forest);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px}
+.csv-fmt pre{font-family:'JetBrains Mono',monospace;font-size:11px;color:#98d0e0;line-height:1.7;white-space:pre-wrap}
+.csv-cmt{color:#5a8a9a!important}
+.drop-zone{border:2px dashed var(--bg3);border-radius:var(--r);padding:26px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg2);margin-bottom:13px}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--amber);background:var(--ab)}
+.dz-ico{font-size:26px;margin-bottom:6px}.dz-lbl{font-size:13.5px;font-weight:500;margin-bottom:2px}.dz-sub{font-size:11.5px;color:var(--t3)}
+.csv-status{font-size:12.5px;color:var(--green);margin-bottom:11px;min-height:18px}
+.csv-status.err{color:var(--red)}
+.csv-btns{display:flex;gap:8px}
+.csv-clear{flex:1;background:var(--rb);border:1.5px solid var(--rbr);border-radius:var(--rs);color:var(--red);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:600;padding:9px;cursor:pointer;transition:all .15s}
+.csv-clear:hover{background:var(--red);color:#fff}
+#cmp-bar{position:fixed;bottom:0;left:0;right:0;background:var(--forest);padding:11px 24px;display:flex;align-items:center;gap:12px;transform:translateY(100%);transition:transform .25s cubic-bezier(.16,1,.3,1);z-index:500;box-shadow:0 -3px 18px rgba(27,45,62,.18)}
+#cmp-bar.on{transform:translateY(0)}
+.cb-lbl{font-size:12.5px;color:rgba(255,255,255,.65)}
+.cb-chips{display:flex;gap:7px;flex:1;flex-wrap:wrap}
+.cb-chip{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.17);border-radius:20px;font-size:12px;color:#fff;padding:4px 10px;display:flex;align-items:center;gap:5px}
+.cb-rm{cursor:pointer;opacity:.65;font-size:11px}.cb-rm:hover{opacity:1}
+.cb-go{background:#d4a84a;border:none;border-radius:6px;color:var(--forest);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:700;padding:7px 16px;cursor:pointer;white-space:nowrap}
+.cb-go:hover{background:#e0bc60}
+.cb-clr{background:none;border:1px solid rgba(255,255,255,.18);border-radius:6px;color:rgba(255,255,255,.55);font-family:'Instrument Sans',sans-serif;font-size:12px;padding:5px 11px;cursor:pointer;transition:all .15s}
+.cb-clr:hover{color:#fff;border-color:rgba(255,255,255,.35)}
+#about{background:var(--forest);padding:44px 22px;margin-top:18px}
+.ab-in{max-width:1100px;margin:0 auto}
+.ab-title{font-family:'Cormorant Garant',serif;font-size:24px;color:#fff;margin-bottom:5px}
+.ab-sub{font-size:13px;color:rgba(255,255,255,.48);margin-bottom:26px;max-width:500px;line-height:1.6}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.src-c{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:var(--rs);padding:13px}
+.src-ic{font-size:15px;margin-bottom:5px}.src-nm{font-size:12px;font-weight:600;color:#fff;margin-bottom:2px}.src-ds{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.5}
+.empty{text-align:center;padding:52px 20px;color:var(--t3)}
+.em-ic{font-size:34px;margin-bottom:9px}.em-title{font-size:15px;font-weight:600;color:var(--t2);margin-bottom:4px}
+/* ── PORTFOLIO BAR ── */
+#portfolio-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.pb-item{border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.pb-item:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.pb-pivot{background:var(--ob);border-color:var(--obr)}.pb-invest{background:var(--gb);border-color:var(--gbr)}
+.pb-sunset{background:var(--rb);border-color:var(--rbr)}.pb-maintain{background:var(--sb);border-color:var(--sbr)}
+.pb-num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500;line-height:1}
+.pb-pivot .pb-num{color:var(--orange)}.pb-invest .pb-num{color:var(--green)}
+.pb-sunset .pb-num{color:var(--red)}.pb-maintain .pb-num{color:var(--slate)}
+.pb-label{font-size:11.5px;font-weight:600;line-height:1.35}
+.pb-pivot .pb-label{color:var(--orange)}.pb-invest .pb-label{color:var(--green)}
+.pb-sunset .pb-label{color:var(--red)}.pb-maintain .pb-label{color:var(--slate)}
+.pb-sub{font-size:10px;color:var(--t3);margin-top:1px}
+/* ── SORT & CRITICAL ── */
+.sort-bar{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.sort-lbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.9px}
+.sb-sep{width:1px;height:16px;background:var(--bg3);margin:0 2px}
+.sortbtn{background:var(--card);border:1.5px solid var(--bg3);border-radius:20px;color:var(--t2);font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:500;padding:5px 12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sortbtn:hover{border-color:var(--abr)}.sortbtn.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.critical-btn{background:var(--rb);border:1.5px solid var(--rbr);border-radius:20px;color:var(--red);font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:700;padding:5px 13px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.critical-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.critical-btn.on{background:var(--red);color:#fff;border-color:var(--red)}
+/* ── LINK TOAST ── */
+#link-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--forest);color:#fff;font-size:12.5px;padding:9px 18px;border-radius:20px;opacity:0;pointer-events:none;transition:all .25s;z-index:900;white-space:nowrap}
+#link-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.print-hd{display:none}
+@media print{
+  #nav,#hero .sw,#hero .h-stats,#ftiles,.fbar,#cmp-bar,#about,.n-btn,.cmp-btn,#drbg,#drawer,#meth-bg,#cmp-bg,#csv-bg{display:none!important}
+  body{background:#fff}#hero{background:var(--forest);-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:20px}
+  .h-title,.h-sub{color:#fff!important}#main{max-width:100%;padding:14px}
+  .pc{break-inside:avoid;box-shadow:none!important;border:1px solid #ddd!important;transform:none!important}
+  #pgrid{grid-template-columns:repeat(3,1fr)}.print-hd{display:block!important}
+}
+@media(max-width:660px){
+  .h-title{font-size:26px}#main{padding:18px 12px}
+  #ftiles{grid-template-columns:repeat(3,1fr)}
+  #drawer{width:100%}#cmp-modal{width:95vw}#meth-modal{width:95vw}#csv-modal{width:95vw}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="n-logo" onclick="clearAll()">Meridian<b>.</b></div>
+  <div class="n-sep"></div>
+  <div class="n-tag">AI Readiness for Academic Programs</div>
+  <div class="n-sp"></div>
+  <button class="n-btn" onclick="openMeth()">⚙️ Methodology</button>
+  <button class="n-btn" onclick="openCSV()">📤 Import Data</button>
+  <button class="n-btn" onclick="openCompare()">⚖️ Compare</button>
+  <button class="n-btn" onclick="exportPDF()">🖨️ Export PDF</button>
+  <a href="use-cases.html" target="_blank" class="n-btn" style="text-decoration:none">💡 Use Cases</a>
+  <a href="methodology.html" target="_blank" class="n-btn" style="text-decoration:none">📐 Full Methodology</a>
+</nav>
+
+<div id="hero">
+  <div class="h-eye">National Program Database</div>
+  <div class="h-title">How will AI affect your <em>academic programs?</em></div>
+  <div class="h-sub">Search any degree. See the risk, the specific tasks changing, and exactly what to do — with no data upload required.</div>
+  <div class="sw">
+    <input class="srch" type="text" id="hsearch" placeholder="Search any degree — Nursing, Accounting, Computer Science…" oninput="onSearch(this.value)" autocomplete="off">
+    <svg class="s-ico" width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#a0b0bc" stroke-width="2"/><path d="M14 14l3 3" stroke="#a0b0bc" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
+  <div class="h-stats">
+    <div class="hs"><span class="hs-v" id="stat-ct">99</span><span class="hs-l">Degree Programs</span></div>
+    <div class="hs"><span class="hs-v">12</span><span class="hs-l">Academic Fields</span></div>
+    <div class="hs"><span class="hs-v">6</span><span class="hs-l">Federal Data Sources</span></div>
+    <div class="hs"><span class="hs-v">Free</span><span class="hs-l">No Login Needed</span></div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="print-summary"></div>
+  <div id="browse-section">
+    <div class="sh-row" style="margin-bottom:14px">
+      <div>
+        <div style="font-family:'Cormorant Garant',serif;font-size:20px">Browse by Field</div>
+        <div style="font-size:12.5px;color:var(--t3);margin-top:1px">Or use the search bar above for a specific program</div>
+      </div>
+      <button class="clr-btn" id="clearBtn" onclick="clearAll()" style="display:none">Clear all filters</button>
+    </div>
+    <div id="ftiles"></div>
+    <div class="fbar">
+      <span class="fbar-lbl">Recommendation:</span>
+      <button class="fb pv" data-a="pivot" onclick="setAction(this,'pivot')">⚡ Urgent Pivot</button>
+      <button class="fb iv" data-a="invest" onclick="setAction(this,'invest')">🌱 Invest &amp; Grow</button>
+      <button class="fb ss" data-a="sunset" onclick="setAction(this,'sunset')">🌅 Sunset</button>
+      <button class="fb mt" data-a="maintain" onclick="setAction(this,'maintain')">🔒 Maintain</button>
+      <button class="critical-btn" id="critical-btn" onclick="toggleCritical()">🚨 Critical Now</button>
+    </div>
+    <div class="sort-bar">
+      <span class="sort-lbl">Sort by:</span>
+      <button class="sortbtn on" data-sort="default" onclick="setSort(this,'default')">Default</button>
+      <button class="sortbtn" data-sort="exposure" onclick="setSort(this,'exposure')">Highest Exposure</button>
+      <button class="sortbtn" data-sort="runway" onclick="setSort(this,'runway')">Shortest Runway</button>
+      <button class="sortbtn" data-sort="faculty" onclick="setSort(this,'faculty')">Faculty Gap</button>
+    </div>
+  </div>
+  <div id="portfolio-bar"></div>
+  <div class="sh-row">
+    <div class="sh-t" id="sh-title">All Programs</div>
+    <span class="sh-ct-badge" id="sh-ct"></span>
+  </div>
+  <div id="pgrid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#111c27;padding:36px 24px;text-align:center;border-top:1px solid rgba(255,255,255,0.07)">
+  <div style="max-width:680px;margin:0 auto">
+    <div style="font-family:'Cormorant Garant',serif;font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:10px;letter-spacing:0.2px">Conceptualized &amp; Designed by</div>
+    <a href="https://www.linkedin.com/in/beingbabu/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:40px;padding:10px 20px;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.borderColor='rgba(240,192,80,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.borderColor='rgba(255,255,255,0.12)'">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      <span style="font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:600;color:#fff">Professor Babu George</span>
+    </a>
+    <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:14px;line-height:1.7">
+      Meridian is an open educational resource. Scores are directional indicators informed by publicly available federal data and peer-reviewed research.<br>
+      They are not certified institutional assessments. See the Methodology panel for a full disclosure of sources and limitations.
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:12px">Meridian · AI Readiness for Academic Programs</div>
+  </div>
+</footer>
+
+<!-- DRAWER -->
+<div id="drbg" onclick="closeDrawer()"></div>
+<div id="drawer"></div>
+<div id="link-toast">🔗 Link copied to clipboard</div>
+
+<!-- METHODOLOGY MODAL -->
+<div id="meth-bg" onclick="e=>{if(e.target===this)closeMeth()}">
+  <div id="meth-modal" class="modal">
+    <div class="modal-cls" onclick="closeMeth()">✕</div>
+    <div class="mm-title">Methodology & Data Sources</div>
+    <div class="mm-sub">Adjust how the composite risk score is calculated. Weights must sum to 100%. Changes affect all program recommendations in real time.</div>
+
+    <!-- DISCLOSURE -->
+    <div style="background:#fff8ee;border:1.5px solid #f5d99a;border-radius:var(--rs);padding:14px 16px;margin-bottom:18px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--amber);margin-bottom:7px">How the Scores Are Built — & What They Cannot Tell You</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.7">
+        <p style="margin-bottom:8px">The <strong>framework</strong> behind every score in Meridian is grounded in peer-reviewed research and federal public data. The five sources listed below are all real, publicly available, and widely cited in the academic literature on AI and labor markets.</p>
+        <p style="margin-bottom:8px"><strong>What is directly sourced:</strong> The occupation-level AI exposure research by Eloundou et al. (2023) and the Felten, Raj &amp; Seamans Princeton AI Exposure Index both published SOC-level scores in their public appendices. The O*NET task frameworks, BLS employment projections, and NCES IPEDS program data are all downloadable from federal databases. The CIP-SOC crosswalk is an NCES-published bridge table.</p>
+        <p style="margin-bottom:8px"><strong>What is estimated, not sourced:</strong> The specific numerical scores shown for each program — the exposure percentages, half-life years, and faculty readiness figures — are <em>informed estimates</em> derived from those sources, not direct database pulls. Translating a national occupational exposure score into a program-level score requires methodological judgment. Scores should be treated as directional indicators, not precise measurements.</p>
+        <p style="margin-bottom:8px"><strong>What this tool is designed for:</strong> Strategic conversation and planning. It is well-suited for helping academic leaders prioritize which programs to examine more closely, structure a curriculum review, or frame a faculty development agenda. It is not a substitute for a formal institutional review with audited data.</p>
+        <p style="margin-bottom:0"><strong>What this tool cannot do:</strong> It cannot predict the future of AI development. It cannot account for institution-specific strengths, regional employer relationships, accreditation nuances, or political and budgetary realities. All recommendations should be reviewed in light of your institution's specific context.</p>
+        <p style="margin-bottom:0;margin-top:8px;padding-top:8px;border-top:1px solid #f0d090"><strong>A note on data currency:</strong> The scores in this version of Meridian reflect a fixed snapshot of the research and federal datasets available at the time of publication. The underlying landscape — AI capabilities, occupational exposure scores, BLS employment projections, and O*NET task data — changes continuously. This application does not automatically refresh or pull live data. Findings should be interpreted with that constraint in mind: what is true today about a program's exposure may shift meaningfully within 12 to 18 months, particularly for programs already close to a category boundary. Treat all scores as current estimates requiring periodic manual review, not as permanent classifications.</p>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0d090;text-align:center">
+          <a href="methodology.html" target="_blank" style="font-size:12.5px;font-weight:600;color:var(--forest);text-decoration:none;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:6px;padding:7px 16px;display:inline-block;transition:all .15s" onmouseover="this.style.background='var(--forest)';this.style.color='#fff'" onmouseout="this.style.background='var(--bg2)';this.style.color='var(--forest)'">📐 Read the full technical methodology →</a>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">Includes all formulas, normalization functions, classification thresholds, a worked example, and a full sourced vs. estimated disclosure.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0d090">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--amber);margin-bottom:6px">Primary Research Sources</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.7">
+          <div>📄 <strong>Eloundou, Manning, Mishkin &amp; Rock (2023)</strong> — "GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models." OpenAI / arXiv:2303.10130. Occupation-level GPT-4 exposure scores (α and β) by SOC code.</div>
+          <div style="margin-top:4px">📄 <strong>Felten, Raj &amp; Seamans (2023)</strong> — "How Will Language Models Use Tools?" Princeton AI Exposure Index. Multi-round occupation-level scores available at aiindex.princeton.edu.</div>
+          <div style="margin-top:4px">🏛️ <strong>O*NET Resource Center</strong> — U.S. Department of Labor. Task statements, importance and frequency ratings for 1,000+ occupations. onetcenter.org/db_releases.html</div>
+          <div style="margin-top:4px">🏛️ <strong>BLS Occupational Employment &amp; Wage Statistics (OEWS)</strong> — U.S. Bureau of Labor Statistics. Employment projections by SOC and metro area. bls.gov/oes</div>
+          <div style="margin-top:4px">🏛️ <strong>NCES IPEDS &amp; CIP-SOC Crosswalk</strong> — National Center for Education Statistics. Program-to-occupation mapping using 6-digit CIP codes. nces.ed.gov/ipeds</div>
+        </div>
+      </div>
+    </div>
+    <div class="preset-row">
+      <button class="preset on" data-preset="balanced" onclick="setPreset('balanced')">Balanced (Default)</button>
+      <button class="preset" data-preset="karpathy" onclick="setPreset('karpathy')">Task-Heavy (Karpathy)</button>
+      <button class="preset" data-preset="labor" onclick="setPreset('labor')">Labor Market Focus</button>
+      <button class="preset" data-preset="faculty_focus" onclick="setPreset('faculty_focus')">Faculty-Readiness Focus</button>
+    </div>
+    <div class="slider-grp">
+      <div class="sl-head"><span class="sl-lbl">Task Automation Potential</span><span class="sl-pct" id="slv-task">40%</span></div>
+      <div class="sl-desc">Weight given to how replaceable specific O*NET tasks are by AI (Eloundou et al. scores)</div>
+      <input type="range" id="sl-task" min="5" max="80" value="40" oninput="updateSliderLabels()">
+    </div>
+    <div class="slider-grp">
+      <div class="sl-head"><span class="sl-lbl">Curriculum Half-Life</span><span class="sl-pct" id="slv-hl">20%</span></div>
+      <div class="sl-desc">Weight given to how quickly the program's target tasks will become automated</div>
+      <input type="range" id="sl-hl" min="5" max="60" value="20" oninput="updateSliderLabels()">
+    </div>
+    <div class="slider-grp">
+      <div class="sl-head"><span class="sl-lbl">Faculty AI Readiness</span><span class="sl-pct" id="slv-fac">15%</span></div>
+      <div class="sl-desc">Weight given to the gap between current faculty AI fluency and what's needed</div>
+      <input type="range" id="sl-fac" min="5" max="50" value="15" oninput="updateSliderLabels()">
+    </div>
+    <div class="slider-grp">
+      <div class="sl-head"><span class="sl-lbl">Regional Labor Market</span><span class="sl-pct" id="slv-reg">15%</span></div>
+      <div class="sl-desc">Weight given to how local employer demand compares to the national average</div>
+      <input type="range" id="sl-reg" min="5" max="40" value="15" oninput="updateSliderLabels()">
+    </div>
+    <div class="slider-grp">
+      <div class="sl-head"><span class="sl-lbl">Employment Outlook</span><span class="sl-pct" id="slv-emp">10%</span></div>
+      <div class="sl-desc">Weight given to BLS projected job growth or decline over the next decade</div>
+      <input type="range" id="sl-emp" min="5" max="30" value="10" oninput="updateSliderLabels()">
+    </div>
+    <div class="wt-total" id="wt-total">Weights total: <span style="color:var(--green)">100%</span></div>
+    <button class="mm-apply" onclick="applyWeights()">Apply Weights & Recalculate All Programs</button>
+  </div>
+</div>
+
+<!-- COMPARE MODAL -->
+<div id="cmp-bg" onclick="if(event.target===this)closeCompare()">
+  <div id="cmp-modal" class="modal">
+    <div class="modal-cls" onclick="closeCompare()">✕</div>
+    <div class="cm-title">Side-by-Side Comparison</div>
+    <div class="cm-sub">Select up to 3 programs using the "+ Compare" button on any card, then click Compare here.</div>
+    <div class="cm-grid-inner"></div>
+  </div>
+</div>
+
+<!-- CSV IMPORT MODAL -->
+<div id="csv-bg" onclick="if(event.target===this)closeCSV()">
+  <div id="csv-modal" class="modal">
+    <div class="modal-cls" onclick="closeCSV()">✕</div>
+    <div class="csvm-title">Import Institutional Data</div>
+    <div class="csvm-sub">Upload a CSV with your institution's enrollment figures, faculty AI readiness, and regional labor data. Your data overlays the national database without replacing it. Saved locally in your browser.</div>
+    <div class="csv-fmt">
+      <pre><span class="csv-cmt"># Required column: program_name (must match exactly)</span>
+program_name,enrollment,faculty_ready_pct,regional_multiplier
+Accounting,920,35,0.92
+Nursing (BSN),1120,71,1.14
+Computer Science,1840,42,0.98</pre>
+    </div>
+    <div style="margin-bottom:12px">
+      <button onclick="downloadCSVTemplate()" style="width:100%;background:var(--forest);color:#fff;border:none;border-radius:var(--rs);font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s" onmouseover="this.style.background='var(--forest2)'" onmouseout="this.style.background='var(--forest)'">
+        <span>⬇️</span> Download Blank CSV Template
+      </button>
+      <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:5px">Opens in Excel, Google Sheets, or any spreadsheet app. Fill in your figures, then upload below.</div>
+    </div>
+    <div class="drop-zone" id="dropzone">
+      <div class="dz-ico">📁</div>
+      <div class="dz-lbl">Drop your completed CSV here or click to browse</div>
+      <div class="dz-sub">Columns: program_name, enrollment, faculty_ready_pct, regional_multiplier</div>
+    </div>
+    <input type="file" id="csv-file" accept=".csv">
+    <div class="csv-status" id="csv-status"></div>
+    <div class="csv-btns">
+      <button class="csv-clear" onclick="clearOverlay()">Clear Institutional Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARE TOOLBAR -->
+<div id="cmp-bar">
+  <span class="cb-lbl">Comparing:</span>
+  <div class="cb-chips" id="cb-chips"></div>
+  <button class="cb-go" onclick="openCompare()">View Comparison →</button>
+  <button class="cb-clr" onclick="state.cmp=[];render()">Clear</button>
+</div>
+
+<script>
+
+const FIELDS = [
+  {id:"business",   icon:"💼", name:"Business"},
+  {id:"cs",         icon:"💻", name:"Computing & IT"},
+  {id:"health",     icon:"🏥", name:"Health Sciences"},
+  {id:"education",  icon:"🎓", name:"Education"},
+  {id:"engineering",icon:"⚙️",  name:"Engineering"},
+  {id:"arts",       icon:"🎨", name:"Arts & Design"},
+  {id:"social",     icon:"🤝", name:"Social Sciences"},
+  {id:"humanities", icon:"📚", name:"Humanities"},
+  {id:"legal",      icon:"⚖️",  name:"Legal Studies"},
+  {id:"science",    icon:"🔬", name:"Natural Sciences"},
+  {id:"trades",     icon:"🔧", name:"Trades & Technology"},
+  {id:"agriculture",icon:"🌾", name:"Agriculture & Environment"},
+];
+
+
+const VERDICTS = {
+  pivot:   "This program's target jobs are heavily affected by AI, but graduates are still needed. The curriculum must shift from doing the tasks to managing the AI that does them. Act before the next entering class graduates.",
+  sunset:  "AI is replacing the core tasks this program trains students for, and employer demand is already declining. Begin a planned wind-down and redirect students toward adjacent programs with better long-term prospects.",
+  invest:  "This program prepares students for work AI cannot easily replicate — physical skill, human judgment, or direct care. Hiring demand is strong and often exceeds supply. Expand capacity and hire faculty.",
+  maintain:"This program is stable. AI will augment some tasks but is unlikely to reshape the field significantly in the near term. Monitor annually, optimize costs, and add AI fluency modules without wholesale redesign."
+};
+const REC = {pivot:"⚡ Urgent Pivot", sunset:"🌅 Sunset", invest:"🌱 Invest & Grow", maintain:"🔒 Maintain"};
+const MECH = {aug:"AI Augments Workers", rep:"AI Replaces Tasks"};
+const MECH_NOTE = {
+  aug:"AI makes workers in this field more productive but doesn't replace them. Graduates who can direct and audit AI tools will have stronger career outcomes.",
+  rep:"AI is replacing the specific tasks this program trains students to perform. Employers are reducing headcount in these roles. The program needs repositioning."
+};
+
+
+const PROGRAMS = [
+// ══ BUSINESS ══════════════════════════════════════════════════════════════════
+{id:1,name:"Accounting",field:"business",cip:"52.0301",degree:"Bachelor's / Master's",
+ exposure:.83,action:"pivot",mechanism:"aug",halfLife:1.8,facultyReady:22,region:.90,empOut:-.02,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Data entry & reconciliation",s:.96,t:"rep"},{n:"Financial statement generation",s:.88,t:"rep"},{n:"Tax computation",s:.81,t:"rep"},{n:"Auditing AI-generated models",s:.33,t:"aug"},{n:"Strategic financial advising",s:.27,t:"aug"}],
+ actions:[{n:"Require AI-generated model auditing skills",p:"urgent",ty:"New Course"},{n:"Retire manual spreadsheet-first coursework",p:"urgent",ty:"Retire"},{n:"Data analytics for accountants (Python basics)",p:"high",ty:"New Course"},{n:"AI governance & professional liability",p:"high",ty:"New Module"},{n:"Client communication & judgment under uncertainty",p:"medium",ty:"Expand"}]},
+
+{id:2,name:"Finance",field:"business",cip:"52.0801",degree:"Bachelor's / Master's",
+ exposure:.79,action:"pivot",mechanism:"aug",halfLife:2.1,facultyReady:28,region:.91,empOut:-.01,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Financial modeling & automated analysis",s:.88,t:"rep"},{n:"Risk assessment report generation",s:.84,t:"rep"},{n:"Portfolio rebalancing algorithms",s:.91,t:"rep"},{n:"Client relationship management",s:.24,t:"aug"},{n:"Deal structuring & negotiation",s:.19,t:"aug"}],
+ actions:[{n:"AI-assisted financial analysis platforms",p:"urgent",ty:"New Module"},{n:"Quantitative methods with Python & AI tools",p:"high",ty:"New Course"},{n:"Investment judgment & decision under uncertainty",p:"high",ty:"Expand"},{n:"Client communication & ethical advising",p:"medium",ty:"Expand"}]},
+
+{id:3,name:"Marketing",field:"business",cip:"52.1401",degree:"Bachelor's / Master's",
+ exposure:.76,action:"pivot",mechanism:"aug",halfLife:1.9,facultyReady:44,region:.91,empOut:.02,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Ad copy & content generation",s:.93,t:"rep"},{n:"Social media scheduling & posting",s:.88,t:"rep"},{n:"SEO & keyword research",s:.82,t:"rep"},{n:"Campaign strategy & brand positioning",s:.34,t:"aug"},{n:"Consumer psychology & deep insight",s:.28,t:"aug"}],
+ actions:[{n:"AI content strategy & workflow automation",p:"urgent",ty:"New Course"},{n:"Data analytics for marketers",p:"high",ty:"New Course"},{n:"Retire standalone copywriting courses",p:"high",ty:"Retire"},{n:"Consumer psychology & behavioral economics",p:"medium",ty:"Expand"}]},
+
+{id:4,name:"Management",field:"business",cip:"52.0201",degree:"Bachelor's / MBA",
+ exposure:.58,action:"pivot",mechanism:"aug",halfLife:3.2,facultyReady:35,region:.89,empOut:.04,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Reports, memos & documentation",s:.82,t:"rep"},{n:"Scheduling & resource planning",s:.77,t:"rep"},{n:"Strategic leadership & culture building",s:.21,t:"aug"},{n:"Conflict resolution & team development",s:.15,t:"aug"}],
+ actions:[{n:"AI tools for project & operations management",p:"high",ty:"New Module"},{n:"Leading AI-augmented teams",p:"high",ty:"New Course"},{n:"Organizational behavior & change management",p:"medium",ty:"Expand"}]},
+
+{id:5,name:"Human Resources",field:"business",cip:"52.1001",degree:"Bachelor's / Master's",
+ exposure:.61,action:"pivot",mechanism:"aug",halfLife:2.8,facultyReady:31,region:.88,empOut:.03,accred:"SHRM",accredYrs:5,
+ tasks:[{n:"Resume screening & applicant ranking",s:.94,t:"rep"},{n:"Benefits administration",s:.88,t:"rep"},{n:"Performance review documentation",s:.79,t:"rep"},{n:"Employee relations & mediation",s:.18,t:"aug"},{n:"Culture building & retention strategy",s:.14,t:"aug"}],
+ actions:[{n:"AI in talent acquisition — bias, auditing, compliance",p:"urgent",ty:"New Course"},{n:"HR analytics & people data platforms",p:"high",ty:"New Course"},{n:"Expand employee relations & organizational psychology",p:"medium",ty:"Expand"}]},
+
+{id:6,name:"Supply Chain & Logistics",field:"business",cip:"52.0203",degree:"Bachelor's / Master's",
+ exposure:.69,action:"pivot",mechanism:"aug",halfLife:2.4,facultyReady:29,region:.92,empOut:.05,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Demand forecasting & inventory planning",s:.91,t:"rep"},{n:"Route optimization",s:.94,t:"rep"},{n:"Data entry & inventory records",s:.97,t:"rep"},{n:"Supplier negotiation & partnerships",s:.22,t:"aug"},{n:"Risk management & resilience planning",s:.28,t:"aug"}],
+ actions:[{n:"AI-powered supply chain platforms (SAP, Oracle AI)",p:"urgent",ty:"New Module"},{n:"Supply chain risk & geopolitical analysis",p:"high",ty:"Expand"},{n:"Retire manual forecasting lab assignments",p:"high",ty:"Retire"}]},
+
+{id:7,name:"Business Analytics",field:"business",cip:"52.1301",degree:"Bachelor's / Master's",
+ exposure:.72,action:"pivot",mechanism:"aug",halfLife:2.2,facultyReady:51,region:.93,empOut:.12,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Dashboard creation & standard reporting",s:.88,t:"rep"},{n:"Routine statistical analysis",s:.84,t:"rep"},{n:"Data visualization",s:.79,t:"aug"},{n:"Problem framing & strategic insight",s:.29,t:"aug"},{n:"Communicating findings to executives",s:.24,t:"aug"}],
+ actions:[{n:"AutoML & foundation model fine-tuning",p:"urgent",ty:"New Module"},{n:"Causal inference & experiment design",p:"high",ty:"Expand"},{n:"Storytelling with data & executive communication",p:"medium",ty:"Expand"}]},
+
+{id:8,name:"Entrepreneurship",field:"business",cip:"52.0701",degree:"Bachelor's / MBA",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:5.1,facultyReady:55,region:.88,empOut:.06,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Market research & competitor analysis",s:.74,t:"aug"},{n:"Business plan writing",s:.68,t:"aug"},{n:"Opportunity identification & product vision",s:.18,t:"aug"},{n:"Team building & investor relations",s:.12,t:"aug"}],
+ actions:[{n:"AI tools for rapid prototyping & market research",p:"medium",ty:"New Module"},{n:"Founder pitching & investor relations",p:"low",ty:"Expand"}]},
+
+{id:9,name:"Real Estate",field:"business",cip:"52.1501",degree:"Bachelor's",
+ exposure:.54,action:"maintain",mechanism:"aug",halfLife:3.8,facultyReady:42,region:.91,empOut:.03,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Property valuation & comp analysis",s:.78,t:"aug"},{n:"Contract documentation",s:.82,t:"rep"},{n:"Client negotiation & deal closing",s:.19,t:"aug"},{n:"Market positioning & advisory",s:.24,t:"aug"}],
+ actions:[{n:"AI-powered valuation & market analysis tools",p:"medium",ty:"New Module"},{n:"Client negotiation & relationship management",p:"low",ty:"Expand"}]},
+
+{id:10,name:"Insurance & Risk Management",field:"business",cip:"52.1701",degree:"Bachelor's",
+ exposure:.74,action:"sunset",mechanism:"rep",halfLife:1.6,facultyReady:18,region:.85,empOut:-.06,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Actuarial table calculations",s:.96,t:"rep"},{n:"Claims processing & documentation",s:.94,t:"rep"},{n:"Policy pricing & underwriting",s:.88,t:"rep"},{n:"Complex risk advisory",s:.38,t:"aug"}],
+ actions:[{n:"Redirect students toward Financial Risk Analytics",p:"urgent",ty:"Merge"},{n:"Bridge curriculum to FinTech or Data Analytics",p:"high",ty:"Transition"}]},
+
+{id:11,name:"Hospitality Management",field:"business",cip:"52.0901",degree:"Bachelor's",
+ exposure:.45,action:"maintain",mechanism:"aug",halfLife:4.4,facultyReady:48,region:.93,empOut:.06,accred:"ACPHA",accredYrs:5,
+ tasks:[{n:"Reservation & inventory management",s:.79,t:"aug"},{n:"Revenue management & pricing",s:.76,t:"aug"},{n:"Guest relations & service recovery",s:.11,t:"aug"},{n:"Food & beverage operations",s:.08,t:"aug"}],
+ actions:[{n:"AI revenue management systems",p:"medium",ty:"New Module"},{n:"Personalized guest experience design",p:"medium",ty:"Expand"}]},
+
+{id:12,name:"International Business",field:"business",cip:"52.1101",degree:"Bachelor's / Master's",
+ exposure:.52,action:"maintain",mechanism:"aug",halfLife:3.9,facultyReady:38,region:.90,empOut:.04,accred:"AACSB",accredYrs:5,
+ tasks:[{n:"Market entry research & reports",s:.81,t:"aug"},{n:"Trade compliance documentation",s:.78,t:"rep"},{n:"Cross-cultural negotiation",s:.14,t:"aug"},{n:"Foreign market strategy",s:.22,t:"aug"}],
+ actions:[{n:"AI-assisted trade compliance & regulation tools",p:"medium",ty:"New Module"},{n:"Geopolitical risk & global strategy",p:"medium",ty:"Expand"}]},
+
+// ══ COMPUTING & IT ════════════════════════════════════════════════════════════
+{id:13,name:"Computer Science",field:"cs",cip:"11.0701",degree:"Bachelor's / Master's",
+ exposure:.87,action:"pivot",mechanism:"aug",halfLife:2.1,facultyReady:38,region:.95,empOut:.15,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Boilerplate code generation",s:.97,t:"rep"},{n:"Software testing & quality assurance",s:.89,t:"rep"},{n:"Technical documentation",s:.84,t:"rep"},{n:"Systems architecture design",s:.41,t:"aug"},{n:"Security & adversarial research",s:.29,t:"aug"}],
+ actions:[{n:"AI-assisted dev toolchain (GitHub Copilot, Cursor)",p:"urgent",ty:"New Course"},{n:"Prompt engineering for software engineers",p:"urgent",ty:"New Module"},{n:"AI systems evaluation & red-teaming",p:"high",ty:"New Course"},{n:"Retire standalone unit-testing lab sections",p:"high",ty:"Retire"}]},
+
+{id:14,name:"Software Engineering",field:"cs",cip:"14.0903",degree:"Bachelor's / Master's",
+ exposure:.85,action:"pivot",mechanism:"aug",halfLife:2.0,facultyReady:41,region:.94,empOut:.14,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Feature implementation from specs",s:.92,t:"rep"},{n:"Code review & debugging",s:.86,t:"aug"},{n:"System design & architecture",s:.38,t:"aug"},{n:"Stakeholder requirements & product thinking",s:.22,t:"aug"}],
+ actions:[{n:"AI pair programming as a core professional skill",p:"urgent",ty:"Restructure"},{n:"Shift emphasis to system design & engineering judgment",p:"urgent",ty:"Restructure"},{n:"Product thinking & user-centered design",p:"high",ty:"Expand"}]},
+
+{id:15,name:"Data Science",field:"cs",cip:"11.0401",degree:"Bachelor's / Master's",
+ exposure:.75,action:"pivot",mechanism:"aug",halfLife:2.3,facultyReady:52,region:.94,empOut:.18,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Data cleaning & preprocessing",s:.88,t:"rep"},{n:"Standard model training & evaluation",s:.82,t:"rep"},{n:"Visualization & dashboard reporting",s:.79,t:"rep"},{n:"Problem framing & research design",s:.28,t:"aug"},{n:"Communicating findings to decision-makers",s:.21,t:"aug"}],
+ actions:[{n:"AutoML & foundation model fine-tuning",p:"urgent",ty:"New Course"},{n:"Causal inference & experimental design",p:"high",ty:"Expand"},{n:"Data ethics & responsible AI",p:"high",ty:"New Course"},{n:"Communication & storytelling with data",p:"medium",ty:"Expand"}]},
+
+{id:16,name:"Cybersecurity",field:"cs",cip:"11.1003",degree:"Bachelor's / Master's",
+ exposure:.52,action:"invest",mechanism:"aug",halfLife:4.1,facultyReady:49,region:.97,empOut:.33,accred:"ABET/NSA",accredYrs:6,
+ tasks:[{n:"Log analysis & threat monitoring",s:.74,t:"aug"},{n:"Vulnerability assessment",s:.68,t:"aug"},{n:"Incident response & forensics",s:.34,t:"aug"},{n:"Adversarial thinking & red team",s:.19,t:"aug"}],
+ actions:[{n:"AI-powered SIEM & threat detection platforms",p:"high",ty:"New Module"},{n:"AI threat modeling & adversarial machine learning",p:"high",ty:"New Course"},{n:"Expand red team & penetration testing labs",p:"medium",ty:"Expand"}]},
+
+{id:17,name:"Information Technology",field:"cs",cip:"11.0103",degree:"Bachelor's",
+ exposure:.78,action:"pivot",mechanism:"aug",halfLife:2.0,facultyReady:33,region:.92,empOut:.08,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Help desk & tier-1 support",s:.91,t:"rep"},{n:"Network configuration documentation",s:.84,t:"rep"},{n:"System administration tasks",s:.76,t:"aug"},{n:"IT project management",s:.39,t:"aug"}],
+ actions:[{n:"AI-assisted IT operations & automation",p:"urgent",ty:"New Course"},{n:"Cloud architecture & AI integration",p:"high",ty:"New Course"},{n:"IT leadership & strategic planning",p:"medium",ty:"Expand"}]},
+
+{id:18,name:"Artificial Intelligence & Machine Learning",field:"cs",cip:"11.0899",degree:"Bachelor's / Master's",
+ exposure:.41,action:"invest",mechanism:"aug",halfLife:4.8,facultyReady:62,region:.96,empOut:.28,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Model implementation & training",s:.74,t:"aug"},{n:"Experiment design & evaluation",s:.58,t:"aug"},{n:"Novel architecture & algorithm research",s:.18,t:"aug"},{n:"Responsible AI & safety design",s:.14,t:"aug"}],
+ actions:[{n:"Foundation model fine-tuning & deployment",p:"high",ty:"Expand"},{n:"AI safety, interpretability & alignment",p:"high",ty:"New Course"},{n:"Applied AI systems across domains",p:"medium",ty:"Expand"}]},
+
+{id:19,name:"Game Design & Development",field:"cs",cip:"11.0803",degree:"Bachelor's",
+ exposure:.69,action:"pivot",mechanism:"aug",halfLife:2.2,facultyReady:44,region:.88,empOut:.08,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Art asset creation",s:.88,t:"rep"},{n:"NPC scripting & dialogue",s:.86,t:"rep"},{n:"Level design & world building",s:.41,t:"aug"},{n:"Narrative design & player experience",s:.22,t:"aug"}],
+ actions:[{n:"AI art generation tools in game pipeline",p:"urgent",ty:"New Module"},{n:"Procedural generation & AI-driven content",p:"high",ty:"New Course"},{n:"Creative direction, narrative & systems design",p:"high",ty:"Expand"}]},
+
+{id:20,name:"UX / UI Design",field:"cs",cip:"11.0801",degree:"Bachelor's / Master's",
+ exposure:.66,action:"pivot",mechanism:"aug",halfLife:2.3,facultyReady:51,region:.91,empOut:.10,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Wireframe & mockup generation",s:.88,t:"aug"},{n:"Usability report writing",s:.82,t:"rep"},{n:"User research & empathy mapping",s:.29,t:"aug"},{n:"Interaction design & prototype testing",s:.24,t:"aug"}],
+ actions:[{n:"AI-assisted design tools (Figma AI, Framer AI)",p:"urgent",ty:"New Module"},{n:"User research methods & behavioral design",p:"high",ty:"Expand"},{n:"Accessibility & inclusive design",p:"medium",ty:"Expand"}]},
+
+{id:21,name:"Web Development",field:"cs",cip:"11.0801",degree:"Associate's / Bachelor's",
+ exposure:.84,action:"pivot",mechanism:"rep",halfLife:1.7,facultyReady:38,region:.91,empOut:.09,accred:"ABET",accredYrs:6,
+ tasks:[{n:"HTML/CSS layout coding",s:.95,t:"rep"},{n:"CMS setup & configuration",s:.92,t:"rep"},{n:"Frontend component coding",s:.88,t:"rep"},{n:"Full-stack architecture & security",s:.35,t:"aug"}],
+ actions:[{n:"Reposition toward full-stack engineering & architecture",p:"urgent",ty:"Restructure"},{n:"AI-native development workflows",p:"urgent",ty:"New Course"},{n:"DevOps, cloud deployment & security",p:"high",ty:"Expand"}]},
+
+{id:22,name:"Cloud Computing",field:"cs",cip:"11.0102",degree:"Associate's / Bachelor's",
+ exposure:.48,action:"maintain",mechanism:"aug",halfLife:4.2,facultyReady:54,region:.96,empOut:.22,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Infrastructure provisioning & configuration",s:.72,t:"aug"},{n:"Cloud cost monitoring & reporting",s:.79,t:"aug"},{n:"Architecture design & security",s:.31,t:"aug"},{n:"Multi-cloud strategy & governance",s:.18,t:"aug"}],
+ actions:[{n:"AI-driven cloud operations & FinOps",p:"medium",ty:"New Module"},{n:"Cloud security & zero-trust architecture",p:"high",ty:"Expand"}]},
+
+{id:23,name:"Network Administration",field:"cs",cip:"11.0901",degree:"Associate's / Bachelor's",
+ exposure:.71,action:"pivot",mechanism:"rep",halfLife:2.4,facultyReady:29,region:.89,empOut:-.02,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Routine network monitoring",s:.92,t:"rep"},{n:"Configuration & patch management",s:.88,t:"rep"},{n:"Network design & architecture",s:.41,t:"aug"},{n:"Security incident response",s:.35,t:"aug"}],
+ actions:[{n:"Reposition toward Cloud & AI-Driven Infrastructure",p:"urgent",ty:"Restructure"},{n:"AWS/Azure/GCP certifications as core curriculum",p:"urgent",ty:"New Module"},{n:"Network security & zero-trust architecture",p:"high",ty:"Expand"}]},
+
+// ══ HEALTH SCIENCES ═══════════════════════════════════════════════════════════
+{id:24,name:"Nursing (BSN)",field:"health",cip:"51.3801",degree:"Bachelor's",
+ exposure:.31,action:"invest",mechanism:"aug",halfLife:7.2,facultyReady:67,region:1.12,empOut:.09,accred:"CCNE",accredYrs:10,
+ tasks:[{n:"Patient documentation & charting",s:.72,t:"aug"},{n:"Medication dosage calculation",s:.65,t:"aug"},{n:"Physical patient assessment",s:.04,t:"aug"},{n:"End-of-life & family communication",s:.02,t:"aug"},{n:"Clinical judgment under ambiguity",s:.06,t:"aug"}],
+ actions:[{n:"AI-assisted clinical documentation tools",p:"medium",ty:"New Module"},{n:"Interpreting AI-flagged patient risk scores",p:"medium",ty:"New Module"},{n:"Expand simulation lab & clinical hours",p:"high",ty:"Expand"},{n:"Increase cohort capacity — national shortage",p:"urgent",ty:"Expand"}]},
+
+{id:25,name:"Medical Billing & Coding",field:"health",cip:"51.0713",degree:"Certificate / Associate's",
+ exposure:.94,action:"sunset",mechanism:"rep",halfLife:.8,facultyReady:18,region:.88,empOut:-.12,accred:"CAHIIM",accredYrs:5,
+ tasks:[{n:"ICD/CPT code lookup & assignment",s:.98,t:"rep"},{n:"Claim submission & follow-up",s:.96,t:"rep"},{n:"Denial management",s:.91,t:"rep"},{n:"Regulatory compliance interpretation",s:.61,t:"rep"}],
+ actions:[{n:"Begin wind-down — do not admit new cohort",p:"urgent",ty:"Sunset"},{n:"Redirect students to Health Informatics pathway",p:"urgent",ty:"Merge"},{n:"Bridge modules for current students",p:"high",ty:"Transition"}]},
+
+{id:26,name:"Physical Therapy (DPT)",field:"health",cip:"51.2308",degree:"Doctoral",
+ exposure:.18,action:"invest",mechanism:"aug",halfLife:9.1,facultyReady:72,region:1.08,empOut:.17,accred:"CAPTE",accredYrs:10,
+ tasks:[{n:"Treatment plan documentation",s:.61,t:"aug"},{n:"Manual therapy & physical intervention",s:.02,t:"aug"},{n:"Gait & movement assessment",s:.08,t:"aug"},{n:"Patient motivation & adherence coaching",s:.04,t:"aug"}],
+ actions:[{n:"AI gait analysis software integration",p:"low",ty:"New Module"},{n:"Expand clinical placement hours",p:"medium",ty:"Expand"},{n:"Increase cohort size by 15%",p:"high",ty:"Expand"}]},
+
+{id:27,name:"Pharmacy (PharmD)",field:"health",cip:"51.2001",degree:"Doctoral",
+ exposure:.44,action:"maintain",mechanism:"aug",halfLife:4.8,facultyReady:61,region:1.04,empOut:.03,accred:"ACPE",accredYrs:6,
+ tasks:[{n:"Drug interaction checking",s:.88,t:"aug"},{n:"Prescription dispensing & verification",s:.72,t:"aug"},{n:"Patient counseling & medication education",s:.18,t:"aug"},{n:"Complex pharmacotherapy management",s:.22,t:"aug"}],
+ actions:[{n:"AI clinical decision support tools",p:"medium",ty:"New Module"},{n:"Expand patient counseling & chronic disease mgmt",p:"medium",ty:"Expand"}]},
+
+{id:28,name:"Radiologic Technology",field:"health",cip:"51.0911",degree:"Associate's / Bachelor's",
+ exposure:.58,action:"pivot",mechanism:"aug",halfLife:3.1,facultyReady:38,region:1.02,empOut:.06,accred:"JRCERT",accredYrs:8,
+ tasks:[{n:"Image acquisition & positioning",s:.28,t:"aug"},{n:"Preliminary image quality assessment",s:.71,t:"aug"},{n:"Radiologist report transcription",s:.94,t:"rep"},{n:"Patient safety & care",s:.06,t:"aug"}],
+ actions:[{n:"AI-assisted image analysis platforms",p:"urgent",ty:"New Module"},{n:"Shift emphasis toward patient communication & safety",p:"high",ty:"Expand"},{n:"Interventional & advanced imaging techniques",p:"high",ty:"Expand"}]},
+
+{id:29,name:"Health Administration",field:"health",cip:"51.0701",degree:"Bachelor's / Master's (MHA)",
+ exposure:.63,action:"pivot",mechanism:"aug",halfLife:2.9,facultyReady:34,region:.97,empOut:.09,accred:"CAHME",accredYrs:5,
+ tasks:[{n:"Scheduling & bed management",s:.89,t:"rep"},{n:"Billing coordination",s:.86,t:"rep"},{n:"Healthcare policy analysis",s:.48,t:"aug"},{n:"Leadership & strategic planning",s:.22,t:"aug"}],
+ actions:[{n:"AI operations tools for healthcare systems",p:"urgent",ty:"New Module"},{n:"Health data analytics & quality metrics",p:"high",ty:"New Course"},{n:"Expand healthcare policy & leadership",p:"medium",ty:"Expand"}]},
+
+{id:30,name:"Dental Hygiene",field:"health",cip:"51.0602",degree:"Associate's / Bachelor's",
+ exposure:.22,action:"invest",mechanism:"aug",halfLife:8.4,facultyReady:69,region:1.06,empOut:.11,accred:"CODA",accredYrs:7,
+ tasks:[{n:"Patient charting & documentation",s:.64,t:"aug"},{n:"Prophylaxis & clinical treatment",s:.03,t:"aug"},{n:"Patient education & behavior change",s:.06,t:"aug"},{n:"Digital radiographic analysis",s:.58,t:"aug"}],
+ actions:[{n:"AI-assisted digital imaging tools",p:"low",ty:"New Module"},{n:"Expand patient communication skills",p:"medium",ty:"Expand"},{n:"Increase clinical hours",p:"medium",ty:"Expand"}]},
+
+{id:31,name:"Occupational Therapy",field:"health",cip:"51.2306",degree:"Master's / Doctoral",
+ exposure:.21,action:"invest",mechanism:"aug",halfLife:8.8,facultyReady:71,region:1.09,empOut:.14,accred:"ACOTE",accredYrs:7,
+ tasks:[{n:"Treatment planning documentation",s:.62,t:"aug"},{n:"Adaptive activity intervention",s:.03,t:"aug"},{n:"Patient & family training",s:.05,t:"aug"},{n:"Environmental modification assessment",s:.07,t:"aug"}],
+ actions:[{n:"AI-assisted assistive technology tools",p:"low",ty:"New Module"},{n:"Expand fieldwork hours",p:"high",ty:"Expand"},{n:"Telehealth & remote care skills",p:"medium",ty:"New Module"}]},
+
+{id:32,name:"Public Health (MPH)",field:"health",cip:"51.2201",degree:"Bachelor's / Master's",
+ exposure:.55,action:"pivot",mechanism:"aug",halfLife:3.3,facultyReady:42,region:1.01,empOut:.10,accred:"CEPH",accredYrs:7,
+ tasks:[{n:"Epidemiological data analysis",s:.79,t:"aug"},{n:"Public health report writing",s:.84,t:"rep"},{n:"Community health program design",s:.28,t:"aug"},{n:"Policy advocacy & stakeholder engagement",s:.16,t:"aug"}],
+ actions:[{n:"AI epidemiology & disease surveillance tools",p:"high",ty:"New Module"},{n:"Data science for public health",p:"high",ty:"New Course"},{n:"Community engagement & health equity",p:"medium",ty:"Expand"}]},
+
+{id:33,name:"Speech-Language Pathology",field:"health",cip:"51.0201",degree:"Master's",
+ exposure:.24,action:"invest",mechanism:"aug",halfLife:8.1,facultyReady:65,region:1.07,empOut:.19,accred:"CAA",accredYrs:8,
+ tasks:[{n:"Assessment report writing",s:.68,t:"aug"},{n:"Direct speech & language therapy",s:.03,t:"aug"},{n:"Family counseling & training",s:.04,t:"aug"},{n:"AAC device work",s:.09,t:"aug"}],
+ actions:[{n:"AI-assisted AAC tools & communication devices",p:"medium",ty:"New Module"},{n:"Expand clinical placement hours",p:"high",ty:"Expand"}]},
+
+{id:34,name:"Respiratory Therapy",field:"health",cip:"51.0908",degree:"Associate's / Bachelor's",
+ exposure:.28,action:"invest",mechanism:"aug",halfLife:7.8,facultyReady:58,region:1.05,empOut:.08,accred:"CoARC",accredYrs:6,
+ tasks:[{n:"Ventilator documentation",s:.66,t:"aug"},{n:"Pulmonary function test operation",s:.22,t:"aug"},{n:"Direct patient respiratory care",s:.04,t:"aug"},{n:"Critical care decision-making",s:.09,t:"aug"}],
+ actions:[{n:"AI-assisted ventilator management platforms",p:"medium",ty:"New Module"},{n:"Expand clinical rotation hours",p:"high",ty:"Expand"}]},
+
+{id:35,name:"Surgical Technology",field:"health",cip:"51.0909",degree:"Certificate / Associate's",
+ exposure:.16,action:"invest",mechanism:"aug",halfLife:10.2,facultyReady:71,region:1.06,empOut:.07,accred:"CAAHEP",accredYrs:5,
+ tasks:[{n:"Sterile field setup & instrumentation",s:.04,t:"aug"},{n:"Surgical instrument management",s:.06,t:"aug"},{n:"Procedure documentation",s:.58,t:"aug"},{n:"Robotic-assisted surgery support",s:.32,t:"aug"}],
+ actions:[{n:"Robotic surgery systems (da Vinci) training",p:"medium",ty:"New Module"},{n:"Increase cohort — OR technician shortage",p:"high",ty:"Expand"}]},
+
+{id:36,name:"Nutrition & Dietetics",field:"health",cip:"51.3101",degree:"Bachelor's / Master's",
+ exposure:.48,action:"maintain",mechanism:"aug",halfLife:4.6,facultyReady:52,region:1.01,empOut:.07,accred:"ACEND",accredYrs:10,
+ tasks:[{n:"Dietary assessment & documentation",s:.72,t:"aug"},{n:"Meal plan development",s:.79,t:"aug"},{n:"Direct patient counseling",s:.12,t:"aug"},{n:"Community nutrition program design",s:.22,t:"aug"}],
+ actions:[{n:"AI-assisted dietary analysis platforms",p:"medium",ty:"New Module"},{n:"Personalized nutrition & nutritional genomics",p:"medium",ty:"New Course"},{n:"Expand supervised practice hours",p:"medium",ty:"Expand"}]},
+
+{id:37,name:"Health Informatics",field:"health",cip:"51.0706",degree:"Bachelor's / Master's",
+ exposure:.49,action:"invest",mechanism:"aug",halfLife:4.4,facultyReady:58,region:1.03,empOut:.18,accred:"CAHIIM",accredYrs:5,
+ tasks:[{n:"EHR data entry & management",s:.82,t:"aug"},{n:"Clinical data analysis & reporting",s:.76,t:"aug"},{n:"Health IT system implementation",s:.38,t:"aug"},{n:"Interoperability & standards governance",s:.21,t:"aug"}],
+ actions:[{n:"AI-powered clinical analytics platforms",p:"high",ty:"New Course"},{n:"AI in EHR optimization & clinical workflow",p:"high",ty:"New Module"},{n:"Health data governance & privacy",p:"medium",ty:"Expand"}]},
+
+// ══ EDUCATION ══════════════════════════════════════════════════════════════════
+{id:38,name:"Early Childhood Education",field:"education",cip:"13.1210",degree:"Bachelor's",
+ exposure:.24,action:"invest",mechanism:"aug",halfLife:8.3,facultyReady:44,region:1.18,empOut:.06,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"Lesson plan documentation",s:.58,t:"aug"},{n:"Child assessment reporting",s:.52,t:"aug"},{n:"Direct child instruction",s:.03,t:"aug"},{n:"Behavior management",s:.05,t:"aug"},{n:"Parent & family engagement",s:.04,t:"aug"}],
+ actions:[{n:"AI-assisted IEP documentation tools",p:"medium",ty:"New Module"},{n:"Expand field placement hours",p:"high",ty:"Expand"},{n:"Dual certification track (birth-5 + K-3)",p:"medium",ty:"New Track"}]},
+
+{id:39,name:"Elementary Education",field:"education",cip:"13.1202",degree:"Bachelor's",
+ exposure:.28,action:"invest",mechanism:"aug",halfLife:7.9,facultyReady:41,region:1.15,empOut:.04,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"Lesson planning & curriculum mapping",s:.61,t:"aug"},{n:"Student progress reports",s:.58,t:"aug"},{n:"Direct classroom instruction",s:.04,t:"aug"},{n:"Family communication",s:.05,t:"aug"}],
+ actions:[{n:"AI-assisted differentiated instruction tools",p:"medium",ty:"New Module"},{n:"Expand student teaching hours",p:"high",ty:"Expand"},{n:"Literacy intervention specialization",p:"medium",ty:"New Track"}]},
+
+{id:40,name:"Special Education",field:"education",cip:"13.1001",degree:"Bachelor's / Master's",
+ exposure:.19,action:"invest",mechanism:"aug",halfLife:9.4,facultyReady:48,region:1.20,empOut:.08,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"IEP documentation",s:.64,t:"aug"},{n:"Direct specialized instruction",s:.02,t:"aug"},{n:"Behavioral support & intervention",s:.03,t:"aug"},{n:"Family & interdisciplinary team coordination",s:.04,t:"aug"}],
+ actions:[{n:"AI-assisted IEP & progress monitoring tools",p:"medium",ty:"New Module"},{n:"Expand practicum hours",p:"high",ty:"Expand"},{n:"Increase cohort — critical national shortage",p:"urgent",ty:"Expand"}]},
+
+{id:41,name:"Secondary Education",field:"education",cip:"13.1205",degree:"Bachelor's",
+ exposure:.35,action:"maintain",mechanism:"aug",halfLife:6.4,facultyReady:39,region:1.10,empOut:.04,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"Lesson planning & assessment design",s:.64,t:"aug"},{n:"Grading & written feedback",s:.72,t:"aug"},{n:"Subject-matter direct instruction",s:.06,t:"aug"},{n:"Student mentoring & advising",s:.04,t:"aug"}],
+ actions:[{n:"AI literacy tools for classroom integration",p:"medium",ty:"New Module"},{n:"Academic integrity in the AI era",p:"high",ty:"New Module"},{n:"Expand student teaching placements",p:"medium",ty:"Expand"}]},
+
+{id:42,name:"Instructional Design & Technology",field:"education",cip:"13.0501",degree:"Master's",
+ exposure:.64,action:"pivot",mechanism:"aug",halfLife:2.4,facultyReady:54,region:.94,empOut:.12,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"Course content writing",s:.88,t:"rep"},{n:"LMS configuration & maintenance",s:.79,t:"aug"},{n:"Learning experience design",s:.32,t:"aug"},{n:"Learning analytics & program evaluation",s:.38,t:"aug"}],
+ actions:[{n:"AI-generated adaptive learning content",p:"urgent",ty:"New Module"},{n:"Learning analytics & AI-driven assessment",p:"high",ty:"New Course"},{n:"Shift emphasis to experience design & strategy",p:"high",ty:"Restructure"}]},
+
+{id:43,name:"Higher Education Administration",field:"education",cip:"13.0401",degree:"Master's / Ed.D.",
+ exposure:.52,action:"maintain",mechanism:"aug",halfLife:3.9,facultyReady:36,region:.94,empOut:.06,accred:"CAEP",accredYrs:7,
+ tasks:[{n:"Enrollment & retention data analysis",s:.78,t:"aug"},{n:"Policy & compliance documentation",s:.74,t:"rep"},{n:"Student services & advising",s:.19,t:"aug"},{n:"Strategic planning & leadership",s:.17,t:"aug"}],
+ actions:[{n:"Institutional data analytics with AI tools",p:"high",ty:"New Module"},{n:"AI in student success & advising systems",p:"high",ty:"New Module"},{n:"Change leadership in technology-disrupted institutions",p:"medium",ty:"Expand"}]},
+
+// ══ ENGINEERING ═══════════════════════════════════════════════════════════════
+{id:44,name:"Civil Engineering",field:"engineering",cip:"14.0801",degree:"Bachelor's / Master's",
+ exposure:.29,action:"invest",mechanism:"aug",halfLife:7.8,facultyReady:58,region:1.07,empOut:.05,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Structural calculations & code compliance",s:.62,t:"aug"},{n:"CAD drafting & design documentation",s:.74,t:"aug"},{n:"Site inspection & field assessment",s:.06,t:"aug"},{n:"Project management & stakeholder coordination",s:.18,t:"aug"}],
+ actions:[{n:"AI-assisted structural analysis software",p:"medium",ty:"New Module"},{n:"BIM & digital twin integration",p:"high",ty:"New Course"},{n:"Expand design studio & site visit hours",p:"medium",ty:"Expand"}]},
+
+{id:45,name:"Mechanical Engineering",field:"engineering",cip:"14.1901",degree:"Bachelor's / Master's",
+ exposure:.33,action:"invest",mechanism:"aug",halfLife:7.1,facultyReady:61,region:1.05,empOut:.11,accred:"ABET",accredYrs:6,
+ tasks:[{n:"CAD modeling & simulation",s:.71,t:"aug"},{n:"Failure analysis documentation",s:.66,t:"aug"},{n:"Physical prototyping & testing",s:.08,t:"aug"},{n:"Design optimization under constraints",s:.31,t:"aug"}],
+ actions:[{n:"AI-assisted generative design & optimization",p:"medium",ty:"New Module"},{n:"Expand lab and hands-on prototyping hours",p:"medium",ty:"Expand"}]},
+
+{id:46,name:"Electrical Engineering",field:"engineering",cip:"14.1001",degree:"Bachelor's / Master's",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:6.2,facultyReady:55,region:1.03,empOut:.09,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Circuit simulation & analysis",s:.72,t:"aug"},{n:"Schematic & PCB documentation",s:.69,t:"aug"},{n:"Hardware debugging & physical testing",s:.09,t:"aug"},{n:"Embedded systems & control design",s:.28,t:"aug"}],
+ actions:[{n:"AI in embedded systems & signal processing",p:"medium",ty:"New Module"},{n:"Machine learning for electrical engineers",p:"medium",ty:"New Course"}]},
+
+{id:47,name:"Aerospace Engineering",field:"engineering",cip:"14.0201",degree:"Bachelor's / Master's",
+ exposure:.31,action:"invest",mechanism:"aug",halfLife:7.6,facultyReady:59,region:1.04,empOut:.06,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Aerodynamic simulation & CFD",s:.68,t:"aug"},{n:"Technical report & certification docs",s:.72,t:"aug"},{n:"Physical systems testing & integration",s:.07,t:"aug"},{n:"Mission & system architecture design",s:.22,t:"aug"}],
+ actions:[{n:"AI-assisted CFD & simulation tools",p:"medium",ty:"New Module"},{n:"Autonomous systems & UAV design track",p:"high",ty:"New Track"}]},
+
+{id:48,name:"Biomedical Engineering",field:"engineering",cip:"14.0501",degree:"Bachelor's / Master's",
+ exposure:.35,action:"maintain",mechanism:"aug",halfLife:6.8,facultyReady:52,region:1.05,empOut:.10,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Medical device documentation & regulatory",s:.74,t:"aug"},{n:"Biomechanical simulation",s:.68,t:"aug"},{n:"Physical device testing & iteration",s:.08,t:"aug"},{n:"Clinical needs assessment & design translation",s:.19,t:"aug"}],
+ actions:[{n:"AI in medical imaging & diagnostic devices",p:"medium",ty:"New Course"},{n:"Regulatory affairs for AI-enabled medical devices",p:"high",ty:"New Module"}]},
+
+{id:49,name:"Industrial Engineering",field:"engineering",cip:"14.1701",degree:"Bachelor's / Master's",
+ exposure:.52,action:"pivot",mechanism:"aug",halfLife:3.7,facultyReady:44,region:1.01,empOut:.05,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Time-motion studies & work measurement",s:.88,t:"rep"},{n:"Process simulation & modeling",s:.82,t:"aug"},{n:"Systems design & optimization",s:.38,t:"aug"},{n:"Human factors & ergonomics",s:.21,t:"aug"}],
+ actions:[{n:"AI-driven process optimization & digital twins",p:"urgent",ty:"New Course"},{n:"Retire manual time-study assignments",p:"high",ty:"Retire"},{n:"AI in supply chain & operations research",p:"high",ty:"Expand"}]},
+
+{id:50,name:"Construction Management",field:"engineering",cip:"52.2001",degree:"Bachelor's",
+ exposure:.28,action:"invest",mechanism:"aug",halfLife:7.8,facultyReady:59,region:1.09,empOut:.09,accred:"ACCE",accredYrs:6,
+ tasks:[{n:"BIM model coordination",s:.51,t:"aug"},{n:"Material quantity estimation",s:.63,t:"aug"},{n:"On-site coordination & safety mgmt",s:.06,t:"aug"},{n:"Subcontractor negotiation",s:.11,t:"aug"}],
+ actions:[{n:"BIM & AI project management platforms",p:"medium",ty:"New Module"},{n:"Expand industry practicum placements",p:"high",ty:"Expand"},{n:"Increase cohort — regional construction shortage",p:"high",ty:"Expand"}]},
+
+{id:51,name:"Environmental Engineering",field:"engineering",cip:"14.1401",degree:"Bachelor's / Master's",
+ exposure:.31,action:"invest",mechanism:"aug",halfLife:7.4,facultyReady:56,region:1.03,empOut:.08,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Environmental impact assessment reports",s:.74,t:"rep"},{n:"Water & air quality monitoring",s:.48,t:"aug"},{n:"Remediation system design",s:.29,t:"aug"},{n:"Regulatory compliance & permitting",s:.68,t:"rep"}],
+ actions:[{n:"AI environmental modeling & sensing platforms",p:"medium",ty:"New Module"},{n:"Climate adaptation & resilience engineering",p:"high",ty:"New Track"},{n:"Expand field research hours",p:"medium",ty:"Expand"}]},
+
+// ══ ARTS & DESIGN ═════════════════════════════════════════════════════════════
+{id:52,name:"Graphic Design",field:"arts",cip:"50.0402",degree:"Bachelor's",
+ exposure:.79,action:"pivot",mechanism:"aug",halfLife:1.5,facultyReady:51,region:.87,empOut:-.02,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Image generation & mockup iteration",s:.95,t:"rep"},{n:"Layout & composition execution",s:.78,t:"rep"},{n:"Brand strategy & identity systems",s:.29,t:"aug"},{n:"Client direction & creative briefing",s:.19,t:"aug"},{n:"Motion & interaction design",s:.45,t:"aug"}],
+ actions:[{n:"AI creative tools as professional workflow",p:"urgent",ty:"New Course"},{n:"Shift emphasis: creative direction over execution",p:"urgent",ty:"Restructure"},{n:"Motion design & interaction track expansion",p:"high",ty:"Expand"},{n:"Creative brief writing & client management",p:"medium",ty:"Expand"}]},
+
+{id:53,name:"Architecture",field:"arts",cip:"04.0201",degree:"B.Arch / M.Arch",
+ exposure:.48,action:"maintain",mechanism:"aug",halfLife:4.2,facultyReady:49,region:.93,empOut:.03,accred:"NAAB",accredYrs:6,
+ tasks:[{n:"CAD drafting & documentation",s:.82,t:"aug"},{n:"3D modeling & rendering",s:.79,t:"aug"},{n:"Design concept & spatial reasoning",s:.24,t:"aug"},{n:"Client consultation & stakeholder mgmt",s:.16,t:"aug"}],
+ actions:[{n:"Generative AI design tools in studio",p:"medium",ty:"New Module"},{n:"Parametric & computational design",p:"medium",ty:"Expand"},{n:"Sustainability & climate-responsive design",p:"high",ty:"Expand"}]},
+
+{id:54,name:"Interior Design",field:"arts",cip:"50.0408",degree:"Bachelor's",
+ exposure:.64,action:"pivot",mechanism:"aug",halfLife:2.4,facultyReady:44,region:.89,empOut:.04,accred:"CIDA",accredYrs:6,
+ tasks:[{n:"Space planning & 3D rendering",s:.84,t:"aug"},{n:"Material specification documentation",s:.78,t:"rep"},{n:"Client presentation development",s:.72,t:"aug"},{n:"Site assessment & contractor coordination",s:.12,t:"aug"}],
+ actions:[{n:"AI-assisted rendering & space planning tools",p:"urgent",ty:"New Module"},{n:"Client experience & service design",p:"high",ty:"Expand"},{n:"Construction documentation & project management",p:"medium",ty:"Expand"}]},
+
+{id:55,name:"Photography",field:"arts",cip:"50.0605",degree:"Bachelor's",
+ exposure:.81,action:"pivot",mechanism:"rep",halfLife:1.4,facultyReady:39,region:.84,empOut:-.04,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Stock image creation",s:.97,t:"rep"},{n:"Photo retouching & editing",s:.94,t:"rep"},{n:"Event & portrait photography",s:.22,t:"aug"},{n:"Visual storytelling & editorial direction",s:.18,t:"aug"}],
+ actions:[{n:"Reposition toward visual storytelling & editorial direction",p:"urgent",ty:"Restructure"},{n:"AI image tools as creative workflow",p:"urgent",ty:"New Module"},{n:"Commercial photography — event, portrait, documentary",p:"high",ty:"Expand"}]},
+
+{id:56,name:"Film, Video & Media Production",field:"arts",cip:"50.0602",degree:"Bachelor's",
+ exposure:.71,action:"pivot",mechanism:"aug",halfLife:1.8,facultyReady:47,region:.88,empOut:.03,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Routine editing & post-production",s:.88,t:"rep"},{n:"Script coverage & initial drafting",s:.86,t:"rep"},{n:"Visual effects & compositing",s:.79,t:"aug"},{n:"Directing & creative vision",s:.18,t:"aug"}],
+ actions:[{n:"AI production tools (Runway, Sora-class) in curriculum",p:"urgent",ty:"New Course"},{n:"Directing, producing & creative leadership",p:"high",ty:"Expand"},{n:"Reduce repetitive post-production lab hours",p:"medium",ty:"Retire"}]},
+
+{id:57,name:"Animation & Digital Media",field:"arts",cip:"50.0411",degree:"Bachelor's",
+ exposure:.74,action:"pivot",mechanism:"aug",halfLife:1.7,facultyReady:45,region:.88,empOut:.04,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Character & environment asset creation",s:.92,t:"rep"},{n:"Motion capture & rigging",s:.78,t:"aug"},{n:"Storyboard & narrative development",s:.28,t:"aug"},{n:"Director & creative supervision",s:.16,t:"aug"}],
+ actions:[{n:"AI-assisted 3D tools & generative pipelines",p:"urgent",ty:"New Course"},{n:"Creative direction & storytelling emphasis",p:"high",ty:"Restructure"},{n:"Expand production & project management",p:"medium",ty:"Expand"}]},
+
+{id:58,name:"Music",field:"arts",cip:"50.0901",degree:"BM / BA / MM",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:5.8,facultyReady:61,region:.91,empOut:.03,accred:"NASM",accredYrs:10,
+ tasks:[{n:"Music notation & transcription",s:.74,t:"aug"},{n:"Audio mixing & production",s:.71,t:"aug"},{n:"Live performance",s:.04,t:"aug"},{n:"Composition & creative expression",s:.22,t:"aug"}],
+ actions:[{n:"AI music composition tools & production platforms",p:"medium",ty:"New Module"},{n:"Music licensing & IP in the AI era",p:"medium",ty:"New Module"},{n:"Live performance & ensemble — expand hours",p:"low",ty:"Expand"}]},
+
+{id:59,name:"Fine Arts (BFA)",field:"arts",cip:"50.0701",degree:"BFA / MFA",
+ exposure:.29,action:"maintain",mechanism:"aug",halfLife:7.1,facultyReady:64,region:.88,empOut:.04,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Physical studio craft & making",s:.03,t:"aug"},{n:"Artist statement & documentation",s:.61,t:"aug"},{n:"Conceptual development & critique",s:.14,t:"aug"},{n:"Exhibition & portfolio development",s:.18,t:"aug"}],
+ actions:[{n:"AI art tools as elective medium",p:"low",ty:"New Module"},{n:"Art business, licensing & IP in the AI era",p:"medium",ty:"New Module"}]},
+
+{id:60,name:"Fashion Design",field:"arts",cip:"50.0407",degree:"Bachelor's",
+ exposure:.58,action:"pivot",mechanism:"aug",halfLife:2.6,facultyReady:38,region:.87,empOut:-.01,accred:"NASAD",accredYrs:7,
+ tasks:[{n:"Technical pattern documentation",s:.81,t:"rep"},{n:"Trend forecasting & mood boards",s:.84,t:"rep"},{n:"Garment construction & physical craft",s:.06,t:"aug"},{n:"Brand vision & concept direction",s:.19,t:"aug"}],
+ actions:[{n:"AI trend forecasting & generative design tools",p:"urgent",ty:"New Module"},{n:"Reposition toward brand direction & creative leadership",p:"high",ty:"Restructure"},{n:"Sustainable manufacturing & supply chain",p:"medium",ty:"Expand"}]},
+
+// ══ SOCIAL SCIENCES ════════════════════════════════════════════════════════════
+{id:61,name:"Psychology",field:"social",cip:"42.0101",degree:"Bachelor's / Master's / PhD",
+ exposure:.44,action:"maintain",mechanism:"aug",halfLife:5.2,facultyReady:48,region:.96,empOut:.06,accred:"APA",accredYrs:7,
+ tasks:[{n:"Literature review & research writing",s:.78,t:"aug"},{n:"Statistical analysis & reporting",s:.82,t:"aug"},{n:"Clinical assessment & therapy",s:.08,t:"aug"},{n:"Behavioral intervention design",s:.14,t:"aug"}],
+ actions:[{n:"AI in behavioral research & assessment tools",p:"medium",ty:"New Module"},{n:"Ethics of AI in mental health",p:"high",ty:"New Module"},{n:"Expand clinical practicum hours",p:"medium",ty:"Expand"}]},
+
+{id:62,name:"Social Work (BSW/MSW)",field:"social",cip:"44.0701",degree:"Bachelor's / Master's",
+ exposure:.21,action:"invest",mechanism:"aug",halfLife:8.9,facultyReady:52,region:1.14,empOut:.11,accred:"CSWE",accredYrs:8,
+ tasks:[{n:"Case documentation & reporting",s:.64,t:"aug"},{n:"Client assessment & intake",s:.14,t:"aug"},{n:"Direct client services & advocacy",s:.03,t:"aug"},{n:"Community organizing & program development",s:.06,t:"aug"}],
+ actions:[{n:"AI-assisted case management documentation tools",p:"medium",ty:"New Module"},{n:"Expand field placement hours",p:"high",ty:"Expand"},{n:"Increase program capacity — national shortage",p:"urgent",ty:"Expand"}]},
+
+{id:63,name:"Political Science",field:"social",cip:"45.1001",degree:"Bachelor's / Master's",
+ exposure:.57,action:"pivot",mechanism:"aug",halfLife:3.4,facultyReady:39,region:.91,empOut:.05,accred:"none",accredYrs:0,
+ tasks:[{n:"Policy research & literature review",s:.82,t:"aug"},{n:"Report & brief writing",s:.86,t:"rep"},{n:"Data analysis & visualization",s:.79,t:"aug"},{n:"Stakeholder engagement & public communication",s:.22,t:"aug"}],
+ actions:[{n:"AI policy analysis tools & computational methods",p:"high",ty:"New Course"},{n:"AI governance & technology policy track",p:"high",ty:"New Track"},{n:"Public communication & debate skills",p:"medium",ty:"Expand"}]},
+
+{id:64,name:"Sociology",field:"social",cip:"45.1101",degree:"Bachelor's / Master's",
+ exposure:.49,action:"maintain",mechanism:"aug",halfLife:4.4,facultyReady:42,region:.90,empOut:.04,accred:"none",accredYrs:0,
+ tasks:[{n:"Survey design & data collection",s:.74,t:"aug"},{n:"Statistical analysis & report writing",s:.79,t:"aug"},{n:"Ethnographic fieldwork",s:.08,t:"aug"},{n:"Community & program evaluation",s:.22,t:"aug"}],
+ actions:[{n:"Computational social science & NLP tools",p:"medium",ty:"New Course"},{n:"Expand applied research & community partnerships",p:"medium",ty:"Expand"}]},
+
+{id:65,name:"Economics",field:"social",cip:"45.0601",degree:"Bachelor's / Master's",
+ exposure:.62,action:"pivot",mechanism:"aug",halfLife:2.8,facultyReady:44,region:.92,empOut:.06,accred:"none",accredYrs:0,
+ tasks:[{n:"Economic modeling & forecasting",s:.88,t:"aug"},{n:"Literature review & research writing",s:.84,t:"aug"},{n:"Policy analysis & recommendation",s:.38,t:"aug"},{n:"Causal inference & experiment design",s:.24,t:"aug"}],
+ actions:[{n:"Machine learning for economists",p:"high",ty:"New Course"},{n:"Causal inference & experimental economics",p:"high",ty:"Expand"},{n:"Economic policy communication & public writing",p:"medium",ty:"Expand"}]},
+
+{id:66,name:"Urban Planning",field:"social",cip:"04.0301",degree:"Bachelor's / Master's (MUP)",
+ exposure:.46,action:"maintain",mechanism:"aug",halfLife:4.8,facultyReady:46,region:1.02,empOut:.04,accred:"PAB",accredYrs:5,
+ tasks:[{n:"Zoning documentation & compliance",s:.79,t:"rep"},{n:"GIS & spatial data analysis",s:.72,t:"aug"},{n:"Community engagement & public input",s:.12,t:"aug"},{n:"Long-range planning & policy design",s:.19,t:"aug"}],
+ actions:[{n:"AI-assisted GIS & urban simulation tools",p:"medium",ty:"New Module"},{n:"Smart city & climate resilience planning",p:"high",ty:"New Track"}]},
+
+{id:67,name:"Public Administration (MPA)",field:"social",cip:"44.0401",degree:"Bachelor's / Master's",
+ exposure:.56,action:"pivot",mechanism:"aug",halfLife:3.3,facultyReady:38,region:.93,empOut:.05,accred:"NASPAA",accredYrs:7,
+ tasks:[{n:"Policy documentation & grant writing",s:.84,t:"rep"},{n:"Program evaluation & reporting",s:.79,t:"aug"},{n:"Stakeholder engagement & facilitation",s:.18,t:"aug"},{n:"Strategic leadership & public trust",s:.14,t:"aug"}],
+ actions:[{n:"AI tools for public sector analytics & services",p:"high",ty:"New Course"},{n:"Digital government & AI policy implementation",p:"high",ty:"New Course"},{n:"Public leadership & administrative ethics",p:"medium",ty:"Expand"}]},
+
+{id:68,name:"Criminal Justice",field:"social",cip:"43.0104",degree:"Bachelor's / Master's",
+ exposure:.48,action:"maintain",mechanism:"aug",halfLife:4.6,facultyReady:38,region:.93,empOut:.03,accred:"ACJS",accredYrs:5,
+ tasks:[{n:"Case documentation & report writing",s:.79,t:"rep"},{n:"Data analysis & crime mapping",s:.74,t:"aug"},{n:"Investigation & evidence collection",s:.18,t:"aug"},{n:"Community engagement & conflict resolution",s:.09,t:"aug"}],
+ actions:[{n:"Predictive policing tools — ethics & application",p:"medium",ty:"New Module"},{n:"AI surveillance law & civil liberties",p:"high",ty:"New Course"},{n:"Expand fieldwork & applied practicum",p:"medium",ty:"Expand"}]},
+
+// ══ HUMANITIES ════════════════════════════════════════════════════════════════
+{id:69,name:"English / Literature",field:"humanities",cip:"23.0101",degree:"Bachelor's / Master's",
+ exposure:.68,action:"pivot",mechanism:"rep",halfLife:2.1,facultyReady:31,region:.88,empOut:-.02,accred:"none",accredYrs:0,
+ tasks:[{n:"Expository & analytical writing",s:.88,t:"rep"},{n:"Literature survey & review",s:.84,t:"rep"},{n:"Close reading & original interpretation",s:.34,t:"aug"},{n:"Teaching, editing & cultural curation",s:.22,t:"aug"}],
+ actions:[{n:"Writing in the AI era — style, voice, human argument",p:"urgent",ty:"Restructure"},{n:"AI & authorship — ethics, law, literary theory",p:"urgent",ty:"New Course"},{n:"Reposition toward editorial, publishing, content strategy",p:"high",ty:"Restructure"}]},
+
+{id:70,name:"Communications",field:"humanities",cip:"09.0101",degree:"Bachelor's / Master's",
+ exposure:.64,action:"pivot",mechanism:"aug",halfLife:2.2,facultyReady:44,region:.89,empOut:.04,accred:"ACEJMC",accredYrs:6,
+ tasks:[{n:"Press release & routine content writing",s:.91,t:"rep"},{n:"Media monitoring & reporting",s:.84,t:"rep"},{n:"Strategic communications & messaging",s:.32,t:"aug"},{n:"Crisis communications & public trust",s:.19,t:"aug"}],
+ actions:[{n:"AI communications tools & content strategy",p:"urgent",ty:"New Course"},{n:"Strategic PR & reputation management",p:"high",ty:"Expand"},{n:"Retire standalone press release writing course",p:"high",ty:"Retire"}]},
+
+{id:71,name:"Journalism",field:"humanities",cip:"09.0401",degree:"Bachelor's / Master's",
+ exposure:.77,action:"pivot",mechanism:"rep",halfLife:1.7,facultyReady:36,region:.87,empOut:-.06,accred:"ACEJMC",accredYrs:6,
+ tasks:[{n:"Routine news writing & wire stories",s:.93,t:"rep"},{n:"Data journalism & research",s:.84,t:"aug"},{n:"Investigative & original reporting",s:.28,t:"aug"},{n:"Video & multimedia storytelling",s:.38,t:"aug"}],
+ actions:[{n:"Shift emphasis to investigative & accountability journalism",p:"urgent",ty:"Restructure"},{n:"Data journalism & AI verification tools",p:"urgent",ty:"New Course"},{n:"Multimedia storytelling & audience building",p:"high",ty:"Expand"}]},
+
+{id:72,name:"Foreign Languages",field:"humanities",cip:"16.0101",degree:"Bachelor's / Master's",
+ exposure:.82,action:"sunset",mechanism:"rep",halfLife:1.2,facultyReady:21,region:.84,empOut:-.08,accred:"none",accredYrs:0,
+ tasks:[{n:"Document translation",s:.97,t:"rep"},{n:"Interpretation & live translation",s:.88,t:"rep"},{n:"Language instruction",s:.44,t:"aug"},{n:"Cross-cultural communication & diplomacy",s:.22,t:"aug"}],
+ actions:[{n:"Reposition as Language + AI specialization",p:"urgent",ty:"Restructure"},{n:"Focus on cross-cultural intelligence & international studies",p:"urgent",ty:"Merge"},{n:"AI translation auditing & post-editing skills",p:"high",ty:"New Module"}]},
+
+{id:73,name:"Philosophy",field:"humanities",cip:"38.0101",degree:"Bachelor's / Master's",
+ exposure:.41,action:"maintain",mechanism:"aug",halfLife:5.6,facultyReady:58,region:.90,empOut:.02,accred:"none",accredYrs:0,
+ tasks:[{n:"Argumentation & critical writing",s:.69,t:"aug"},{n:"Ethics case analysis",s:.58,t:"aug"},{n:"Philosophical research & scholarship",s:.44,t:"aug"},{n:"Ethical consultation & applied reasoning",s:.22,t:"aug"}],
+ actions:[{n:"AI ethics & philosophy of mind as core track",p:"medium",ty:"New Track"},{n:"Applied ethics for technology & policy",p:"high",ty:"New Course"}]},
+
+{id:74,name:"History",field:"humanities",cip:"54.0101",degree:"Bachelor's / Master's",
+ exposure:.51,action:"maintain",mechanism:"aug",halfLife:4.1,facultyReady:46,region:.91,empOut:.02,accred:"none",accredYrs:0,
+ tasks:[{n:"Archival research & source gathering",s:.78,t:"aug"},{n:"Historical writing & narrative",s:.72,t:"aug"},{n:"Primary source interpretation & synthesis",s:.33,t:"aug"},{n:"Public history & community engagement",s:.14,t:"aug"}],
+ actions:[{n:"Digital humanities & AI archival tools",p:"medium",ty:"New Module"},{n:"Reposition toward policy, law & public-sector tracks",p:"medium",ty:"New Track"}]},
+
+{id:75,name:"Creative Writing",field:"humanities",cip:"23.1302",degree:"Bachelor's / MFA",
+ exposure:.72,action:"pivot",mechanism:"rep",halfLife:1.9,facultyReady:28,region:.87,empOut:-.03,accred:"none",accredYrs:0,
+ tasks:[{n:"Commercial copywriting & content",s:.94,t:"rep"},{n:"Drafting & revision iterations",s:.88,t:"rep"},{n:"Original literary voice & form",s:.26,t:"aug"},{n:"Editing, mentorship & teaching",s:.18,t:"aug"}],
+ actions:[{n:"Distinguish literary vs. commercial writing — reposition toward literary",p:"urgent",ty:"Restructure"},{n:"AI & authorship — intellectual property & craft",p:"urgent",ty:"New Course"},{n:"Editing, manuscript development & publishing pathway",p:"high",ty:"Expand"}]},
+
+// ══ LEGAL ═════════════════════════════════════════════════════════════════════
+{id:76,name:"Paralegal Studies",field:"legal",cip:"22.0302",degree:"Associate's / Bachelor's",
+ exposure:.81,action:"pivot",mechanism:"rep",halfLife:1.4,facultyReady:29,region:.82,empOut:-.04,accred:"ABA",accredYrs:3,
+ tasks:[{n:"Legal document drafting",s:.92,t:"rep"},{n:"Case law research",s:.94,t:"rep"},{n:"Contract review & redlining",s:.89,t:"rep"},{n:"Client intake & communication",s:.31,t:"aug"},{n:"Court procedure management",s:.42,t:"aug"}],
+ actions:[{n:"Legal AI platforms (Harvey, CoCounsel) practicum",p:"urgent",ty:"New Course"},{n:"Reposition as Legal Operations & AI Management",p:"urgent",ty:"Restructure"},{n:"Merge with Pre-Law advising track",p:"high",ty:"Merge"}]},
+
+{id:77,name:"Legal Studies / Pre-Law",field:"legal",cip:"22.0101",degree:"Bachelor's",
+ exposure:.59,action:"maintain",mechanism:"aug",halfLife:3.7,facultyReady:41,region:.90,empOut:.04,accred:"ABA",accredYrs:3,
+ tasks:[{n:"Legal research & memoranda",s:.84,t:"aug"},{n:"Case analysis & brief writing",s:.79,t:"aug"},{n:"Oral argument & advocacy",s:.18,t:"aug"},{n:"Client counseling skills",s:.14,t:"aug"}],
+ actions:[{n:"AI legal research tools (Westlaw AI, Lexis+)",p:"high",ty:"New Module"},{n:"Technology & the law — regulation, liability, IP",p:"high",ty:"New Course"},{n:"Oral advocacy & courtroom skills",p:"medium",ty:"Expand"}]},
+
+{id:78,name:"Court Reporting",field:"legal",cip:"22.0303",degree:"Associate's / Certificate",
+ exposure:.96,action:"sunset",mechanism:"rep",halfLife:.6,facultyReady:14,region:.81,empOut:-.18,accred:"NCRA",accredYrs:5,
+ tasks:[{n:"Verbatim court transcription",s:.99,t:"rep"},{n:"Deposition & hearing documentation",s:.97,t:"rep"},{n:"Real-time captioning",s:.94,t:"rep"}],
+ actions:[{n:"Immediate wind-down — do not admit new students",p:"urgent",ty:"Sunset"},{n:"Redirect to Legal Technology & Operations pathway",p:"urgent",ty:"Merge"}]},
+
+{id:79,name:"Compliance & Regulatory Affairs",field:"legal",cip:"22.0205",degree:"Bachelor's / Master's",
+ exposure:.57,action:"pivot",mechanism:"aug",halfLife:3.1,facultyReady:34,region:.92,empOut:.09,accred:"none",accredYrs:0,
+ tasks:[{n:"Compliance documentation & audit reports",s:.84,t:"rep"},{n:"Regulatory research & monitoring",s:.81,t:"aug"},{n:"Policy interpretation & advisory",s:.32,t:"aug"},{n:"Ethics & governance oversight",s:.19,t:"aug"}],
+ actions:[{n:"AI compliance monitoring platforms",p:"urgent",ty:"New Module"},{n:"AI regulatory frameworks (EU AI Act, NIST)",p:"high",ty:"New Course"},{n:"Ethics & governance leadership",p:"medium",ty:"Expand"}]},
+
+// ══ NATURAL SCIENCES ══════════════════════════════════════════════════════════
+{id:80,name:"Biology",field:"science",cip:"26.0101",degree:"Bachelor's / Master's",
+ exposure:.39,action:"maintain",mechanism:"aug",halfLife:5.8,facultyReady:54,region:.98,empOut:.05,accred:"none",accredYrs:0,
+ tasks:[{n:"Literature search & review",s:.81,t:"aug"},{n:"Lab data documentation",s:.74,t:"aug"},{n:"Physical lab & fieldwork",s:.05,t:"aug"},{n:"Experimental design & hypothesis development",s:.22,t:"aug"}],
+ actions:[{n:"Bioinformatics & AI genomics tools",p:"medium",ty:"New Course"},{n:"Computational biology as track option",p:"medium",ty:"New Track"}]},
+
+{id:81,name:"Chemistry",field:"science",cip:"40.0501",degree:"Bachelor's / Master's / PhD",
+ exposure:.44,action:"maintain",mechanism:"aug",halfLife:5.1,facultyReady:52,region:.99,empOut:.06,accred:"ACS",accredYrs:5,
+ tasks:[{n:"Literature review & research documentation",s:.79,t:"aug"},{n:"Lab notebook & data recording",s:.72,t:"aug"},{n:"Physical synthesis & experimental work",s:.06,t:"aug"},{n:"Molecular design & hypothesis generation",s:.26,t:"aug"}],
+ actions:[{n:"Computational chemistry & molecular simulation tools",p:"medium",ty:"New Course"},{n:"AI-assisted drug discovery methods",p:"medium",ty:"New Module"}]},
+
+{id:82,name:"Physics",field:"science",cip:"40.0801",degree:"Bachelor's / Master's / PhD",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:6.2,facultyReady:56,region:.98,empOut:.06,accred:"none",accredYrs:0,
+ tasks:[{n:"Numerical simulation & computation",s:.72,t:"aug"},{n:"Research documentation & publication",s:.69,t:"aug"},{n:"Physical experimentation & measurement",s:.07,t:"aug"},{n:"Theoretical modeling & framework development",s:.21,t:"aug"}],
+ actions:[{n:"Machine learning for physics simulation",p:"medium",ty:"New Module"},{n:"Applied physics tracks — quantum computing, materials",p:"medium",ty:"New Track"}]},
+
+{id:83,name:"Environmental Science",field:"science",cip:"03.0104",degree:"Bachelor's / Master's",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:5.9,facultyReady:57,region:1.02,empOut:.06,accred:"none",accredYrs:0,
+ tasks:[{n:"Environmental data analysis & reporting",s:.74,t:"aug"},{n:"Field sampling & monitoring",s:.07,t:"aug"},{n:"GIS & remote sensing analysis",s:.62,t:"aug"},{n:"Regulatory compliance documentation",s:.78,t:"rep"}],
+ actions:[{n:"AI remote sensing & satellite data analysis",p:"medium",ty:"New Module"},{n:"Climate modeling tools",p:"medium",ty:"New Module"},{n:"Expand field research hours",p:"medium",ty:"Expand"}]},
+
+{id:84,name:"Mathematics",field:"science",cip:"27.0101",degree:"Bachelor's / Master's / PhD",
+ exposure:.44,action:"maintain",mechanism:"aug",halfLife:5.2,facultyReady:62,region:.96,empOut:.05,accred:"none",accredYrs:0,
+ tasks:[{n:"Routine computation & symbolic manipulation",s:.81,t:"aug"},{n:"Mathematical modeling & analysis",s:.64,t:"aug"},{n:"Novel proof construction",s:.21,t:"aug"},{n:"Applied problem translation",s:.28,t:"aug"}],
+ actions:[{n:"Computational mathematics & AI-assisted proof tools",p:"medium",ty:"New Module"},{n:"Applied math tracks — data science, finance, operations",p:"high",ty:"New Track"}]},
+
+{id:85,name:"Statistics",field:"science",cip:"27.0501",degree:"Bachelor's / Master's",
+ exposure:.59,action:"pivot",mechanism:"aug",halfLife:3.1,facultyReady:54,region:.95,empOut:.14,accred:"none",accredYrs:0,
+ tasks:[{n:"Standard statistical modeling",s:.84,t:"aug"},{n:"Report & findings documentation",s:.79,t:"rep"},{n:"Experimental design & analysis",s:.38,t:"aug"},{n:"Causal inference & decision support",s:.26,t:"aug"}],
+ actions:[{n:"ML-integrated statistical workflows (Python, R+AI)",p:"urgent",ty:"New Module"},{n:"Causal inference & Bayesian methods",p:"high",ty:"Expand"},{n:"Communication of uncertainty to non-experts",p:"medium",ty:"Expand"}]},
+
+{id:86,name:"Clinical / Counseling Psychology",field:"science",cip:"42.2803",degree:"PsyD / PhD",
+ exposure:.29,action:"invest",mechanism:"aug",halfLife:7.8,facultyReady:61,region:1.08,empOut:.14,accred:"APA",accredYrs:7,
+ tasks:[{n:"Session documentation & notes",s:.67,t:"aug"},{n:"Psychological assessment & testing",s:.41,t:"aug"},{n:"Direct therapeutic intervention",s:.04,t:"aug"},{n:"Crisis intervention",s:.03,t:"aug"}],
+ actions:[{n:"AI session documentation tools",p:"medium",ty:"New Module"},{n:"Telehealth & digital therapeutics",p:"medium",ty:"New Module"},{n:"Expand supervised clinical hours",p:"high",ty:"Expand"}]},
+
+// ══ TRADES & TECHNOLOGY ════════════════════════════════════════════════════════
+{id:87,name:"HVAC Technology",field:"trades",cip:"15.0501",degree:"Certificate / Associate's",
+ exposure:.14,action:"invest",mechanism:"aug",halfLife:13.1,facultyReady:66,region:1.11,empOut:.06,accred:"HVAC Excellence",accredYrs:5,
+ tasks:[{n:"System installation & commissioning",s:.04,t:"aug"},{n:"Diagnostic troubleshooting",s:.19,t:"aug"},{n:"Maintenance & repair",s:.06,t:"aug"},{n:"Smart building system integration",s:.38,t:"aug"}],
+ actions:[{n:"Smart building & IoT HVAC system integration",p:"medium",ty:"New Module"},{n:"Increase capacity — critical workforce gap",p:"urgent",ty:"Expand"}]},
+
+{id:88,name:"Welding Technology",field:"trades",cip:"48.0508",degree:"Certificate / Associate's",
+ exposure:.09,action:"invest",mechanism:"aug",halfLife:14.2,facultyReady:72,region:1.08,empOut:.04,accred:"AWS",accredYrs:5,
+ tasks:[{n:"Precision manual welding",s:.04,t:"aug"},{n:"Weld inspection & quality control",s:.22,t:"aug"},{n:"Blueprint reading & fabrication",s:.18,t:"aug"},{n:"Welding automation & robot programming",s:.44,t:"aug"}],
+ actions:[{n:"Robotic welding & CNC automation programming",p:"medium",ty:"New Module"},{n:"Increase capacity — severe national welder shortage",p:"urgent",ty:"Expand"}]},
+
+{id:89,name:"Automotive Technology",field:"trades",cip:"47.0604",degree:"Certificate / Associate's",
+ exposure:.17,action:"invest",mechanism:"aug",halfLife:11.8,facultyReady:64,region:1.06,empOut:.02,accred:"ASE/NATEF",accredYrs:5,
+ tasks:[{n:"Mechanical diagnosis & repair",s:.08,t:"aug"},{n:"Diagnostic software operation",s:.38,t:"aug"},{n:"EV & hybrid system service",s:.24,t:"aug"},{n:"Customer communication & service writing",s:.18,t:"aug"}],
+ actions:[{n:"EV & hybrid vehicle systems — expand track",p:"urgent",ty:"New Track"},{n:"Advanced diagnostics & OBD-AI tools",p:"high",ty:"New Module"},{n:"Increase capacity — technician shortage",p:"high",ty:"Expand"}]},
+
+{id:90,name:"Electrical Technology",field:"trades",cip:"46.0302",degree:"Certificate / Associate's",
+ exposure:.12,action:"invest",mechanism:"aug",halfLife:13.8,facultyReady:68,region:1.10,empOut:.06,accred:"NCCER",accredYrs:5,
+ tasks:[{n:"Electrical installation & wiring",s:.04,t:"aug"},{n:"Panel & circuit inspection",s:.08,t:"aug"},{n:"Blueprint & electrical code reading",s:.28,t:"aug"},{n:"Smart home & building automation",s:.41,t:"aug"}],
+ actions:[{n:"Smart building & EV charging infrastructure",p:"medium",ty:"New Module"},{n:"Expand program — critical infrastructure workforce gap",p:"urgent",ty:"Expand"}]},
+
+{id:91,name:"Culinary Arts",field:"trades",cip:"12.0500",degree:"Certificate / Associate's",
+ exposure:.16,action:"maintain",mechanism:"aug",halfLife:12.4,facultyReady:61,region:.96,empOut:.08,accred:"ACF",accredYrs:5,
+ tasks:[{n:"Recipe scaling & menu costing",s:.48,t:"aug"},{n:"Food preparation & technique",s:.03,t:"aug"},{n:"Kitchen management & staffing",s:.09,t:"aug"},{n:"Sensory evaluation & plating",s:.02,t:"aug"}],
+ actions:[{n:"Cost-share kitchen with Hospitality Management",p:"low",ty:"Optimize"},{n:"Restaurant pop-up & industry partnership revenue",p:"low",ty:"Optimize"}]},
+
+{id:92,name:"Plumbing Technology",field:"trades",cip:"46.0503",degree:"Certificate / Associate's",
+ exposure:.08,action:"invest",mechanism:"aug",halfLife:15.0,facultyReady:69,region:1.12,empOut:.04,accred:"NCCER",accredYrs:5,
+ tasks:[{n:"Pipe installation & fitting",s:.03,t:"aug"},{n:"Plumbing code & blueprint reading",s:.26,t:"aug"},{n:"Diagnostic leak detection",s:.14,t:"aug"},{n:"Smart water system & sensor integration",s:.38,t:"aug"}],
+ actions:[{n:"Smart plumbing & sensor-based leak detection",p:"low",ty:"New Module"},{n:"Increase cohort — severe plumber shortage",p:"urgent",ty:"Expand"}]},
+
+{id:93,name:"Carpentry & Construction Technology",field:"trades",cip:"46.0201",degree:"Certificate / Associate's",
+ exposure:.10,action:"invest",mechanism:"aug",halfLife:14.6,facultyReady:67,region:1.09,empOut:.04,accred:"NCCER",accredYrs:5,
+ tasks:[{n:"Framing, finishing & millwork",s:.04,t:"aug"},{n:"Blueprint reading & material estimation",s:.24,t:"aug"},{n:"Site measurement & precision cutting",s:.06,t:"aug"},{n:"Green building & sustainable materials",s:.18,t:"aug"}],
+ actions:[{n:"Green building & sustainable construction methods",p:"medium",ty:"New Module"},{n:"Increase cohort — construction workforce shortage",p:"urgent",ty:"Expand"}]},
+
+{id:94,name:"Cosmetology",field:"trades",cip:"12.0401",degree:"Certificate",
+ exposure:.12,action:"invest",mechanism:"aug",halfLife:11.6,facultyReady:58,region:.98,empOut:.08,accred:"NACCAS",accredYrs:5,
+ tasks:[{n:"Hair, skin & nail services",s:.03,t:"aug"},{n:"Color formulation & application",s:.14,t:"aug"},{n:"Client consultation & upsell",s:.09,t:"aug"},{n:"Salon management & booking",s:.44,t:"aug"}],
+ actions:[{n:"AI-assisted booking & salon management tools",p:"low",ty:"New Module"},{n:"Expand advanced color & chemical services training",p:"medium",ty:"Expand"}]},
+
+// ══ AGRICULTURE & ENVIRONMENT ═════════════════════════════════════════════════
+{id:95,name:"Agriculture Business",field:"agriculture",cip:"01.0101",degree:"Bachelor's",
+ exposure:.42,action:"maintain",mechanism:"aug",halfLife:5.3,facultyReady:48,region:1.03,empOut:.03,accred:"AABI",accredYrs:7,
+ tasks:[{n:"Market analysis & commodity pricing",s:.72,t:"aug"},{n:"Farm records & financial reporting",s:.68,t:"aug"},{n:"Field operations & crop management",s:.08,t:"aug"},{n:"Buyer-seller negotiation & contracting",s:.19,t:"aug"}],
+ actions:[{n:"Precision agriculture & AI crop monitoring tools",p:"medium",ty:"New Module"},{n:"Agricultural data analytics",p:"medium",ty:"New Course"}]},
+
+{id:96,name:"Forestry & Natural Resources",field:"agriculture",cip:"03.0501",degree:"Bachelor's",
+ exposure:.21,action:"maintain",mechanism:"aug",halfLife:11.2,facultyReady:55,region:1.04,empOut:.03,accred:"SAF",accredYrs:10,
+ tasks:[{n:"Remote sensing data interpretation",s:.58,t:"aug"},{n:"Field inventory & assessment",s:.07,t:"aug"},{n:"Fire behavior modeling",s:.44,t:"aug"},{n:"Wildlife habitat management",s:.09,t:"aug"}],
+ actions:[{n:"GIS & drone survey integration",p:"medium",ty:"New Module"},{n:"Cost-share with Agriculture Extension",p:"low",ty:"Optimize"}]},
+
+{id:97,name:"Animal Science",field:"agriculture",cip:"01.0901",degree:"Bachelor's",
+ exposure:.19,action:"invest",mechanism:"aug",halfLife:9.8,facultyReady:58,region:1.05,empOut:.04,accred:"AABI",accredYrs:7,
+ tasks:[{n:"Animal health monitoring & documentation",s:.52,t:"aug"},{n:"Herd & livestock direct care",s:.04,t:"aug"},{n:"Nutrition & feeding management",s:.28,t:"aug"},{n:"Genetic selection & breeding",s:.38,t:"aug"}],
+ actions:[{n:"AI precision livestock monitoring tools",p:"low",ty:"New Module"},{n:"Expand hands-on farm & lab hours",p:"medium",ty:"Expand"}]},
+
+{id:98,name:"Horticulture",field:"agriculture",cip:"01.0601",degree:"Associate's / Bachelor's",
+ exposure:.17,action:"invest",mechanism:"aug",halfLife:12.8,facultyReady:61,region:1.04,empOut:.05,accred:"AABI",accredYrs:7,
+ tasks:[{n:"Physical planting & cultivation",s:.03,t:"aug"},{n:"Pest & disease identification",s:.22,t:"aug"},{n:"Greenhouse management & reporting",s:.48,t:"aug"},{n:"Landscape design & planning",s:.34,t:"aug"}],
+ actions:[{n:"AI-assisted plant disease identification tools",p:"low",ty:"New Module"},{n:"Urban agriculture & vertical farming techniques",p:"medium",ty:"New Track"}]},
+
+{id:99,name:"Food Science & Technology",field:"agriculture",cip:"01.1001",degree:"Bachelor's / Master's",
+ exposure:.41,action:"maintain",mechanism:"aug",halfLife:5.4,facultyReady:52,region:1.01,empOut:.06,accred:"IFT",accredYrs:7,
+ tasks:[{n:"Product formulation documentation",s:.76,t:"aug"},{n:"Sensory evaluation & testing",s:.08,t:"aug"},{n:"Quality control & regulatory compliance",s:.72,t:"rep"},{n:"Process optimization & scale-up",s:.36,t:"aug"}],
+ actions:[{n:"AI-assisted formulation & ingredient optimization",p:"medium",ty:"New Module"},{n:"Regulatory AI compliance tools (FDA, USDA)",p:"medium",ty:"New Module"}]},
+
+// ══ ADDITIONAL MAINSTREAM PROGRAMS ══════════════════════════════════════════
+{id:100,name:"Kinesiology / Exercise Science",field:"health",cip:"31.0505",degree:"Bachelor's / Master's",
+ exposure:.22,action:"invest",mechanism:"aug",halfLife:8.6,facultyReady:58,region:1.06,empOut:.13,accred:"CAATE",accredYrs:7,
+ tasks:[{n:"Exercise prescription documentation",s:.58,t:"aug"},{n:"Physical assessment & testing",s:.06,t:"aug"},{n:"Direct client training & coaching",s:.03,t:"aug"},{n:"Biomechanical movement analysis",s:.31,t:"aug"},{n:"Rehabilitation support",s:.07,t:"aug"}],
+ actions:[{n:"AI wearable & performance analytics platforms",p:"medium",ty:"New Module"},{n:"Expand clinical/practicum hours in PT and sports settings",p:"high",ty:"Expand"},{n:"Increase program capacity — growing demand in healthcare & wellness",p:"high",ty:"Expand"}]},
+
+{id:101,name:"Liberal Arts & General Studies",field:"humanities",cip:"24.0101",degree:"Associate's / Bachelor's",
+ exposure:.49,action:"maintain",mechanism:"aug",halfLife:4.8,facultyReady:42,region:.91,empOut:.01,accred:"none",accredYrs:0,
+ tasks:[{n:"Research writing & documentation",s:.79,t:"aug"},{n:"Critical analysis & argumentation",s:.54,t:"aug"},{n:"Interdisciplinary problem-solving",s:.28,t:"aug"},{n:"Oral communication & presentation",s:.14,t:"aug"}],
+ actions:[{n:"AI literacy as a general education requirement",p:"urgent",ty:"New Course"},{n:"Strengthen transfer pathways to high-demand majors",p:"high",ty:"Restructure"},{n:"Portfolio-based assessment replacing traditional papers",p:"medium",ty:"Restructure"}]},
+
+{id:102,name:"Chemical Engineering",field:"engineering",cip:"14.0701",degree:"Bachelor's / Master's",
+ exposure:.34,action:"maintain",mechanism:"aug",halfLife:6.8,facultyReady:57,region:1.02,empOut:.07,accred:"ABET",accredYrs:6,
+ tasks:[{n:"Process simulation & thermodynamic modeling",s:.72,t:"aug"},{n:"Lab data analysis & documentation",s:.69,t:"aug"},{n:"Physical reactor & process control",s:.08,t:"aug"},{n:"Safety & hazard analysis (HAZOP)",s:.12,t:"aug"},{n:"Process optimization & scale-up",s:.38,t:"aug"}],
+ actions:[{n:"AI process simulation tools (Aspen AI, MATLAB ML)",p:"medium",ty:"New Module"},{n:"Computational chemistry & molecular AI modeling",p:"medium",ty:"Expand"},{n:"Expand lab hours — hands-on process work remains irreplaceable",p:"low",ty:"Expand"}]},
+
+{id:103,name:"Physician Assistant Studies",field:"health",cip:"51.0912",degree:"Master's (MPAS)",
+ exposure:.19,action:"invest",mechanism:"aug",halfLife:9.2,facultyReady:68,region:1.13,empOut:.28,accred:"ARC-PA",accredYrs:6,
+ tasks:[{n:"Clinical documentation & SOAP notes",s:.68,t:"aug"},{n:"Physical examination & diagnosis",s:.05,t:"aug"},{n:"Patient history & counseling",s:.06,t:"aug"},{n:"Interpreting AI-flagged diagnostic alerts",s:.41,t:"aug"},{n:"Prescriptive management",s:.09,t:"aug"}],
+ actions:[{n:"AI clinical decision support tools & EHR integration",p:"medium",ty:"New Module"},{n:"Expand supervised clinical rotations",p:"high",ty:"Expand"},{n:"Increase cohort size — critical national shortage",p:"urgent",ty:"Expand"}]},
+
+{id:104,name:"Theater Arts / Performing Arts",field:"arts",cip:"50.0501",degree:"Bachelor's (BFA / BA)",
+ exposure:.28,action:"maintain",mechanism:"aug",halfLife:7.4,facultyReady:62,region:.89,empOut:.04,accred:"NAST",accredYrs:7,
+ tasks:[{n:"Script analysis & dramaturgy",s:.54,t:"aug"},{n:"Live performance & embodied craft",s:.02,t:"aug"},{n:"Directing & production design",s:.17,t:"aug"},{n:"Stage management documentation",s:.61,t:"aug"}],
+ actions:[{n:"AI in production design & virtual stagecraft",p:"medium",ty:"New Module"},{n:"Expand industry partnerships — regional theater & film",p:"medium",ty:"Expand"},{n:"Arts business, grant writing & career development",p:"medium",ty:"New Module"}]},
+
+{id:105,name:"Anthropology",field:"social",cip:"45.0201",degree:"Bachelor's / Master's",
+ exposure:.44,action:"maintain",mechanism:"aug",halfLife:5.1,facultyReady:46,region:.90,empOut:.02,accred:"none",accredYrs:0,
+ tasks:[{n:"Field notes & ethnographic documentation",s:.62,t:"aug"},{n:"Archival & artifact analysis",s:.44,t:"aug"},{n:"Fieldwork & participant observation",s:.04,t:"aug"},{n:"Cultural theory & interpretive scholarship",s:.28,t:"aug"}],
+ actions:[{n:"Digital anthropology & computational methods",p:"medium",ty:"New Course"},{n:"Applied anthropology tracks — UX research, healthcare, policy",p:"high",ty:"New Track"},{n:"AI & cultural bias — ethics and critique",p:"medium",ty:"New Module"}]},
+
+{id:106,name:"Diagnostic Medical Sonography",field:"health",cip:"51.0910",degree:"Associate's / Bachelor's",
+ exposure:.54,action:"pivot",mechanism:"aug",halfLife:3.2,facultyReady:36,region:1.04,empOut:.10,accred:"CAAHEP",accredYrs:6,
+ tasks:[{n:"Standard image acquisition & scanning",s:.38,t:"aug"},{n:"AI-assisted image quality assessment",s:.69,t:"aug"},{n:"Preliminary findings documentation",s:.82,t:"aug"},{n:"Patient communication & preparation",s:.07,t:"aug"},{n:"Complex case protocol decisions",s:.22,t:"aug"}],
+ actions:[{n:"AI-integrated ultrasound platforms & auto-measurement tools",p:"urgent",ty:"New Module"},{n:"Shift emphasis toward complex case interpretation & patient care",p:"high",ty:"Restructure"},{n:"Expand clinical hours in interventional & advanced imaging",p:"high",ty:"Expand"}]},
+
+{id:107,name:"Emergency Medical Services / Paramedic",field:"health",cip:"51.0904",degree:"Certificate / Associate's",
+ exposure:.16,action:"invest",mechanism:"aug",halfLife:11.4,facultyReady:64,region:1.09,empOut:.06,accred:"CoAEMSP",accredYrs:5,
+ tasks:[{n:"Patient assessment & triage",s:.06,t:"aug"},{n:"Emergency intervention & treatment",s:.03,t:"aug"},{n:"Incident documentation",s:.58,t:"aug"},{n:"AI-assisted dispatch & routing support",s:.34,t:"aug"}],
+ actions:[{n:"AI-assisted triage & decision support tools",p:"medium",ty:"New Module"},{n:"Expand simulation lab hours",p:"high",ty:"Expand"},{n:"Increase capacity — EMS workforce shortage in most states",p:"urgent",ty:"Expand"}]},
+
+{id:108,name:"Religious Studies / Theology",field:"humanities",cip:"38.0201",degree:"Bachelor's / Master's (M.Div.)",
+ exposure:.38,action:"maintain",mechanism:"aug",halfLife:6.2,facultyReady:52,region:.90,empOut:.01,accred:"ATS",accredYrs:10,
+ tasks:[{n:"Textual analysis & biblical/religious hermeneutics",s:.61,t:"aug"},{n:"Theological writing & scholarship",s:.68,t:"aug"},{n:"Pastoral counseling & community ministry",s:.06,t:"aug"},{n:"Interfaith dialogue & leadership",s:.08,t:"aug"}],
+ actions:[{n:"AI tools in religious scholarship & digital humanities",p:"medium",ty:"New Module"},{n:"Ethics of AI from theological & philosophical perspectives",p:"medium",ty:"New Course"},{n:"Strengthen applied ministry & community engagement tracks",p:"medium",ty:"Expand"}]},
+
+{id:109,name:"Medical Assistant",field:"health",cip:"51.0801",degree:"Certificate / Associate's",
+ exposure:.79,action:"sunset",mechanism:"rep",halfLife:1.4,facultyReady:19,region:.91,empOut:-.04,accred:"CAAHEP",accredYrs:5,
+ tasks:[{n:"Patient intake data entry & EHR documentation",s:.94,t:"rep"},{n:"Insurance verification & prior authorizations",s:.92,t:"rep"},{n:"Appointment scheduling & reminders",s:.97,t:"rep"},{n:"Vital signs recording",s:.48,t:"aug"},{n:"Direct patient preparation & rooming",s:.12,t:"aug"}],
+ actions:[{n:"Begin planned wind-down — do not admit new cohorts",p:"urgent",ty:"Sunset"},{n:"Redirect students to Health Informatics or Patient Care Tech pathways",p:"urgent",ty:"Merge"},{n:"Offer bridge modules to current students in healthcare AI tools",p:"high",ty:"Transition"}]},
+
+{id:110,name:"Nursing - ADN",field:"health",cip:"51.3801",degree:"Associate's (ADN)",
+ exposure:.30,action:"invest",mechanism:"aug",halfLife:7.4,facultyReady:65,region:1.14,empOut:.09,accred:"ACEN",accredYrs:8,
+ tasks:[{n:"Patient documentation & charting",s:.70,t:"aug"},{n:"Medication administration & verification",s:.38,t:"aug"},{n:"Physical patient care & assessment",s:.04,t:"aug"},{n:"Care coordination & handoff communication",s:.08,t:"aug"}],
+ actions:[{n:"AI-assisted clinical documentation tools",p:"medium",ty:"New Module"},{n:"ADN-to-BSN bridge pathway partnership with 4-year institutions",p:"high",ty:"Expand"},{n:"Increase cohort size — ADN nursing feeds the largest share of US hospital staffing",p:"urgent",ty:"Expand"}]},
+
+{id:111,name:"Geographic Information Systems",field:"science",cip:"45.0702",degree:"Certificate / Bachelor's / Master's",
+ exposure:.36,action:"invest",mechanism:"aug",halfLife:6.4,facultyReady:61,region:1.03,empOut:.14,accred:"none",accredYrs:0,
+ tasks:[{n:"Spatial data collection & field survey",s:.18,t:"aug"},{n:"Map production & cartographic design",s:.62,t:"aug"},{n:"Remote sensing & satellite analysis",s:.54,t:"aug"},{n:"Geospatial modeling & analysis",s:.48,t:"aug"}],
+ actions:[{n:"AI remote sensing & machine learning for spatial analysis",p:"high",ty:"New Course"},{n:"Drone & LiDAR data processing",p:"medium",ty:"New Module"},{n:"Applied GIS tracks — urban planning, environmental, emergency management",p:"high",ty:"Expand"}]},
+
+{id:112,name:"Library & Information Science",field:"humanities",cip:"25.0101",degree:"Master's (MLIS)",
+ exposure:.68,action:"pivot",mechanism:"rep",halfLife:2.2,facultyReady:38,region:.88,empOut:-.02,accred:"ALA",accredYrs:7,
+ tasks:[{n:"Cataloging & metadata management",s:.91,t:"rep"},{n:"Reference query research",s:.88,t:"rep"},{n:"Literature search & synthesis",s:.84,t:"rep"},{n:"Collection development strategy",s:.42,t:"aug"},{n:"Community programming & information literacy instruction",s:.18,t:"aug"}],
+ actions:[{n:"Reposition toward AI literacy instruction & digital curation",p:"urgent",ty:"Restructure"},{n:"AI metadata tools & automated cataloging systems",p:"urgent",ty:"New Module"},{n:"Expand community engagement & information equity focus",p:"high",ty:"Expand"},{n:"Data librarianship & research data management",p:"high",ty:"New Track"}]},
+
+{id:113,name:"Biochemistry",field:"science",cip:"26.0202",degree:"Bachelor's / Master's / PhD",
+ exposure:.37,action:"maintain",mechanism:"aug",halfLife:6.1,facultyReady:56,region:1.01,empOut:.10,accred:"none",accredYrs:0,
+ tasks:[{n:"Literature review & documentation",s:.79,t:"aug"},{n:"Lab protocol execution & recording",s:.32,t:"aug"},{n:"Molecular modeling & structural analysis",s:.62,t:"aug"},{n:"Experimental design & hypothesis development",s:.21,t:"aug"},{n:"Physical lab work & wet chemistry",s:.05,t:"aug"}],
+ actions:[{n:"AI molecular modeling & drug discovery platforms (AlphaFold, RoseTTAFold)",p:"high",ty:"New Module"},{n:"Computational biochemistry as core track",p:"medium",ty:"New Track"},{n:"Expand hands-on lab hours — physical experimentation remains non-automatable",p:"medium",ty:"Expand"}]},
+]; // end PROGRAMS
+
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  search:'', field:'', action:'', open:null, cmp:[],
+  sort:'default', critical:false,
+  weights:{task:.40, halfLife:.20, faculty:.15, regional:.15, employment:.10},
+  overlay:{},
+};
+
+const LS_WEIGHTS = 'meridian_weights_v1';
+const LS_OVERLAY = 'meridian_overlay_v1';
+
+function loadState() {
+  try {
+    const w = localStorage.getItem(LS_WEIGHTS);
+    if (w) state.weights = JSON.parse(w);
+    const o = localStorage.getItem(LS_OVERLAY);
+    if (o) state.overlay = JSON.parse(o);
+  } catch(e){}
+}
+
+function saveWeights() {
+  try { localStorage.setItem(LS_WEIGHTS, JSON.stringify(state.weights)); } catch(e){}
+}
+
+function saveOverlay() {
+  try { localStorage.setItem(LS_OVERLAY, JSON.stringify(state.overlay)); } catch(e){}
+}
+
+// ── COMPOSITE SCORE ────────────────────────────────────────────────────────
+function compositeScore(p) {
+  const w = state.weights;
+  // Normalize each factor to 0-1 risk scale
+  const task   = p.exposure;
+  const hl     = Math.min(1, Math.max(0, 1 - (p.halfLife - 0.5) / 14.5));  // 0.5yr=1, 15yr=0
+  const fac    = 1 - (effectiveFacultyReady(p) / 100);
+  const reg    = Math.max(0, 1 - (p.region - 0.8) / 0.4);  // <=0.8 is max risk
+  const emp    = Math.max(0, Math.min(1, -p.empOut / 0.15)); // -15% = max risk, 0%+ = 0 risk
+  return task*w.task + hl*w.halfLife + fac*w.faculty + reg*w.regional + emp*w.employment;
+}
+
+function effectiveFacultyReady(p) {
+  const ov = state.overlay[p.name];
+  return ov && ov.faculty_ready_pct != null ? ov.faculty_ready_pct : p.facultyReady;
+}
+function effectiveRegion(p) {
+  const ov = state.overlay[p.name];
+  return ov && ov.regional_multiplier != null ? ov.regional_multiplier : p.region;
+}
+function effectiveEnrollment(p) {
+  const ov = state.overlay[p.name];
+  return ov && ov.enrollment != null ? ov.enrollment : null;
+}
+function hasOverlay(p) { return !!state.overlay[p.name]; }
+
+function dynamicAction(p) {
+  const cs = compositeScore(p);
+  if (p.mechanism === 'rep' && cs > 0.67) return 'sunset';
+  if (cs > 0.57) return 'pivot';
+  if (cs < 0.30) return 'invest';
+  return 'maintain';
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function pct(v) { return Math.round(v*100)+'%'; }
+function expClr(e){ return e>=.75?'var(--red)':e>=.55?'var(--orange)':e>=.35?'var(--amber)':'var(--green)'; }
+function expLbl(e){ return e>=.75?'Very High':e>=.55?'High':e>=.35?'Moderate':'Low'; }
+function facClr(f){ return f>=60?'var(--green)':f>=40?'var(--amber)':'var(--red)'; }
+function hlClr(h){ return h<2?'var(--red)':h<4?'var(--orange)':h<7?'var(--amber)':'var(--green)'; }
+function tBarClr(s){ return s>=.75?'var(--red)':s>=.5?'var(--orange)':s>=.3?'var(--amber)':'var(--green)'; }
+function rbadge(a){ return `<span class="rbadge rb-${a}">${REC[a]}</span>`; }
+function fieldOf(p){ return FIELDS.find(f=>f.id===p.field)||{icon:'',name:p.field}; }
+
+function isCritical(p){
+  return p.exposure >= 0.65 && p.halfLife <= 3.0 && effectiveFacultyReady(p) <= 35;
+}
+
+function filtered(){
+  let list = PROGRAMS.filter(p => {
+    if(state.critical && !isCritical(p)) return false;
+    if(state.field && p.field!==state.field) return false;
+    if(state.action && dynamicAction(p)!==state.action) return false;
+    const q = state.search.toLowerCase();
+    if(q && !p.name.toLowerCase().includes(q) && !fieldOf(p).name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(state.sort === 'exposure') list.sort((a,b) => b.exposure - a.exposure);
+  else if(state.sort === 'runway') list.sort((a,b) => a.halfLife - b.halfLife);
+  else if(state.sort === 'faculty') list.sort((a,b) => effectiveFacultyReady(a) - effectiveFacultyReady(b));
+  return list;
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────
+function render(){
+  renderFields();
+  renderPortfolio();
+  renderGrid();
+  renderCmpBar();
+}
+
+function renderPortfolio(){
+  const counts = {pivot:0, invest:0, sunset:0, maintain:0};
+  PROGRAMS.forEach(p => counts[dynamicAction(p)]++);
+  const defs = [
+    {k:'pivot',  cls:'pb-pivot',  label:'Urgent Pivot',  sub:'Need curriculum action now'},
+    {k:'invest', cls:'pb-invest', label:'Invest & Grow',  sub:'Strong long-term prospects'},
+    {k:'sunset', cls:'pb-sunset', label:'Sunset',         sub:'Begin wind-down planning'},
+    {k:'maintain',cls:'pb-maintain',label:'Maintain',     sub:'Stable — monitor annually'},
+  ];
+  document.getElementById('portfolio-bar').innerHTML = defs.map(d => `
+    <div class="pb-item ${d.cls}" onclick="document.querySelector('.fb.${d.k[0]}${d.k==='invest'?'v':d.k==='sunset'?'s':d.k==='maintain'?'t':'v'}[data-a]') && setAction(document.querySelector('.fb[data-a=\\'${d.k}\\']'),'${d.k}')" title="Filter to ${d.label} programs">
+      <div class="pb-num">${counts[d.k]}</div>
+      <div><div class="pb-label">${d.label}</div><div class="pb-sub">${d.sub}</div></div>
+    </div>`).join('');
+  // make the whole bar clickable properly via direct onclick
+  document.querySelectorAll('.pb-item').forEach(el => {
+    const action = el.querySelector('.pb-label').textContent.toLowerCase().replace('urgent pivot','pivot').replace('invest & grow','invest').replace('sunset','sunset').replace('maintain','maintain');
+    el.onclick = () => {
+      const btn = document.querySelector(`.fb[data-a="${action}"]`);
+      if(btn) setAction(btn, action);
+    };
+  });
+}
+
+function renderFields(){
+  document.getElementById('ftiles').innerHTML = FIELDS.map(f=>{
+    const ct = PROGRAMS.filter(p=>p.field===f.id).length;
+    return `<div class="ftile${state.field===f.id?' on':''}" onclick="setField('${f.id}')">
+      <span class="ft-ic">${f.icon}</span>
+      <span class="ft-nm">${f.name}</span>
+      <span class="ft-ct">${ct} programs</span>
+    </div>`;
+  }).join('');
+}
+
+function renderGrid(){
+  const list = filtered();
+  const el = document.getElementById('pgrid');
+  const title = document.getElementById('sh-title');
+  const ct = document.getElementById('sh-ct');
+  const clearBtn = document.getElementById('clearBtn');
+  const isF = state.search||state.field||state.action;
+  clearBtn.style.display = isF ? 'inline':'none';
+  if(state.field) title.textContent = fieldOf({field:state.field}).name+' Programs';
+  else if(state.search) title.textContent = 'Search results for "'+state.search+'"';
+  else title.textContent = 'All Programs';
+  ct.textContent = list.length+' program'+(list.length!==1?'s':'');
+  if(!list.length){
+    el.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="em-ic">🔍</div><div class="em-title">No programs match</div><div>Try a different search or clear filters</div></div>';
+    return;
+  }
+  el.innerHTML = list.map(p=>{
+    const act = dynamicAction(p);
+    const ec = expClr(p.exposure);
+    const isCmp = state.cmp.includes(p.id);
+    const ovBadge = hasOverlay(p) ? '<span class="ov-badge" title="Your institution\'s data applied">★ Overlaid</span>' : '';
+    return `<div class="pc ${act}${isCmp?' cmp-sel':''}" onclick="openDrawer(${p.id})">
+      <div class="pc-top">
+        <div>
+          <div class="pc-nm">${p.name}</div>
+          <div class="pc-fi">${fieldOf(p).name} · ${p.degree}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${rbadge(act)}${ovBadge}</div>
+      </div>
+      <div class="pc-meter">
+        <div class="pm-row"><span class="pm-lbl">AI Exposure Risk</span>
+          <span class="pm-val" style="color:${ec}">${expLbl(p.exposure)} (${pct(p.exposure)})</span></div>
+        <div class="pm-bar"><div class="pm-fill" style="width:${pct(p.exposure)};background:${ec}"></div></div>
+      </div>
+      <div class="pc-tags">
+        <span class="ptag">${MECH[p.mechanism]}</span>
+        <span class="ptag">⏱ ${p.halfLife}yr runway</span>
+        ${p.accred&&p.accred!=='none'?`<span class="ptag">${p.accred}</span>`:''}
+      </div>
+      <button class="cmp-btn" onclick="event.stopPropagation();toggleCmp(${p.id})">${isCmp?'✓ Added':'+ Compare'}</button>
+    </div>`;
+  }).join('');
+}
+
+// ── INTERACTIONS ────────────────────────────────────────────────────────────
+function onSearch(v){
+  state.search=v; state.field=''; render();
+}
+function setField(id){
+  state.field=state.field===id?'':id; state.search='';
+  document.getElementById('hsearch').value=''; render();
+}
+function setAction(btn,a){
+  if(state.action===a){state.action='';btn.classList.remove('on');}
+  else{state.action=a;document.querySelectorAll('.fb[data-a]').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+  render();
+}
+function setSort(btn, s){
+  state.sort = s;
+  document.querySelectorAll('.sortbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+function toggleCritical(){
+  state.critical = !state.critical;
+  document.getElementById('critical-btn').classList.toggle('on', state.critical);
+  render();
+}
+function clearAll(){
+  state.search=''; state.field=''; state.action=''; state.critical=false; state.sort='default';
+  document.getElementById('hsearch').value='';
+  document.querySelectorAll('.fb[data-a]').forEach(b=>b.classList.remove('on'));
+  document.getElementById('critical-btn').classList.remove('on');
+  document.querySelectorAll('.sortbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.sortbtn[data-sort="default"]').classList.add('on');
+  render();
+}
+
+// ── COMPARE ────────────────────────────────────────────────────────────────
+function toggleCmp(id){
+  if(state.cmp.includes(id)) state.cmp=state.cmp.filter(x=>x!==id);
+  else if(state.cmp.length<3) state.cmp.push(id);
+  render();
+}
+function renderCmpBar(){
+  const bar = document.getElementById('cmp-bar');
+  if(!state.cmp.length){ bar.classList.remove('on'); return; }
+  bar.classList.add('on');
+  const chips = state.cmp.map(id=>{
+    const p=PROGRAMS.find(x=>x.id===id);
+    return p?`<span class="cb-chip">${p.name}<span class="cb-chip-rm" onclick="toggleCmp(${id})">✕</span></span>`:'';
+  }).join('');
+  document.getElementById('cb-chips').innerHTML = chips;
+}
+function openCompare(){
+  if(state.cmp.length<2){alert('Select at least 2 programs to compare.');return;}
+  const ps = state.cmp.map(id=>PROGRAMS.find(x=>x.id===id)).filter(Boolean);
+  const cols = ps.map(p=>{
+    const act=dynamicAction(p);
+    const cs=compositeScore(p);
+    return `<div class="cm-col">
+      <div class="cm-col-nm">${rbadge(act)} ${p.name}</div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:8px">${fieldOf(p).name}</div>
+      <div class="cm-val" style="color:${expClr(p.exposure)}">${pct(p.exposure)}</div>
+      <div style="font-size:10.5px;color:var(--t3);margin-bottom:4px">AI Exposure (${expLbl(p.exposure)})</div>
+      <div class="cm-bar-bg"><div class="cm-bar-fg" style="width:${pct(p.exposure)};background:${expClr(p.exposure)}"></div></div>
+    </div>`;
+  }).join('');
+  const hl = ps.map(p=>`<div class="cm-col">
+    <div class="cm-val" style="color:${hlClr(p.halfLife)}">${p.halfLife} yrs</div>
+    <div class="cm-bar-bg"><div class="cm-bar-fg" style="width:${Math.min(100,p.halfLife/15*100).toFixed(0)}%;background:${hlClr(p.halfLife)}"></div></div>
+  </div>`).join('');
+  const fac = ps.map(p=>{
+    const fr=effectiveFacultyReady(p);
+    return `<div class="cm-col">
+      <div class="cm-val" style="color:${facClr(fr)}">${fr}%</div>
+      <div class="cm-bar-bg"><div class="cm-bar-fg" style="width:${fr}%;background:${facClr(fr)}"></div></div>
+    </div>`;
+  }).join('');
+  const cs = ps.map(p=>{
+    const s=compositeScore(p);
+    return `<div class="cm-col">
+      <div class="cm-val" style="color:${expClr(s)}">${pct(s)}</div>
+      <div style="font-size:10.5px;color:var(--t3)">Weighted composite risk</div>
+      <div class="cm-bar-bg"><div class="cm-bar-fg" style="width:${pct(s)};background:${expClr(s)}"></div></div>
+    </div>`;
+  }).join('');
+  const taskTbls = ps.map(p=>`<div class="cm-col" style="font-size:11.5px">
+    ${p.tasks.slice(0,4).map(t=>`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between"><span style="color:var(--t2)">${t.n}</span><span class="tr-tag tt-${t.t}">${t.t==='rep'?'Replaces':'Assists'}</span></div><div class="tr-bar"><div class="tr-bg"><div class="tr-fg" style="width:${pct(t.s)};background:${tBarClr(t.s)}"></div></div><span class="tr-pct">${pct(t.s)}</span></div></div>`).join('')}
+  </div>`).join('');
+  const ncols = ps.length;
+  const gridStyle = `grid-template-columns:repeat(${ncols},1fr)`;
+  document.getElementById('cmp-modal').querySelector('.cm-grid-inner').innerHTML = `
+    <div class="cm-metric"><div class="cm-m-lbl">Recommendation</div><div style="display:grid;gap:9px;${gridStyle}">${cols}</div></div>
+    <div class="cm-metric"><div class="cm-m-lbl">Curriculum Half-Life (years of runway)</div><div style="display:grid;gap:9px;${gridStyle}">${hl}</div></div>
+    <div class="cm-metric"><div class="cm-m-lbl">Faculty AI Readiness</div><div style="display:grid;gap:9px;${gridStyle}">${fac}</div></div>
+    <div class="cm-metric"><div class="cm-m-lbl">Weighted Composite Risk Score</div><div style="display:grid;gap:9px;${gridStyle}">${cs}</div></div>
+    <div class="cm-metric"><div class="cm-m-lbl">Top Task Breakdown</div><div style="display:grid;gap:9px;${gridStyle}">${taskTbls}</div></div>`;
+  document.getElementById('cmp-bg').classList.add('on');
+}
+function closeCompare(){ document.getElementById('cmp-bg').classList.remove('on'); }
+
+// ── DRAWER ─────────────────────────────────────────────────────────────────
+function slugify(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+function showToast(msg){
+  const t = document.getElementById('link-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function copyProgramLink(id){
+  const p = PROGRAMS.find(x=>x.id===id);
+  if(!p) return;
+  const url = location.href.split('#')[0] + '#' + slugify(p.name);
+  navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copied to clipboard')).catch(() => showToast('🔗 ' + url));
+}
+
+function openDrawer(id){
+  const p=PROGRAMS.find(x=>x.id===id);
+  if(!p) return;
+  state.open=id;
+  const act=dynamicAction(p);
+  const f=fieldOf(p);
+  const cs=compositeScore(p);
+  const fr=effectiveFacultyReady(p);
+  const enr=effectiveEnrollment(p);
+  const ovApplied=hasOverlay(p);
+  const r=28,stroke=6,circ=2*Math.PI*r,offset=circ-p.exposure*circ;
+  const ec=expClr(p.exposure);
+  const tasks=p.tasks.map(t=>{
+    const bc=tBarClr(t.s);
+    return `<div class="task-row">
+      <div class="tr-top"><span class="tr-nm">${t.n}</span>
+        <span class="tr-tag tt-${t.t}">${t.t==='rep'?'AI Replaces':'AI Assists'}</span></div>
+      <div class="tr-bar"><div class="tr-bg"><div class="tr-fg" style="width:${pct(t.s)};background:${bc}"></div></div>
+        <span class="tr-pct">${pct(t.s)}</span></div>
+    </div>`;
+  }).join('');
+  const ints=p.actions.map(i=>`<div class="ai-row">
+    <span class="ai-pr pr-${i.p}">${i.p}</span>
+    <div><div class="ai-nm">${i.n}</div><div class="ai-ty">${i.ty}</div></div>
+  </div>`).join('');
+  const accredLine=p.accred&&p.accred!=='none'
+    ?`Accrediting body: <strong>${p.accred}</strong> · Review cycle: <strong>${p.accredYrs} years</strong>. Substantial curriculum changes must move through this cycle. Realistic implementation runway: ${Math.ceil(p.accredYrs/2)}–${p.accredYrs} years unless expedited review is pursued.`
+    :`No national programmatic accreditor. Changes move through your institution's standard curriculum approval process without external review delays.`;
+  const ovNote=ovApplied?`<div style="background:var(--skb);border:1.5px solid #b8d8f0;border-radius:var(--rs);padding:10px 13px;font-size:12.5px;color:var(--sky);margin-bottom:10px">★ Your institution's data is applied to this program. ${enr!=null?'Enrollment: <strong>'+enr.toLocaleString()+'</strong>. ':''} Faculty AI readiness: <strong>${fr}%</strong>.</div>`:'';
+  const csDiff=cs-p.exposure;
+  const csNote=Math.abs(csDiff)>.05?`<div style="font-size:11px;color:var(--t3);margin-top:4px">${csDiff>0?'↑ Composite risk higher':'↓ Composite risk lower'} than raw exposure due to current methodology weights</div>`:'';
+  document.getElementById('drawer').innerHTML=`
+    <div class="dr-top">
+      <div class="dr-cls" onclick="closeDrawer()">✕</div>
+      <div class="dr-fi">${f.icon} ${f.name} · CIP ${p.cip}</div>
+      <div class="dr-title">${p.name}</div>
+      <div class="dr-bgs">${rbadge(act)}<span style="font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:4px;background:var(--bg2);color:var(--t2);border:1px solid var(--bg3)">${p.degree}</span>${ovApplied?'<span class="ov-badge">★ Your Data</span>':''}<button onclick="copyProgramLink(${p.id})" style="background:none;border:1px solid var(--bg3);border-radius:4px;font-family:'Instrument Sans',sans-serif;font-size:9.5px;font-weight:600;color:var(--t3);padding:3px 8px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='var(--forest)';this.style.borderColor='var(--forest)'" onmouseout="this.style.color='var(--t3)';this.style.borderColor='var(--bg3)'">🔗 Copy link</button></div>
+    </div>
+    <div class="dr-bd">
+      <div class="dr-sec">
+        <div class="dr-stitle">What this means for your program</div>
+        ${ovNote}
+        <div class="verdict vr-${act}"><div class="vr-lbl">${REC[act]}</div><div class="vr-txt">${VERDICTS[act]}</div></div>
+      </div>
+      <div class="dr-sec">
+        <div class="dr-stitle">At a glance</div>
+        <div class="score-strip">
+          <div class="ss-it">
+            <div class="ss-lbl">AI Exposure</div>
+            <div class="ss-val" style="color:${ec}">${pct(p.exposure)}</div>
+            <div class="ss-sub">${expLbl(p.exposure)} risk</div>
+          </div>
+          <div class="ss-it">
+            <div class="ss-lbl">Years of Runway</div>
+            <div class="ss-val" style="color:${hlClr(p.halfLife)}">${p.halfLife}</div>
+            <div class="ss-sub">before major change</div>
+          </div>
+          <div class="ss-it">
+            <div class="ss-lbl">Faculty Ready</div>
+            <div class="ss-val" style="color:${facClr(fr)}">${fr}%</div>
+            <div class="ss-sub">have AI fluency</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:11px 14px;margin-bottom:10px">
+          <svg viewBox="0 0 60 60" width="60" height="60" style="flex-shrink:0">
+            <circle cx="30" cy="30" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="${stroke}"/>
+            <circle cx="30" cy="30" r="${r}" fill="none" stroke="${expClr(cs)}" stroke-width="${stroke}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${(circ-cs*circ).toFixed(1)}" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+            <text x="30" y="35" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="${expClr(cs)}" font-weight="500">${pct(cs)}</text>
+          </svg>
+          <div>
+            <div style="font-size:12.5px;font-weight:600;margin-bottom:2px">Weighted Composite Risk</div>
+            <div style="font-size:11.5px;color:var(--t3);line-height:1.5">Calculated using your current methodology weights across task exposure, half-life, faculty readiness, regional market, and employment outlook.</div>
+            ${csNote}
+          </div>
+        </div>
+        <div class="mech-box mb-${p.mechanism}">
+          <div class="mb-lbl">${MECH[p.mechanism]}</div>${MECH_NOTE[p.mechanism]}
+        </div>
+      </div>
+      <div class="dr-sec">
+        <div class="dr-stitle">How specific tasks are affected (O*NET data)</div>
+        ${tasks}
+      </div>
+      <div class="dr-sec">
+        <div class="dr-stitle">Recommended actions</div>
+        ${ints}
+      </div>
+      <div class="dr-sec">
+        <div class="dr-stitle">Accreditation & implementation timeline</div>
+        <div class="info-box">${accredLine}</div>
+      </div>
+      <div class="dr-sec">
+        <div class="dr-stitle">Regional labor market note</div>
+        <div class="info-box">National scores are adjusted by a <strong>regional multiplier of ${effectiveRegion(p).toFixed(2)}x</strong>.
+        ${effectiveRegion(p)>1?'A multiplier above 1.0 means local employer demand exceeds the national average — the hiring market in most regions supports this program better than national numbers suggest.':'A multiplier below 1.0 means the local labor market for this field is weaker than the national average, which accelerates the urgency of recommended changes.'}</div>
+      </div>
+    </div>`;
+  document.getElementById('drawer').classList.add('on');
+  document.getElementById('drbg').classList.add('on');
+  document.getElementById('drawer').scrollTop=0;
+  history.replaceState(null,'','#'+slugify(p.name));
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('on');
+  document.getElementById('drbg').classList.remove('on');
+  history.replaceState(null,'', location.pathname + location.search);
+  state.open=null;
+}
+
+// ── METHODOLOGY ────────────────────────────────────────────────────────────
+const PRESETS = {
+  balanced:   {task:.40,halfLife:.20,faculty:.15,regional:.15,employment:.10},
+  karpathy:   {task:.65,halfLife:.15,faculty:.10,regional:.05,employment:.05},
+  labor:      {task:.25,halfLife:.15,faculty:.15,regional:.25,employment:.20},
+  faculty_focus:{task:.30,halfLife:.20,faculty:.30,regional:.10,employment:.10},
+};
+
+function openMeth(){
+  syncSliders();
+  document.getElementById('meth-bg').classList.add('on');
+}
+function closeMeth(){ document.getElementById('meth-bg').classList.remove('on'); }
+
+function syncSliders(){
+  const w=state.weights;
+  document.getElementById('sl-task').value=Math.round(w.task*100);
+  document.getElementById('sl-hl').value=Math.round(w.halfLife*100);
+  document.getElementById('sl-fac').value=Math.round(w.faculty*100);
+  document.getElementById('sl-reg').value=Math.round(w.regional*100);
+  document.getElementById('sl-emp').value=Math.round(w.employment*100);
+  updateSliderLabels();
+}
+
+function updateSliderLabels(){
+  ['task','hl','fac','reg','emp'].forEach(id=>{
+    const el=document.getElementById('sl-'+id);
+    if(el) document.getElementById('slv-'+id).textContent=el.value+'%';
+  });
+  const total = ['task','hl','fac','reg','emp'].reduce((s,id)=>{
+    const el=document.getElementById('sl-'+id);
+    return s+(el?parseInt(el.value):0);
+  },0);
+  const tw=document.getElementById('wt-total');
+  if(tw){ tw.innerHTML='Weights total: <span style="color:'+(total===100?'var(--green)':'var(--red)')+'">'+total+'%</span> (must equal 100%)'; }
+  document.querySelectorAll('.preset').forEach(b=>b.classList.remove('on'));
+}
+
+function setPreset(key){
+  const p=PRESETS[key];
+  if(!p) return;
+  Object.keys(p).forEach(k=>state.weights[k]=p[k]);
+  syncSliders();
+  document.querySelectorAll('.preset').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`.preset[data-preset="${key}"]`).classList.add('on');
+}
+
+function applyWeights(){
+  const ids=['task','hl','fac','reg','emp'];
+  const keys=['task','halfLife','faculty','regional','employment'];
+  const vals=ids.map(id=>parseInt(document.getElementById('sl-'+id).value)||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  if(total!==100){ alert('Weights must sum to 100%. Current total: '+total+'%.'); return; }
+  keys.forEach((k,i)=>state.weights[k]=vals[i]/100);
+  saveWeights();
+  closeMeth();
+  render();
+  if(state.open) openDrawer(state.open);
+}
+
+// ── CSV TEMPLATE DOWNLOAD ──────────────────────────────────────────────────
+function downloadCSVTemplate(){
+  const header = 'program_name,enrollment,faculty_ready_pct,regional_multiplier';
+  const comment = '# program_name must match exactly. enrollment = total enrolled students. faculty_ready_pct = % of faculty with meaningful AI fluency (0-100). regional_multiplier = local employer demand vs. national average (e.g. 1.05 = 5% stronger than national).';
+  const sample = PROGRAMS.map(p => `"${p.name}",,, `).join('\n');
+  const csv = comment + '\n' + header + '\n' + sample;
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'meridian_institutional_template.csv';
+  a.click();
+}
+
+// ── CSV IMPORT ─────────────────────────────────────────────────────────────
+function openCSV(){ document.getElementById('csv-bg').classList.add('on'); }
+function closeCSV(){ document.getElementById('csv-bg').classList.remove('on'); }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const dz=document.getElementById('dropzone');
+  if(dz){
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');handleFile(e.dataTransfer.files[0]);});
+    dz.addEventListener('click',()=>document.getElementById('csv-file').click());
+  }
+  document.getElementById('csv-file').addEventListener('change',e=>handleFile(e.target.files[0]));
+});
+
+function handleFile(file){
+  if(!file||!file.name.endsWith('.csv')){setCSVStatus('Please upload a .csv file.',true);return;}
+  const reader=new FileReader();
+  reader.onload=e=>parseCSV(e.target.result);
+  reader.readAsText(file);
+}
+
+function parseCSV(text){
+  try{
+    const lines=text.trim().split('\n').map(l=>l.trim()).filter(Boolean);
+    if(!lines.length){setCSVStatus('CSV file is empty.',true);return;}
+    const headers=lines[0].toLowerCase().split(',').map(h=>h.trim().replace(/"/g,''));
+    const nameIdx=headers.indexOf('program_name');
+    if(nameIdx<0){setCSVStatus('Missing required column: program_name',true);return;}
+    const enrollIdx=headers.indexOf('enrollment');
+    const facIdx=headers.indexOf('faculty_ready_pct');
+    const regIdx=headers.indexOf('regional_multiplier');
+    let matched=0;
+    lines.slice(1).forEach(line=>{
+      const cols=line.split(',').map(c=>c.trim().replace(/"/g,''));
+      const name=cols[nameIdx];
+      if(!name) return;
+      const prog=PROGRAMS.find(p=>p.name.toLowerCase()===name.toLowerCase());
+      if(!prog) return;
+      matched++;
+      if(!state.overlay[prog.name]) state.overlay[prog.name]={};
+      if(enrollIdx>=0&&cols[enrollIdx]) state.overlay[prog.name].enrollment=parseInt(cols[enrollIdx])||null;
+      if(facIdx>=0&&cols[facIdx]) state.overlay[prog.name].faculty_ready_pct=parseFloat(cols[facIdx])||null;
+      if(regIdx>=0&&cols[regIdx]) state.overlay[prog.name].regional_multiplier=parseFloat(cols[regIdx])||null;
+    });
+    saveOverlay();
+    setCSVStatus(`Successfully matched ${matched} program${matched!==1?'s':''} from your file.`,false);
+    render();
+  }catch(e){setCSVStatus('Error parsing CSV: '+e.message,true);}
+}
+
+function setCSVStatus(msg,isErr){
+  const el=document.getElementById('csv-status');
+  if(el){el.textContent=msg;el.className='csv-status'+(isErr?' err':'');}
+}
+
+function clearOverlay(){
+  state.overlay={};
+  try{localStorage.removeItem(LS_OVERLAY);}catch(e){}
+  setCSVStatus('Institutional data cleared.',false);
+  render();
+}
+
+// ── PDF EXPORT ─────────────────────────────────────────────────────────────
+function exportPDF(){
+  const el=document.getElementById('print-summary');
+  const list=filtered();
+  const cats={pivot:0,sunset:0,invest:0,maintain:0};
+  list.forEach(p=>cats[dynamicAction(p)]++);
+  el.innerHTML=`
+    <div class="print-hd" style="padding:16px 0 12px;border-bottom:2px solid var(--forest);margin-bottom:12px">
+      <div style="font-size:22px;font-weight:700;font-family:'Cormorant Garant',serif">Meridian — AI Readiness Report</div>
+      <div style="font-size:12px;color:var(--t3);margin-top:3px">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} · ${list.length} programs</div>
+    </div>
+    <div class="print-hd" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;page-break-inside:avoid">
+      <div style="background:var(--ob);border:1.5px solid var(--obr);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--orange)">${cats.pivot}</div><div style="font-size:11px;color:var(--orange);font-weight:600;text-transform:uppercase">Urgent Pivot</div></div>
+      <div style="background:var(--rb);border:1.5px solid var(--rbr);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--red)">${cats.sunset}</div><div style="font-size:11px;color:var(--red);font-weight:600;text-transform:uppercase">Sunset</div></div>
+      <div style="background:var(--gb);border:1.5px solid var(--gbr);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--green)">${cats.invest}</div><div style="font-size:11px;color:var(--green);font-weight:600;text-transform:uppercase">Invest & Grow</div></div>
+      <div style="background:var(--sb);border:1.5px solid var(--sbr);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--slate)">${cats.maintain}</div><div style="font-size:11px;color:var(--slate);font-weight:600;text-transform:uppercase">Maintain</div></div>
+    </div>`;
+  window.print();
+}
+
+// ── KEYBOARD ────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeDrawer();closeMeth();closeCompare();closeCSV();}
+});
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+loadState();
+document.getElementById('stat-ct').textContent=PROGRAMS.length;
+render();
+
+// Deep link: open program from URL hash
+(function(){
+  const hash = location.hash.replace('#','');
+  if(hash){
+    const p = PROGRAMS.find(p => slugify(p.name) === hash);
+    if(p) setTimeout(() => openDrawer(p.id), 120);
+  }
+})();
+
+</script>
+</body>
+</html>

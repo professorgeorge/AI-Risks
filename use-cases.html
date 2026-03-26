@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Use Case Examples</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@500;600;700&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f4ef;--bg2:#f0ebe2;--bg3:#e6ddd0;--card:#fff;
+  --navy:#1b2d3e;--navy2:#243750;--text:#1b2d3e;--t2:#496070;--t3:#7a90a0;
+  --amber:#b8720e;--ab:#fef3e2;--abr:#f5d99a;
+  --green:#1a6e3c;--gb:#edf7f2;--gbr:#90d4b0;
+  --orange:#b85010;--ob:#fdf4ee;--obr:#f0c090;
+  --red:#b02020;--rb:#fdf0ee;--rbr:#f0b8b2;
+  --slate:#5a6a7a;--sb:#f0f3f6;--sbr:#c0d0e0;
+  --r:12px;--rs:8px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--amber);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAV */
+nav{background:var(--navy);height:54px;display:flex;align-items:center;padding:0 24px;gap:18px;position:sticky;top:0;z-index:100}
+.n-logo{font-family:'Cormorant Garant',serif;font-size:19px;color:#fff}
+.n-logo b{color:#f0c050}
+.n-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
+.n-tag{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap}
+.n-sp{flex:1}
+.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:rgba(255,255,255,.78);font-size:12.5px;font-weight:500;padding:6px 12px;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.back-btn:hover{background:rgba(255,255,255,.16);color:#fff;text-decoration:none}
+
+/* HERO */
+.uc-hero{background:var(--navy);padding:48px 24px 56px;text-align:center}
+.uc-eye{font-size:10.5px;font-weight:700;color:#f0c050;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
+.uc-title{font-family:'Cormorant Garant',serif;font-size:36px;color:#fff;line-height:1.18;margin-bottom:12px;max-width:640px;margin-left:auto;margin-right:auto}
+.uc-title em{color:#f0c050;font-style:normal}
+.uc-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:540px;margin:0 auto;line-height:1.7}
+
+/* LAYOUT */
+.uc-main{max-width:960px;margin:0 auto;padding:44px 24px 64px}
+
+/* WHO SECTION */
+.who-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:52px}
+.who-card{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);padding:18px}
+.who-icon{font-size:26px;margin-bottom:9px}
+.who-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.who-desc{font-size:12.5px;color:var(--t2);line-height:1.6}
+
+/* SECTION HEADERS */
+.sec-label{font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
+.sec-title{font-family:'Cormorant Garant',serif;font-size:26px;color:var(--text);margin-bottom:8px}
+.sec-sub{font-size:14px;color:var(--t2);line-height:1.7;max-width:680px;margin-bottom:28px}
+
+/* USE CASE CARDS */
+.uc-card{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);margin-bottom:20px;overflow:hidden}
+.uc-card-top{padding:20px 22px 16px;border-bottom:1px solid var(--bg2);display:flex;gap:16px;align-items:flex-start}
+.uc-num{font-family:'Cormorant Garant',serif;font-size:32px;color:var(--bg3);line-height:1;flex-shrink:0;margin-top:-3px}
+.uc-card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.3}
+.uc-role{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--t3)}
+.uc-card-body{padding:16px 22px 20px}
+.uc-scenario{font-size:13.5px;color:var(--t2);line-height:1.72;margin-bottom:14px}
+.uc-steps{margin-bottom:14px}
+.uc-step{display:flex;gap:11px;margin-bottom:10px;align-items:flex-start}
+.step-num{width:20px;height:20px;background:var(--navy);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;color:var(--text);line-height:1.65;flex:1}
+.step-text strong{color:var(--text)}
+.uc-outcome{background:var(--gb);border:1.5px solid var(--gbr);border-radius:var(--rs);padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.uo-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.uo-text{font-size:13px;color:var(--text);line-height:1.65}
+.uo-text strong{color:var(--green)}
+
+/* FEATURE REFERENCE */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+.feat-card{background:var(--bg2);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:14px 16px}
+.feat-icon{font-size:18px;margin-bottom:6px}
+.feat-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.feat-desc{font-size:12px;color:var(--t2);line-height:1.6}
+
+/* TIPS */
+.tips-box{background:var(--ab);border:1.5px solid var(--abr);border-radius:var(--r);padding:22px 24px;margin-top:44px}
+.tips-title{font-family:'Cormorant Garant',serif;font-size:18px;color:var(--text);margin-bottom:14px}
+.tip-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.tip-row:last-child{margin-bottom:0}
+.tip-icon{font-size:14px;flex-shrink:0;margin-top:2px}
+.tip-text{font-size:13px;color:var(--t2);line-height:1.65}
+.tip-text strong{color:var(--text)}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid var(--bg3);padding:16px 0}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+.faq-a{font-size:13px;color:var(--t2);line-height:1.7}
+
+/* CTA */
+.cta-strip{background:var(--navy);border-radius:var(--r);padding:28px 28px;margin-top:44px;text-align:center}
+.cta-title{font-family:'Cormorant Garant',serif;font-size:22px;color:#fff;margin-bottom:8px}
+.cta-sub{font-size:13.5px;color:rgba(255,255,255,.55);margin-bottom:18px;line-height:1.65}
+.cta-btn{display:inline-block;background:#f0c050;color:var(--navy);font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:700;padding:11px 28px;border-radius:var(--rs);text-decoration:none;transition:background .15s}
+.cta-btn:hover{background:#ffd060;text-decoration:none}
+
+/* FOOTER */
+footer{background:#111c27;padding:28px 24px;text-align:center;margin-top:0;border-top:1px solid rgba(255,255,255,0.07)}
+.ft-credit{font-size:12.5px;color:rgba(255,255,255,.4);line-height:1.7}
+.ft-link{color:#f0c050;text-decoration:none;font-weight:600}
+.ft-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="n-logo">Meridian<b>.</b></div>
+  <div class="n-sep"></div>
+  <div class="n-tag">AI Readiness for Academic Programs</div>
+  <div class="n-sp"></div>
+  <a href="index.html" class="back-btn">← Back to Dashboard</a>
+</nav>
+
+<div class="uc-hero">
+  <div class="uc-eye">How to Use Meridian</div>
+  <div class="uc-title">Real scenarios. <em>Plain language.</em></div>
+  <div class="uc-sub">You don't need to be technical to use this tool. Here's how different people in higher education are putting it to work — in meetings, in planning cycles, and in conversations with faculty.</div>
+</div>
+
+<div class="uc-main">
+
+  <!-- WHO IS IT FOR -->
+  <div style="margin-bottom:44px">
+    <div class="sec-label">Who It's For</div>
+    <div class="sec-title">Anyone who makes decisions about academic programs</div>
+    <div class="sec-sub">No technical background required. If you're responsible for what gets taught, how resources are allocated, or how your institution prepares students for the workforce, this tool was built for you.</div>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-icon">🏛️</div>
+        <div class="who-title">Provosts & Academic VPs</div>
+        <div class="who-desc">Get a bird's-eye view of which program families carry the most AI-related risk across the institution.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">📋</div>
+        <div class="who-title">Deans</div>
+        <div class="who-desc">Understand which programs in your college need urgent attention and which are stable ground for investment.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">🎓</div>
+        <div class="who-title">Department Chairs</div>
+        <div class="who-desc">See a task-level breakdown of how AI affects your specific field, with concrete curriculum recommendations.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">📊</div>
+        <div class="who-title">Strategic Planning Teams</div>
+        <div class="who-desc">Filter by risk category, compare programs side by side, and export a clean PDF for board presentations.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">🔬</div>
+        <div class="who-title">Curriculum Committees</div>
+        <div class="who-desc">Use the detailed intervention lists to prioritize which courses to add, retire, or restructure in each review cycle.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">💼</div>
+        <div class="who-title">Faculty Development Offices</div>
+        <div class="who-desc">Identify where faculty AI readiness gaps are widest relative to the urgency of program change required.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USE CASES -->
+  <div style="margin-bottom:10px">
+    <div class="sec-label">Scenario Walkthroughs</div>
+    <div class="sec-title">What it actually looks like in practice</div>
+    <div class="sec-sub">Each scenario below describes a real planning situation and shows exactly which steps a person in that role would take inside Meridian.</div>
+  </div>
+
+  <!-- CASE 1 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">01</div>
+      <div>
+        <div class="uc-role">Provost · Board Prep Meeting</div>
+        <div class="uc-card-title">"I need to show the board which programs are most at risk from AI — without a research deep-dive."</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        A provost has 20 minutes before a board meeting. The board has been asking questions about AI and curriculum. She needs a clear, defensible summary of where the institution's academic portfolio stands — without spending hours in spreadsheets.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Open the dashboard. The home screen shows all programs organized by field. No setup needed.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">Click the <strong>⚡ Urgent Pivot</strong> filter button. Every program that needs immediate curriculum action appears instantly.</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Click the <strong>🌅 Sunset</strong> filter. Review which programs have exposure so high that the underlying job market is already contracting.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Click <strong>🖨️ Export PDF</strong> in the top navigation. A clean, dated summary report is ready for the board packet in one click.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The provost walks into the meeting with a credible, data-informed overview showing 8 programs in "Urgent Pivot," 3 in "Sunset," and 14 as strong "Invest" opportunities — drawn from federal research, not vendor claims.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 2 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">02</div>
+      <div>
+        <div class="uc-role">Dean of Business · Annual Review</div>
+        <div class="uc-card-title">"I want to compare Accounting, Finance, and Marketing side by side and understand what's different between them."</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        A business school dean knows all three programs are being affected by AI, but doesn't understand why they might need different responses. She wants to see the differences concretely, in one view.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Click the <strong>💼 Business</strong> field tile to filter the view to business programs only.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">On each of the three program cards, click the small <strong>+ Compare</strong> button that appears on hover. A blue tray appears at the bottom of the screen.</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Click <strong>View Comparison →</strong> in the tray. A side-by-side panel opens showing exposure scores, runway years, faculty readiness, and task breakdowns for all three at once.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Notice that Marketing has a shorter runway (1.9 years) but higher faculty readiness (44%) than Accounting (1.8 years, 22% readiness). That changes the intervention priority.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The dean sees clearly that Accounting needs faculty development investment first — not because its AI risk is worse, but because the people who would teach a revised curriculum aren't ready yet. That's a different planning problem than Marketing.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 3 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">03</div>
+      <div>
+        <div class="uc-role">Department Chair, Nursing · Curriculum Committee</div>
+        <div class="uc-card-title">"Someone told me AI is going to replace nurses. I need to know what's actually true and what we should actually change."</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        A nursing department chair has heard a lot of alarming headlines. Before going to the faculty with any proposed changes, she wants to understand the evidence and have a concrete list of what to actually do.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Type "Nursing" in the search bar at the top. The Nursing (BSN) card appears immediately.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">Click the card. The detail drawer opens on the right side of the screen.</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Read the <strong>Verdict</strong> box at the top — it says "Invest & Grow" with a plain-English explanation. AI exposure is 31%, with a 7.2-year runway. The recommendation is to expand, not contract.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Scroll to the <strong>Task Breakdown</strong> section. It shows that documentation and scheduling are somewhat affected (AI assists), while physical assessment, clinical judgment, and family communication are rated very low for AI impact.</div></div>
+        <div class="uc-step"><div class="step-num">5</div><div class="step-text">Scroll to <strong>Recommended Actions</strong>. The most urgent item: add a module on interpreting AI-flagged patient risk scores. Not a program overhaul — a focused addition.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The chair goes to the faculty meeting with a specific, evidence-grounded proposal: one new module on AI documentation tools, expanded simulation hours, and a push to increase cohort size. The data supports the program, not the headlines.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 4 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">04</div>
+      <div>
+        <div class="uc-role">VP of Enrollment Strategy · Portfolio Planning</div>
+        <div class="uc-card-title">"Which programs should we be actively recruiting into, and which ones should we quietly stop promoting?"</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        An enrollment officer is building the next three-year recruitment strategy. She needs to know which programs have strong long-term job market prospects — and which ones her team should stop marketing to prospective students in good conscience.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Click the <strong>🌱 Invest & Grow</strong> filter. These are programs with low AI substitution risk and strong or growing employer demand. Prioritize recruitment and marketing spend here.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">Note the trades programs (Welding, HVAC, Electrical Technology) — all show 11+ year runways and regional multipliers above 1.0. Often overlooked, but the data is clear.</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Click the <strong>🌅 Sunset</strong> filter. These programs have declining job markets and high AI substitution. Medical Billing & Coding (0.94 exposure, 0.8-year runway) is the starkest example.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Click any Sunset program and read the <strong>Recommended Actions</strong>. They tell you what to say to current students — transition pathways, bridge courses, adjacent programs.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The enrollment strategy now has a clear data rationale for where recruitment dollars go. The institution can also demonstrate to prospective students and their families that its program recommendations are grounded in labor market evidence, not just tradition.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 5 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">05</div>
+      <div>
+        <div class="uc-role">Strategic Planning Office · Institutional Data Overlay</div>
+        <div class="uc-card-title">"Our enrollment numbers and faculty readiness look very different from the national averages. Can I see our specific picture?"</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        A planning analyst knows that the national defaults don't fully reflect his institution — they have unusually high enrollment in Nursing and unusually low faculty AI readiness in Business. He wants to see how those differences change the recommendations.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Click <strong>📤 Import Data</strong> in the top navigation bar.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">Click <strong>Download Blank CSV Template</strong>. The file opens in Excel or Google Sheets with all program names already listed and empty columns for enrollment, faculty readiness %, and regional multiplier.</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Fill in the rows for the programs he has data on. Leave the rest blank. Save the file.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Drag and drop the saved file into the upload area, or click to browse and select it.</div></div>
+        <div class="uc-step"><div class="step-num">5</div><div class="step-text">The dashboard instantly updates. Programs with institutional data now show a blue <strong>🏛️ Your Institution</strong> badge. The scores are recalculated using the institution's actual figures instead of national defaults.</div></div>
+        <div class="uc-step"><div class="step-num">6</div><div class="step-text">The data stays saved in the browser. He doesn't need to re-upload on the next visit.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The planning team now has a view that reflects their actual institution — not the national average. A program that looks stable nationally might look urgent when local enrollment and faculty readiness figures are plugged in, or vice versa.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE 6 -->
+  <div class="uc-card">
+    <div class="uc-card-top">
+      <div class="uc-num">06</div>
+      <div>
+        <div class="uc-role">Provost · "What If" Scenario Planning</div>
+        <div class="uc-card-title">"What if we weighted faculty readiness more heavily than task automation? Does that change which programs we prioritize?"</div>
+      </div>
+    </div>
+    <div class="uc-card-body">
+      <div class="uc-scenario">
+        A provost leading a strategic planning retreat wants to show the cabinet that program risk depends on what your institution can actually do, not just on the national research. Her institution has a strong faculty development budget but limited capital for new technology infrastructure.
+      </div>
+      <div class="uc-steps">
+        <div class="uc-step"><div class="step-num">1</div><div class="step-text">Click <strong>⚙️ Methodology</strong> in the top navigation.</div></div>
+        <div class="uc-step"><div class="step-num">2</div><div class="step-text">Read the <strong>Methodology Disclosure</strong> at the top of the panel — it explains exactly what the scores are based on and what they cannot tell you. Useful for any audience that will ask "where does this come from?"</div></div>
+        <div class="uc-step"><div class="step-num">3</div><div class="step-text">Try the <strong>Faculty-Readiness Focus</strong> preset. This shifts weight heavily toward the faculty gap dimension. The scores recalculate instantly across all programs.</div></div>
+        <div class="uc-step"><div class="step-num">4</div><div class="step-text">Compare the resulting recommendation list to the <strong>Balanced (Default)</strong> preset. Some programs move between categories. These are the programs worth the most discussion.</div></div>
+      </div>
+      <div class="uc-outcome">
+        <div class="uo-icon">✅</div>
+        <div class="uo-text"><strong>Result:</strong> The cabinet meeting becomes a structured scenario conversation rather than an argument about which numbers to trust. Changing the weights visibly changes the output, which is itself a valuable insight: the right response to AI in higher education depends on your institution's specific constraints.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE QUICK REFERENCE -->
+  <div style="margin-top:52px;margin-bottom:52px">
+    <div class="sec-label">Quick Reference</div>
+    <div class="sec-title">Every feature, in plain English</div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-name">Portfolio Snapshot Bar</div>
+        <div class="feat-desc">Four live counters above the program grid show exactly how many programs fall into each recommendation category. Updates instantly as filters change. Click any counter to filter to that category.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🚨</div>
+        <div class="feat-name">Critical Now Filter</div>
+        <div class="feat-desc">Surfaces programs that combine high AI exposure, short runway, AND low faculty readiness — the triple threat that means a program is in trouble and the institution can't respond quickly. One click, no manual cross-referencing.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">↕️</div>
+        <div class="feat-name">Sort Controls</div>
+        <div class="feat-desc">Sort all programs by highest exposure, shortest runway, or largest faculty readiness gap. Useful when you want the most urgent programs at the top without reading through the full grid.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔗</div>
+        <div class="feat-name">Deep Links</div>
+        <div class="feat-desc">Every open program drawer generates a shareable URL. Click "Copy link" in any drawer to copy a direct link to that program. Send it to a department chair and it opens straight to the right program — no searching required.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📐</div>
+        <div class="feat-name">Full Methodology</div>
+        <div class="feat-desc">A separate technical document covering every formula, normalization function, classification threshold, and data source. Includes a worked example and a full disclosure of what is directly sourced versus estimated. <a href="methodology.html" target="_blank">Read it here →</a></div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔍</div>
+        <div class="feat-name">Search Bar</div>
+        <div class="feat-desc">Type any degree name to find it instantly. No browsing required.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🗂️</div>
+        <div class="feat-name">Field Tiles</div>
+        <div class="feat-desc">Click a subject area (Business, Health Sciences, etc.) to see all programs in that field at once.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎯</div>
+        <div class="feat-name">Recommendation Filters</div>
+        <div class="feat-desc">Filter by Urgent Pivot, Invest & Grow, Sunset, or Maintain to see only the programs in each category.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <div class="feat-name">Program Detail Drawer</div>
+        <div class="feat-desc">Click any program card for the full picture: verdict, task breakdown, action list, accreditation timeline, and regional note.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚖️</div>
+        <div class="feat-name">Side-by-Side Compare</div>
+        <div class="feat-desc">Select up to 3 programs with the "+ Compare" button on any card, then view them in a single comparison panel.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚙️</div>
+        <div class="feat-name">Methodology Panel</div>
+        <div class="feat-desc">Adjust how the five scoring dimensions are weighted. Use presets or set your own weights. Includes a full data disclosure.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📤</div>
+        <div class="feat-name">Import Your Data</div>
+        <div class="feat-desc">Upload a CSV with your institution's enrollment and faculty readiness figures. Scores recalculate to reflect your actual situation.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⬇️</div>
+        <div class="feat-name">CSV Template Download</div>
+        <div class="feat-desc">Download a ready-made template with all program names pre-filled. Open in Excel or Google Sheets and fill in your numbers.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🖨️</div>
+        <div class="feat-name">Export PDF</div>
+        <div class="feat-desc">Generate a clean, print-ready report of whatever view is currently on screen. Ready for board packets and committee meetings.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="tips-box">
+    <div class="tips-title">💡 Tips for Getting the Most Out of Meridian</div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>Start with the filters, not the search.</strong> If you don't have a specific program in mind, clicking "Urgent Pivot" or "Sunset" immediately surfaces the highest-priority conversations.</div></div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>The task breakdown is the most useful part of the detail drawer.</strong> It shows specifically which tasks AI is replacing versus augmenting, which tells you what kind of curriculum change is needed.</div></div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>Faculty readiness percentage is often the binding constraint.</strong> A program might urgently need to change, but if only 22% of faculty have AI fluency, the change timeline is controlled by faculty development, not just accreditation.</div></div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>The accreditation note in each drawer tells you your realistic runway.</strong> A 5-year AACSB cycle means curriculum changes formalized now won't be locked in until the next review. Begin pilot electives before then.</div></div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>Treat the scores as starting points, not verdicts.</strong> The Methodology panel's disclosure section explains exactly what is sourced versus estimated. Use these numbers to structure the conversation, then validate with your own institutional research.</div></div>
+    <div class="tip-row"><div class="tip-icon">📌</div><div class="tip-text"><strong>Your uploaded CSV data stays saved.</strong> Once you import institutional figures, they persist in your browser. You don't need to re-upload the next time you open the tool on the same device.</div></div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="margin-top:52px">
+    <div class="sec-label">Common Questions</div>
+    <div class="sec-title">Frequently asked</div>
+    <div style="margin-top:18px">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to create an account or log in?</div>
+        <div class="faq-a">No. Meridian requires no account, no login, and no installation. Open the file in any browser and it works immediately.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is my institution's data sent anywhere when I import a CSV?</div>
+        <div class="faq-a">No. All data processing happens entirely in your browser. Nothing is transmitted to any server. Your institutional figures are saved only in your browser's local storage and never leave your device.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How precise are the exposure scores? Can I cite them in a formal report?</div>
+        <div class="faq-a">The scores are directional indicators, not certified measurements. The underlying research framework is peer-reviewed and the source data is federal and publicly available, but the program-level figures involve methodological judgment. They are appropriate for strategic planning conversations and internal documents. For formal published work or accreditation submissions, treat them as a starting point and supplement with your own institutional research.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">My program isn't in the database. What do I do?</div>
+        <div class="faq-a">You can use the "Import Data" feature to add a program manually, or find the closest equivalent in the database and note the parallels. The team behind Meridian is actively expanding the program database.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I share the PDF report externally?</div>
+        <div class="faq-a">Yes. The exported PDF is a clean document suitable for board packets, committee meetings, or sharing with department chairs. It includes the date and a note on the data sources. We recommend including a brief note that scores are directional indicators based on national research.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How often is the program data updated?</div>
+        <div class="faq-a">The underlying research sources (BLS, O*NET, IPEDS) are updated on annual or biennial cycles. Meridian aims to reflect the most current published data. Check the Methodology panel for the version and source dates.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-strip">
+    <div class="cta-title">Ready to explore your programs?</div>
+    <div class="cta-sub">The full dashboard is one click away. No setup, no login, no upload required.</div>
+    <a href="index.html" class="cta-btn">Open the Dashboard →</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="ft-credit">
+    Conceptualized &amp; Designed by <a href="https://www.linkedin.com/in/beingbabu/" target="_blank" rel="noopener noreferrer" class="ft-link">Professor Babu George</a><br>
+    Meridian is an open educational resource. Scores are directional indicators informed by publicly available federal data and peer-reviewed research.
+  </div>
+</footer>
+
+</body>
+</html>
