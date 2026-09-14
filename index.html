@@ -88,11 +88,25 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .sect-s{font-size:12.5px;color:var(--t3);margin-top:2px}
 
 /* headline finding */
-#finding{background:linear-gradient(180deg,#fff,#fdfbf7);border:1.5px solid var(--bg3);border-left:5px solid var(--gold);border-radius:var(--r);padding:16px 20px;margin-bottom:22px}
-.fd-k{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.6px;margin-bottom:6px}
-.fd-t{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.3;margin-bottom:6px}
-.fd-b{font-size:13.5px;color:var(--t2);line-height:1.65;max-width:78ch}
-.fd-b a{color:var(--sky)}
+#finding{background:linear-gradient(180deg,#fff,#fdfbf7);border:1.5px solid var(--bg3);border-left:5px solid var(--gold);border-radius:var(--r);padding:20px 24px;margin-bottom:22px;
+  display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:4px 34px;align-items:start}
+.fd-hd{grid-column:1;grid-row:1}
+.fd-k{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.6px;margin-bottom:7px}
+.fd-t{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.26;text-wrap:balance}
+.fd-stat{display:flex;gap:14px 22px;margin-top:15px;padding-top:14px;border-top:1px solid var(--bg3);flex-wrap:wrap}
+.fd-s{min-width:0}
+.fd-s b{display:block;font-family:var(--serif);font-size:26px;font-weight:700;line-height:1;color:var(--gold)}
+.fd-s span{display:block;font-size:11px;color:var(--t3);line-height:1.45;margin-top:5px;max-width:18ch;text-wrap:balance}
+.fd-s.red b{color:var(--red)}
+.fd-b{grid-column:2;grid-row:1;font-size:13.5px;color:var(--t2);line-height:1.7;hyphens:auto}
+.fd-b a{color:var(--sky);white-space:nowrap}
+@media(max-width:880px){
+  #finding{grid-template-columns:1fr;gap:10px}
+  .fd-hd,.fd-b{grid-column:1}.fd-hd{grid-row:auto}.fd-b{grid-row:auto}
+  .fd-t{font-size:20px}
+  .fd-stat{display:grid;grid-template-columns:repeat(3,1fr);margin-top:13px;padding-top:12px;gap:12px}
+  .fd-s span{max-width:none}
+}
 
 /* start here */
 #starthere{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;margin-bottom:24px}
@@ -430,8 +444,15 @@ footer{background:#10201b;padding:34px 20px;text-align:center;border-top:1px sol
   <div id="print-summary" class="print-only"></div>
 
   <section id="finding" aria-labelledby="fd-t">
-    <p class="fd-k">What the data shows</p>
-    <h2 class="fd-t" id="fd-t">AI is changing what graduates do far faster than it is reducing how many graduates are needed.</h2>
+    <div class="fd-hd">
+      <p class="fd-k">What the data shows</p>
+      <h2 class="fd-t" id="fd-t">AI is changing what graduates do far faster than it is reducing how many graduates are needed.</h2>
+      <div class="fd-stat">
+        <div class="fd-s"><b>113</b><span>programs assessed</span></div>
+        <div class="fd-s"><b>103</b><span>figures read from BLS</span></div>
+        <div class="fd-s red"><b>2</b><span>warrant wind-down</span></div>
+      </div>
+    </div>
     <p class="fd-b">Every employment figure here has now been read from the Bureau of Labor Statistics rather than estimated. Once that is done, high task exposure and contracting employment almost never coincide: of 113 programs, <strong>seven</strong> feed an occupation projected to shrink at all, and <strong>two</strong> meet the bar for wind-down planning. The occupations AI touches most heavily — accounting, medical records, paralegal work, translation, software — are projected to hold steady or grow. The rest face a curriculum problem, not an enrolment problem. <a href="methodology.html#corrections">See every figure and its source →</a></p>
   </section>
 
