@@ -3,810 +3,313 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meridian — Technical Methodology</title>
+<title>Methodology — Meridian</title>
+<meta name="description" content="Full technical methodology for Meridian: data sources, normalisation functions, the composite scoring formula, classification thresholds, a worked example, and a line-by-line account of what is sourced and what is estimated.">
+<link rel="canonical" href="https://professorgeorge.github.io/AI-Risks/methodology.html">
+<meta property="og:title" content="Meridian — Technical Methodology">
+<meta property="og:description" content="Sources, formulas, thresholds, and an explicit account of what is measured and what is judged.">
+<meta name="theme-color" content="#1a3830">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a3830'/%3E%3Cpath d='M7 23V10l9 8 9-8v13' stroke='%23d4a84a' stroke-width='2.6' fill='none' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f3efe7;--bg2:#ede7dc;--bg3:#ddd5c6;--card:#fff;
+  --bg:#f3efe7;--bg2:#ece6da;--bg3:#d8cfbe;--card:#fff;
   --forest:#1a3830;--forest2:#244d42;
-  --text:#1a2e26;--t2:#3d5a50;--t3:#7a9890;
-  --gold:#a87218;--ab:#fdf5e4;--abr:#e8cc88;
-  --red:#9e2020;--rb:#fdf0ee;--rbr:#eeb0a8;
-  --green:#1a6438;--gb:#eaf6ef;--gbr:#88ccaa;
-  --orange:#b84018;--ob:#fdf2ee;--obr:#edb898;
-  --slate:#4a6268;--sb:#edf2f4;--sbr:#b8ccd4;
-  --sky:#145c8e;--skb:#eaf4fb;
+  --text:#16271f;--t2:#355046;--t3:#4f6d66;
+  --gold:#8a5c12;--abr:#e0bf72;--ab:#fdf5e4;
+  --red:#8f1c1c;--rb:#fcefed;--rbr:#e09a90;
+  --green:#14562f;--gb:#e8f5ed;--gbr:#6bb992;
+  --orange:#a5380f;--ob:#fdf1ec;--obr:#e0a075;
+  --slate:#3f565c;--sb:#eaf0f2;--sbr:#a6bec7;
+  --sky:#0f5280;--skb:#e8f3fb;--skbr:#a9cfea;
   --r:10px;--rs:7px;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
 }
 html{font-size:16px;scroll-behavior:smooth}
-body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-a{color:var(--gold);text-decoration:none}
-a:hover{text-decoration:underline}
-
-/* NAV */
-nav{background:var(--forest);height:54px;display:flex;align-items:center;padding:0 24px;gap:18px;position:sticky;top:0;z-index:100}
-.n-logo{font-family:'Cormorant Garant',serif;font-size:19px;color:#fff}
-.n-logo b{color:#d4a84a}
-.n-sep{width:1px;height:18px;background:rgba(255,255,255,.15)}
-.n-tag{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.skip{position:absolute;left:-9999px;background:#fff;color:var(--forest);padding:10px 16px;z-index:99;font-weight:600}
+.skip:focus{left:0}
+#nav{background:var(--forest);display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;padding:10px 22px;position:sticky;top:0;z-index:50}
+.n-logo{font-family:var(--serif);font-size:20px;font-weight:600;color:#fff;text-decoration:none}
+.n-logo b{color:#e0b45c}
+.n-tag{font-size:12px;color:rgba(255,255,255,.62);border-left:1px solid rgba(255,255,255,.22);padding-left:14px}
 .n-sp{flex:1}
-.back-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:rgba(255,255,255,.78);font-size:12.5px;font-weight:500;padding:6px 12px;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
-.back-btn:hover{background:rgba(255,255,255,.16);color:#fff;text-decoration:none}
-
-/* HERO */
-.hero{background:var(--forest);padding:52px 24px 60px;text-align:center}
-.h-eye{font-size:10.5px;font-weight:700;color:#d4a84a;text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
-.h-title{font-family:'Cormorant Garant',serif;font-size:38px;color:#fff;line-height:1.18;margin-bottom:12px;max-width:680px;margin-left:auto;margin-right:auto}
-.h-sub{font-size:15px;color:rgba(255,255,255,.55);max-width:600px;margin:0 auto;line-height:1.7}
-.h-version{display:inline-block;margin-top:18px;font-size:11.5px;color:rgba(255,255,255,.35);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 14px}
-
-/* LAYOUT */
-.page{max-width:860px;margin:0 auto;padding:52px 24px 80px}
-
-/* TOC */
-.toc{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);padding:22px 26px;margin-bottom:48px}
-.toc-title{font-family:'Cormorant Garant',serif;font-size:17px;margin-bottom:12px;color:var(--text)}
-.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
-.toc-list li a{font-size:13px;color:var(--t2);display:flex;align-items:center;gap:6px;padding:3px 0}
-.toc-list li a:hover{color:var(--forest);text-decoration:none}
-.toc-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);width:22px;flex-shrink:0}
-
-/* SECTION */
-.sec{margin-bottom:52px;scroll-margin-top:72px}
-.sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);font-weight:500;letter-spacing:1px;margin-bottom:5px}
-.sec-title{font-family:'Cormorant Garant',serif;font-size:28px;color:var(--text);margin-bottom:6px;line-height:1.2}
-.sec-sub{font-size:14px;color:var(--t2);margin-bottom:22px;max-width:680px;line-height:1.7}
-.sec-divider{height:1.5px;background:var(--bg3);margin-bottom:24px}
-
-/* PROSE */
-p{font-size:14px;color:var(--t2);line-height:1.78;margin-bottom:14px;max-width:720px}
-p strong{color:var(--text);font-weight:600}
-p:last-child{margin-bottom:0}
-
-/* FORMULA BLOCK */
-.formula{background:var(--forest);border-radius:var(--rs);padding:16px 20px;margin:18px 0;overflow-x:auto}
-.formula pre{font-family:'JetBrains Mono',monospace;font-size:13px;color:#a8dcc8;line-height:1.8;white-space:pre}
-.formula .cmt{color:#4a8a72}
-.formula .val{color:#d4a84a}
-.formula .fn{color:#88ccee}
-
-/* DATA TABLE */
-.data-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px}
-.data-table th{background:var(--forest);color:#fff;padding:9px 14px;text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.3px}
-.data-table td{padding:9px 14px;border-bottom:1px solid var(--bg3);color:var(--t2);vertical-align:top;line-height:1.6}
-.data-table tr:last-child td{border-bottom:none}
-.data-table tr:nth-child(even) td{background:var(--bg2)}
-.data-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);font-weight:500;white-space:nowrap}
-
-/* THRESHOLD TABLE */
-.thresh-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
-.thresh-table th{background:var(--forest);color:#fff;padding:10px 16px;text-align:left;font-size:12px;font-weight:600;letter-spacing:.3px}
-.thresh-table td{padding:11px 16px;border-bottom:1px solid var(--bg3);vertical-align:middle}
-.thresh-table tr:last-child td{border-bottom:none}
-.thresh-table .cond{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
-.rec-pill{font-size:11px;font-weight:700;text-transform:uppercase;padding:3px 10px;border-radius:5px;white-space:nowrap}
-.rp-pivot{background:var(--ob);color:var(--orange);border:1px solid var(--obr)}
-.rp-sunset{background:var(--rb);color:var(--red);border:1px solid var(--rbr)}
-.rp-invest{background:var(--gb);color:var(--green);border:1px solid var(--gbr)}
-.rp-maintain{background:var(--sb);color:var(--slate);border:1px solid var(--sbr)}
-
-/* CALLOUT */
-.callout{border-radius:var(--rs);padding:14px 18px;margin:18px 0}
-.callout p{margin-bottom:0;max-width:none}
-.callout-warn{background:var(--ab);border:1.5px solid var(--abr)}
-.callout-warn p{color:var(--text)}
-.callout-info{background:var(--skb);border:1.5px solid #b8d8f0}
-.callout-info p{color:var(--text)}
-.callout-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
-.callout-warn .callout-label{color:var(--gold)}
-.callout-info .callout-label{color:var(--sky)}
-
-/* NORMALIZATION DIAGRAM */
-.norm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
-.norm-card{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:14px 16px}
-.nc-dim{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:6px}
-.nc-formula{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--forest);background:var(--bg2);border-radius:4px;padding:6px 9px;margin-bottom:8px;line-height:1.6}
-.nc-range{font-size:11.5px;color:var(--t2);line-height:1.6}
-.nc-range span{font-family:'JetBrains Mono',monospace;font-size:11px}
-
-/* SOURCE CARDS */
-.source-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
-.src-item{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:14px 18px}
-.src-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
-.src-icon{font-size:18px;flex-shrink:0;margin-top:1px}
-.src-name{font-size:14px;font-weight:600;color:var(--text)}
-.src-type{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-left:8px}
-.src-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:6px}
-.src-used{font-size:12px;color:var(--t3);border-top:1px solid var(--bg3);padding-top:8px;margin-top:6px}
-.src-used strong{color:var(--text)}
-
-/* PIPELINE */
-.pipeline{display:flex;align-items:flex-start;gap:0;margin:22px 0;overflow-x:auto;padding-bottom:4px}
-.pipe-step{flex:1;min-width:120px}
-.pipe-box{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:12px 14px;text-align:center;position:relative}
-.pipe-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-bottom:4px}
-.pipe-label{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4}
-.pipe-sub{font-size:10.5px;color:var(--t3);margin-top:3px;line-height:1.4}
-.pipe-arrow{display:flex;align-items:center;justify-content:center;padding:0 6px;color:var(--t3);font-size:18px;flex-shrink:0;margin-top:18px}
-
-/* LIMITATION BOX */
-.limit-list{list-style:none;margin-top:14px}
-.limit-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--bg3)}
-.limit-item:last-child{border-bottom:none}
-.li-icon{font-size:15px;flex-shrink:0;margin-top:2px}
-.li-text{font-size:13.5px;color:var(--t2);line-height:1.7}
-.li-text strong{color:var(--text)}
-
-/* WORKED EXAMPLE */
-.example-box{background:var(--card);border:2px solid var(--forest);border-radius:var(--r);padding:22px 24px;margin:20px 0}
-.ex-title{font-family:'Cormorant Garant',serif;font-size:18px;margin-bottom:14px;color:var(--text)}
-.ex-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bg2);font-size:13px}
-.ex-row:last-child{border-bottom:none;padding-top:10px;font-weight:600}
-.ex-dim{color:var(--t2)}
-.ex-calc{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3)}
-.ex-result{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--forest);font-weight:600}
-
-/* FOOTER */
-footer{background:#111c27;padding:28px 24px;text-align:center;border-top:1px solid rgba(255,255,255,.07)}
-.ft-credit{font-size:12.5px;color:rgba(255,255,255,.4);line-height:1.7}
-.ft-link{color:#d4a84a;text-decoration:none;font-weight:600}
-.ft-link:hover{text-decoration:underline}
-
-@media(max-width:660px){
-  .norm-grid{grid-template-columns:1fr}
-  .toc-list{grid-template-columns:1fr}
-  .pipeline{flex-direction:column}
-  .pipe-arrow{transform:rotate(90deg);margin:0 auto}
-  .h-title{font-size:28px}
+.n-btn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-size:12.5px;font-weight:500;padding:6px 12px;text-decoration:none;white-space:nowrap}
+.n-btn:hover{background:rgba(255,255,255,.2)}
+header.page{background:var(--forest);padding:38px 22px 42px;text-align:center}
+header.page .eye{font-size:10.5px;font-weight:700;color:#e0b45c;text-transform:uppercase;letter-spacing:2.4px;margin-bottom:11px}
+header.page h1{font-family:var(--serif);font-size:clamp(28px,5vw,40px);font-weight:600;color:#fff;line-height:1.18;margin-bottom:11px}
+header.page p{font-size:14.5px;color:rgba(255,255,255,.82);max-width:640px;margin:0 auto;line-height:1.7}
+header.page .ver{font-family:var(--mono);font-size:11.5px;color:rgba(255,255,255,.6);margin-top:16px}
+.wrap{max-width:880px;margin:0 auto;padding:30px 22px 60px}
+nav.toc{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r);padding:18px 22px;margin-bottom:30px}
+nav.toc h2{font-family:var(--serif);font-size:19px;font-weight:600;margin-bottom:11px}
+nav.toc ol{list-style:none;counter-reset:t;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:3px 18px}
+nav.toc li{counter-increment:t}
+nav.toc a{display:block;color:var(--t2);text-decoration:none;font-size:13.5px;padding:3px 0;border-bottom:1px solid transparent}
+nav.toc a::before{content:counter(t,decimal-leading-zero) " ";font-family:var(--mono);font-size:11px;color:var(--gold);margin-right:6px}
+nav.toc a:hover{color:var(--forest);border-bottom-color:var(--abr)}
+section.s{margin-bottom:38px;scroll-margin-top:66px}
+section.s>h2{font-family:var(--serif);font-size:27px;font-weight:600;line-height:1.2;margin-bottom:6px;padding-bottom:9px;border-bottom:2px solid var(--bg3)}
+section.s>h2 .num{font-family:var(--mono);font-size:13px;color:var(--gold);display:block;margin-bottom:2px;letter-spacing:1px}
+h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+p{margin-bottom:13px;font-size:14.5px;color:var(--t2)}
+p strong,li strong,td strong{color:var(--text)}
+ul,ol.b{margin:0 0 14px 20px}
+li{font-size:14.5px;color:var(--t2);margin-bottom:7px}
+a{color:var(--sky)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--bg2);border:1px solid var(--bg3);border-radius:4px;padding:1px 5px}
+pre{font-family:var(--mono);font-size:12.5px;background:var(--forest);color:#d8e6e0;border-radius:var(--rs);padding:15px 17px;overflow-x:auto;margin-bottom:14px;line-height:1.8}
+pre .c{color:#8fae9f}
+pre .k{color:#e0b45c}
+.tbl-wrap{overflow-x:auto;margin-bottom:16px;border:1.5px solid var(--bg3);border-radius:var(--rs)}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:13.5px;min-width:520px}
+th{background:var(--bg2);text-align:left;padding:10px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--t2);border-bottom:1.5px solid var(--bg3);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--bg2);color:var(--t2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.note{border-radius:var(--rs);padding:14px 17px;margin-bottom:16px;font-size:13.5px;line-height:1.7}
+.note .nh{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.note p{font-size:13.5px;margin-bottom:9px}.note p:last-child{margin-bottom:0}
+.n-amber{background:var(--ab);border:1.5px solid var(--abr)}.n-amber .nh{color:var(--gold)}
+.n-blue{background:var(--skb);border:1.5px solid var(--skbr)}.n-blue .nh{color:var(--sky)}
+.n-red{background:var(--rb);border:1.5px solid var(--rbr)}.n-red .nh{color:var(--red)}
+.n-green{background:var(--gb);border:1.5px solid var(--gbr)}.n-green .nh{color:var(--green)}
+.src{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:15px 17px;margin-bottom:12px}
+.src .hd{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.src .ttl{font-size:15px;font-weight:600;flex:1;min-width:200px}
+.chip{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.c-peer{background:var(--gb);color:var(--green);border:1px solid var(--gbr)}
+.c-fed{background:var(--skb);color:var(--sky);border:1px solid var(--skbr)}
+.c-wp{background:var(--ab);color:var(--gold);border:1px solid var(--abr)}
+.src .use{font-size:13px;color:var(--t2);background:var(--bg);border-left:3px solid var(--bg3);padding:8px 12px;margin-top:9px}
+.pipe{display:flex;gap:7px;flex-wrap:wrap;align-items:stretch;margin-bottom:16px}
+.pipe .st{flex:1;min-width:128px;background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:11px 12px}
+.pipe .st b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:3px}
+.pipe .st span{font-size:13px;font-weight:600;display:block;line-height:1.35}
+.pipe .st em{font-size:11.5px;color:var(--t3);font-style:normal;display:block;margin-top:3px;line-height:1.45}
+.calc{background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);overflow:hidden;margin-bottom:14px}
+.calc .row{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:9px 14px;border-bottom:1px solid var(--bg2);font-size:13.5px;align-items:center}
+.calc .row:last-child{border-bottom:none;background:var(--bg2);font-weight:700}
+.calc .row span:nth-child(2),.calc .row span:nth-child(3){font-family:var(--mono);text-align:right;white-space:nowrap}
+.tier{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+.t-src{background:var(--gb);color:var(--green);border:1px solid var(--gbr)}
+.t-est{background:var(--ab);color:var(--gold);border:1px solid var(--abr)}
+.lim{display:flex;gap:12px;background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--rs);padding:13px 15px;margin-bottom:10px}
+.lim .ic{font-size:19px;line-height:1.2}
+.lim p{margin:0;font-size:13.5px}
+.quote{background:var(--bg2);border-left:4px solid var(--gold);border-radius:0 var(--rs) var(--rs) 0;padding:14px 17px;font-size:13.5px;line-height:1.75;color:var(--t2)}
+footer{background:#10201b;padding:32px 22px;text-align:center;color:rgba(255,255,255,.72);font-size:12.5px;line-height:1.7}
+footer p{color:rgba(255,255,255,.72);font-size:12.5px;margin-bottom:0}
+footer a{color:#e0b45c}
+footer .nm{font-family:var(--serif);font-size:15px;color:rgba(255,255,255,.85);margin-bottom:8px}
+@media(max-width:700px){
+  .n-tag{display:none}
+  .wrap{padding:22px 15px 44px}
+  section.s>h2{font-size:22px}
+  .calc .row{grid-template-columns:1fr auto;font-size:12.5px}
+  .calc .row span:nth-child(2){display:none}
 }
+@media print{#nav,.skip{display:none}body{background:#fff}header.page{padding:20px}.wrap{max-width:100%}section.s{break-inside:auto}pre{background:#f2f2f2;color:#111;border:1px solid #ccc}}
 </style>
 </head>
 <body>
-
-<nav>
-  <div class="n-logo">Meridian<b>.</b></div>
-  <div class="n-sep"></div>
-  <div class="n-tag">Technical Methodology</div>
-  <div class="n-sp"></div>
-  <a href="index.html" class="back-btn">← Back to Dashboard</a>
+<a class="skip" href="#top">Skip to content</a>
+<nav id="nav" aria-label="Primary">
+  <a class="n-logo" href="index.html">Meridian<b>.</b></a>
+  <span class="n-tag">Technical methodology</span>
+  <span class="n-sp"></span>
+  <a class="n-btn" href="index.html">← Back to the dashboard</a>
+  <a class="n-btn" href="use-cases.html">How to use it</a>
 </nav>
-
-<div class="hero">
-  <div class="h-eye">Technical Documentation</div>
-  <div class="h-title">How Meridian arrives at its scores and recommendations</div>
-  <div class="h-sub">A full account of the data sources, normalization logic, composite scoring formula, classification thresholds, and the honest limits of what these outputs can and cannot claim.</div>
-  <div class="h-version">Version 1.0 · Published 2025 · Subject to revision as underlying data sources update</div>
+<header class="page">
+  <p class="eye">Technical documentation</p>
+  <h1>How Meridian arrives at its numbers</h1>
+  <p>Every data source, normalisation function, weighting decision and classification threshold, together with a candid account of which figures are read from a database and which are judgements.</p>
+  <p class="ver">Version 2.0 · September 2026 · supersedes v1.0</p>
+</header>
+<div class="wrap" id="top">
+<nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#intent">Design intent and what changed in v2</a></li><li><a href="#pipeline">The data pipeline</a></li><li><a href="#sources">Primary data sources</a></li><li><a href="#dims">The five scoring dimensions</a></li><li><a href="#norm">Normalisation functions</a></li><li><a href="#formula">The composite score</a></li><li><a href="#thresholds">Classification thresholds</a></li><li><a href="#tasks">Task-level scoring</a></li><li><a href="#critical">The “urgent and under-resourced” filter</a></li><li><a href="#example">Worked example: Accounting</a></li><li><a href="#corrections">Employment figures re-verified against BLS</a></li><li><a href="#sourced">What is sourced and what is estimated</a></li><li><a href="#calibration">Calibration and disagreement</a></li><li><a href="#limits">Limitations and appropriate use</a></li></ol></nav><section class="s" id="intent"><h2><span class="num">01</span>Design intent and what changed in v2</h2>
+<p>Meridian estimates how far artificial intelligence is changing the work that US degree programs prepare students for, and what kind of institutional response that implies. It covers <strong>113 degree programs</strong> across twelve academic fields, each identified by its six-digit CIP code and, where one dominates, a mapped SOC occupational code.</p>
+<p>The output is one of four recommendations — Pivot, Expand, Augment or Restructure — derived from a weighted composite of five dimensions: task automation potential, curriculum half-life, faculty AI readiness, regional labour market strength and employment outlook.</p>
+<p>The tool is built for structuring a decision, not for certifying one. The scores say where to look harder and what kind of question to ask. They do not substitute for curriculum review, accreditation consultation or institution-specific labour market analysis.</p>
+<div class="note n-blue"><p class="nh">What changed in version 2</p>
+<p>Three substantive revisions, each documented in full below.</p>
+<p><strong>Every employment figure was re-read from the Bureau of Labor Statistics.</strong> Version 1 described these as drawn from BLS; on checking, 96 of 113 did not match the Occupational Outlook Handbook, and several were wrong by enough to reverse the recommendation. All 113 are now documented: 103 read directly from the OOH entry for the program's SOC code in the current 2025&ndash;35 round, and 10 — degrees whose graduates disperse too widely for any single occupational projection to represent them — carry the BLS all-occupation projection of +3.5% instead of an asserted figure. Nothing is left as an unsupported estimate. Section 11 gives every figure, its SOC code and its source.</p>
+<p><strong>The wind-down rule was tightened.</strong> In v1 a program was recommended for wind-down when AI substituted for its core tasks and the composite score was high. That rule placed English, journalism, creative writing, photography, paralegal studies and medical assisting in the wind-down category — all occupations that federal projections show holding steady or growing. High task exposure was being read as falling demand. The rule now also requires that the credential map to essentially one occupation and that employment actually be projected to contract. 2 programs in 113 now meet it.</p>
+<p><strong>The categories were renamed.</strong> “Sunset” named a fate rather than an action, and carried a finality the underlying data cannot support. The four responses are now Pivot, Expand, Augment and Restructure. Definitions are unchanged except where noted in section 7.</p></div>
+<div class="note n-amber"><p class="nh">The finding this produces</p>
+<p>Once employment projections are read rather than assumed, a clear pattern appears. Of 113 programs, 7 feed an occupation that BLS projects will shrink at all, and only 2 combine that with the task substitution and the single-occupation dependence that would justify winding a program down. AI is changing what graduates do considerably faster than it is reducing how many graduates employers need. For most programs the implication is curricular, not existential — a harder problem to ignore and an easier one to act on.</p>
+<p>This is a claim about the current evidence, not a prediction. BLS projections have historically been conservative about technological displacement, and the exposure research is only three years old. The pattern is what the public data supports today; it is exactly the kind of claim that should be re-checked when the next projection round lands.</p></div></section><section class="s" id="pipeline"><h2><span class="num">02</span>The data pipeline</h2>
+<p>Each program is identified by its six-digit CIP code (Classification of Instructional Programs, NCES). The CIP code is mapped to one or more SOC codes (Standard Occupational Classification) through the NCES CIP–SOC crosswalk. SOC is the unit of analysis in the Eloundou and Felten exposure research, in O*NET, and in BLS projections, so it is the hinge the whole method turns on.</p>
+<div class="pipe">
+<div class="st"><b>Step 01</b><span>CIP code</span><em>Six-digit program identifier (NCES)</em></div><div class="st"><b>Step 02</b><span>SOC code</span><em>CIP–SOC crosswalk (NCES)</em></div><div class="st"><b>Step 03</b><span>AI exposure</span><em>Eloundou et al.; Felten et al.</em></div><div class="st"><b>Step 04</b><span>Task breakdown</span><em>O*NET task statements and ratings</em></div><div class="st"><b>Step 05</b><span>Employment</span><em>BLS projections by SOC</em></div><div class="st"><b>Step 06</b><span>Composite</span><em>Weighted formula → recommendation</em></div>
 </div>
-
-<div class="page">
-
-  <!-- TOC -->
-  <div class="toc">
-    <div class="toc-title">Contents</div>
-    <ul class="toc-list">
-      <li><a href="#overview"><span class="toc-num">1.</span> Overview & Design Intent</a></li>
-      <li><a href="#pipeline"><span class="toc-num">2.</span> Data Pipeline</a></li>
-      <li><a href="#sources"><span class="toc-num">3.</span> Primary Data Sources</a></li>
-      <li><a href="#dimensions"><span class="toc-num">4.</span> The Five Scoring Dimensions</a></li>
-      <li><a href="#normalization"><span class="toc-num">5.</span> Normalization Functions</a></li>
-      <li><a href="#composite"><span class="toc-num">6.</span> Composite Score Formula</a></li>
-      <li><a href="#classification"><span class="toc-num">7.</span> Classification Thresholds</a></li>
-      <li><a href="#tasks"><span class="toc-num">8.</span> Task-Level Scoring</a></li>
-      <li><a href="#critical"><span class="toc-num">9.</span> "Critical Now" Logic</a></li>
-      <li><a href="#worked-example"><span class="toc-num">10.</span> Worked Example: Accounting</a></li>
-      <li><a href="#estimated"><span class="toc-num">11.</span> What Is Estimated vs. Sourced</a></li>
-      <li><a href="#limitations"><span class="toc-num">12.</span> Limitations & Appropriate Use</a></li>
-    </ul>
-  </div>
-
-
-  <!-- 1. OVERVIEW -->
-  <div class="sec" id="overview">
-    <div class="sec-num">01</div>
-    <div class="sec-title">Overview & Design Intent</div>
-    <div class="sec-divider"></div>
-    <p>Meridian is a strategic planning tool designed to help higher education administrators — provosts, deans, and department chairs — identify which academic programs face the greatest disruption from AI, and what kind of response is warranted. The tool covers 113 US degree programs across 12 academic fields.</p>
-    <p>The core output is a <strong>recommendation category</strong> (Urgent Pivot, Invest & Grow, Sunset, or Maintain) derived from a <strong>weighted composite risk score</strong>. That score combines five empirically grounded dimensions: task automation potential, curriculum half-life, faculty AI readiness, regional labor market strength, and employment outlook.</p>
-    <p>The tool is designed for <strong>strategic conversation and prioritization</strong>, not for certified institutional assessments. The scores identify which programs deserve closer scrutiny and what kind of intervention is likely appropriate. They are not substitutes for formal curriculum review, accreditation analysis, or institution-specific labor market research.</p>
-    <div class="callout callout-warn">
-      <div class="callout-label">Important framing</div>
-      <p>The <em>framework</em> is grounded in peer-reviewed research and federal data. The program-level numerical values involve methodological judgment in applying national occupational scores to specific academic programs. Both the framework and its limitations are documented fully below.</p>
-    </div>
-  </div>
-
-
-  <!-- 2. PIPELINE -->
-  <div class="sec" id="pipeline">
-    <div class="sec-num">02</div>
-    <div class="sec-title">Data Pipeline</div>
-    <div class="sec-divider"></div>
-    <p>Each program in Meridian is identified by its <strong>6-digit CIP code</strong> (Classification of Instructional Programs, published by NCES). The CIP code is mapped to one or more <strong>SOC codes</strong> (Standard Occupational Classification) using the NCES CIP-SOC crosswalk. SOC codes are the unit of analysis in both the Eloundou et al. and Felten et al. AI exposure research, the O*NET task database, and BLS employment projections.</p>
-
-    <div class="pipeline">
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 1</div>
-          <div class="pipe-label">CIP Code</div>
-          <div class="pipe-sub">6-digit program identifier (NCES)</div>
-        </div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 2</div>
-          <div class="pipe-label">SOC Code(s)</div>
-          <div class="pipe-sub">CIP-SOC Crosswalk (NCES)</div>
-        </div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 3</div>
-          <div class="pipe-label">AI Exposure Score</div>
-          <div class="pipe-sub">Eloundou et al. & Felten et al.</div>
-        </div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 4</div>
-          <div class="pipe-label">Task Breakdown</div>
-          <div class="pipe-sub">O*NET task statements & scores</div>
-        </div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 5</div>
-          <div class="pipe-label">Employment Data</div>
-          <div class="pipe-sub">BLS OEWS projections</div>
-        </div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-step">
-        <div class="pipe-box">
-          <div class="pipe-num">Step 6</div>
-          <div class="pipe-label">Composite Score</div>
-          <div class="pipe-sub">Weighted formula → recommendation</div>
-        </div>
-      </div>
-    </div>
-
-    <p>Where a CIP code maps to multiple SOC codes (common for broad programs like Psychology or Business), exposure scores are weighted by the relative share of graduates entering each occupation, using IPEDS completion-to-employment flow data where available and professional judgment otherwise.</p>
-  </div>
-
-
-  <!-- 3. SOURCES -->
-  <div class="sec" id="sources">
-    <div class="sec-num">03</div>
-    <div class="sec-title">Primary Data Sources</div>
-    <div class="sec-divider"></div>
-    <p>All five sources below are publicly available, freely downloadable, and either peer-reviewed or published by US federal agencies. No proprietary vendor data is used.</p>
-
-    <div class="source-list">
-      <div class="src-item">
-        <div class="src-header">
-          <div class="src-icon">📄</div>
-          <div>
-            <span class="src-name">Eloundou, Manning, Mishkin & Rock (2023)</span>
-            <span class="src-type">Peer-reviewed</span>
-          </div>
-        </div>
-        <div class="src-desc">"GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models." arXiv:2303.10130. Published by OpenAI researchers. This paper provides occupation-level GPT-4 exposure scores (α and β) for every SOC code, where α captures tasks directly automatable by GPT-4 alone, and β captures tasks automatable with GPT-4 plus complementary tools. Meridian uses the β score as the primary exposure estimate, as it better reflects the near-term deployment reality of AI-augmented workflows rather than the model in isolation.</div>
-        <div class="src-used"><strong>Used for:</strong> Primary AI exposure score (0–1 scale) by SOC code. Mapped to CIP programs via the NCES crosswalk.</div>
-      </div>
-
-      <div class="src-item">
-        <div class="src-header">
-          <div class="src-icon">📄</div>
-          <div>
-            <span class="src-name">Felten, Raj & Seamans (2023)</span>
-            <span class="src-type">Peer-reviewed</span>
-          </div>
-        </div>
-        <div class="src-desc">Princeton AI Exposure Index. Constructs an AI occupational exposure score by linking 10 AI application areas to 52 human abilities in O*NET, then mapping those abilities to occupations. Provides a complementary exposure estimate developed through a different methodological pathway than Eloundou et al. When the two sources diverge significantly for a given SOC code, the program's exposure score reflects the midpoint with a notation in the task breakdown.</div>
-        <div class="src-used"><strong>Used for:</strong> Cross-validation of Eloundou et al. scores. Final exposure score is a weighted average of both where both are available (60% Eloundou β, 40% Felten index), reflecting the greater occupational coverage of the Eloundou dataset.</div>
-      </div>
-
-      <div class="src-item">
-        <div class="src-header">
-          <div class="src-icon">🏛️</div>
-          <div>
-            <span class="src-name">O*NET Bulk Data (U.S. Department of Labor)</span>
-            <span class="src-type">Federal database</span>
-          </div>
-        </div>
-        <div class="src-desc">The Occupational Information Network (O*NET), maintained by the U.S. Department of Labor's Employment and Training Administration. O*NET provides structured task statements for every SOC occupation, each rated for importance (1–5) and frequency (1–5) by incumbent workers. Task statements are also categorized by the type of work activity they represent. Available at onetcenter.org/db_releases.html.</div>
-        <div class="src-used"><strong>Used for:</strong> Task-level breakdowns shown in each program's detail drawer. Task selection prioritizes statements with importance ≥ 3.0 and frequency ≥ 2.5. AI impact classification (Replaces vs. Assists) is assigned based on whether the task's core cognitive demand is primarily pattern recognition and generation (Replaces) or judgment, physical action, and relational interaction (Assists).</div>
-      </div>
-
-      <div class="src-item">
-        <div class="src-header">
-          <div class="src-icon">🏛️</div>
-          <div>
-            <span class="src-name">BLS Occupational Employment & Wage Statistics (OEWS)</span>
-            <span class="src-type">Federal database</span>
-          </div>
-        </div>
-        <div class="src-desc">Published by the U.S. Bureau of Labor Statistics. Provides current employment levels, wages, and 10-year projected growth or decline by SOC code, nationally and by metropolitan statistical area. Employment projections are published biennially in the BLS Occupational Outlook Handbook. Available at bls.gov/oes and bls.gov/ooh.</div>
-        <div class="src-used"><strong>Used for:</strong> Employment outlook dimension (empOut field). Expressed as projected 10-year percentage change in employment. Negative values indicate projected job loss; positive values indicate projected growth. Also used to construct the regional multiplier, which adjusts national exposure scores by local labor market demand relative to national average for that occupation cluster.</div>
-      </div>
-
-      <div class="src-item">
-        <div class="src-header">
-          <div class="src-icon">🏛️</div>
-          <div>
-            <span class="src-name">NCES IPEDS & CIP-SOC Crosswalk</span>
-            <span class="src-type">Federal database</span>
-          </div>
-        </div>
-        <div class="src-desc">The National Center for Education Statistics Integrated Postsecondary Education Data System (IPEDS) provides enrollment, completions, and program cost data by 6-digit CIP code across all US institutions. The CIP-SOC crosswalk is an NCES-published bridge table mapping every academic program to its most common target occupation(s). Available at nces.ed.gov/ipeds and nces.ed.gov/ipeds/cipcode.</div>
-        <div class="src-used"><strong>Used for:</strong> Program identification (CIP codes), enrollment context, and as the bridge linking academic programs to occupational data. Faculty AI readiness national estimates are calibrated against IPEDS survey data on instructional staff professional development activities where available.</div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- 4. DIMENSIONS -->
-  <div class="sec" id="dimensions">
-    <div class="sec-num">04</div>
-    <div class="sec-title">The Five Scoring Dimensions</div>
-    <div class="sec-divider"></div>
-    <p>Each program is scored on five dimensions, each expressed on a <strong>0–1 risk scale</strong> where 0 represents no risk and 1 represents maximum risk. The dimensions are then combined into a weighted composite score.</p>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Dimension</th>
-          <th>Variable</th>
-          <th>Default Weight</th>
-          <th>What it measures</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Task Automation Potential</td>
-          <td>task</td>
-          <td>40%</td>
-          <td>The fraction of occupation-level tasks that are automatable by current AI, drawn from Eloundou et al. β scores and cross-validated with the Felten index. This is the single strongest predictor of near-term disruption and receives the highest default weight.</td>
-        </tr>
-        <tr>
-          <td>Curriculum Half-Life</td>
-          <td>halfLife</td>
-          <td>20%</td>
-          <td>An estimate of years until 40% or more of the program's target tasks are automated at scale — the point at which a curriculum trained to current standards becomes substantially misaligned with employer needs. Shorter half-lives represent higher risk. Derived from task automation timelines in the AI progress literature combined with O*NET task frequency data.</td>
-        </tr>
-        <tr>
-          <td>Faculty AI Readiness</td>
-          <td>faculty</td>
-          <td>15%</td>
-          <td>The estimated percentage of current faculty in a given program area who have meaningful AI fluency — defined as the ability to integrate AI tools into instruction and assess AI-generated work critically. This dimension captures the implementation constraint: programs that need to change may not be able to change quickly if faculty are not prepared. National estimates calibrated to IPEDS professional development data and published faculty survey research.</td>
-        </tr>
-        <tr>
-          <td>Regional Labor Market</td>
-          <td>region</td>
-          <td>15%</td>
-          <td>A multiplier reflecting how local employer demand for a program's target occupations compares to the national average. A value above 1.0 means regional demand exceeds the national average (lower effective risk); below 1.0 means demand is weaker regionally (higher effective risk). Derived from BLS OEWS metro-level employment concentration data for the top 20 US metro labor markets, then averaged as a national representative figure.</td>
-        </tr>
-        <tr>
-          <td>Employment Outlook</td>
-          <td>empOut</td>
-          <td>10%</td>
-          <td>BLS 10-year projected employment growth (positive) or decline (negative) for the primary SOC code(s) associated with the program. Expressed as a decimal (e.g., −0.12 = 12% projected decline). This dimension directly captures whether the labor market is contracting independent of AI, which compounds risk when combined with high exposure.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="callout callout-info">
-      <div class="callout-label">On weight selection</div>
-      <p>The 40/20/15/15/10 default weighting reflects a deliberate emphasis on task automation as the primary signal, consistent with the Eloundou et al. and Felten et al. research design. The remaining weights distribute influence across implementation capacity (faculty), market context (regional, employment), and timing (half-life). Users can adjust all weights in the Methodology panel. Presets are available for task-heavy, labor-market-focused, and faculty-readiness-focused analyses.</p>
-    </div>
-  </div>
-
-
-  <!-- 5. NORMALIZATION -->
-  <div class="sec" id="normalization">
-    <div class="sec-num">05</div>
-    <div class="sec-title">Normalization Functions</div>
-    <div class="sec-divider"></div>
-    <p>Each dimension is measured in different units (fractions, years, percentages, multipliers). Before combining them, each is normalized to a <strong>0–1 risk scale</strong> using the functions below. The exact functions used in the application's source code are reproduced here verbatim.</p>
-
-    <div class="formula">
-      <pre><span class="cmt">// Task Automation Potential — already on 0-1 scale from source research</span>
-<span class="fn">task</span>   = p.exposure
-<span class="cmt">           Range: [0.0, 1.0] — no transformation needed</span>
-
-<span class="cmt">// Curriculum Half-Life — years until 40%+ of tasks automated</span>
-<span class="fn">hl</span>     = <span class="fn">min</span>(<span class="val">1</span>, <span class="fn">max</span>(<span class="val">0</span>, <span class="val">1</span> - (p.halfLife - <span class="val">0.5</span>) / <span class="val">14.5</span>))
-<span class="cmt">           0.5 years → risk = 1.0 (maximum urgency)
-           15 years  → risk = 0.0 (no near-term urgency)
-           Linear interpolation between these bounds</span>
-
-<span class="cmt">// Faculty AI Readiness — inverted: lower readiness = higher risk</span>
-<span class="fn">fac</span>    = <span class="val">1</span> - (effectiveFacultyReady(p) / <span class="val">100</span>)
-<span class="cmt">           0% ready  → risk = 1.0
-           100% ready → risk = 0.0</span>
-
-<span class="cmt">// Regional Labor Market — inverted multiplier</span>
-<span class="fn">reg</span>    = <span class="fn">max</span>(<span class="val">0</span>, <span class="val">1</span> - (p.region - <span class="val">0.8</span>) / <span class="val">0.4</span>)
-<span class="cmt">           region ≤ 0.8 → risk = 1.0 (very weak local market)
-           region ≥ 1.2 → risk = 0.0 (strong local market)
-           Linear between 0.8 and 1.2</span>
-
-<span class="cmt">// Employment Outlook — converts projected growth/decline to risk</span>
-<span class="fn">emp</span>    = <span class="fn">max</span>(<span class="val">0</span>, <span class="fn">min</span>(<span class="val">1</span>, -p.empOut / <span class="val">0.15</span>))
-<span class="cmt">           empOut ≤ -0.15 (15%+ decline)  → risk = 1.0
-           empOut ≥  0.00 (stable/growing) → risk = 0.0
-           Linear interpolation between these bounds</span></pre>
-    </div>
-
-    <div class="norm-grid">
-      <div class="norm-card">
-        <div class="nc-dim">Half-Life Normalization</div>
-        <div class="nc-formula">risk = clamp(0, 1 − (hl − 0.5) / 14.5, 1)</div>
-        <div class="nc-range">
-          <span>0.5 yr</span> → risk 1.00 &nbsp;|&nbsp; <span>5 yr</span> → risk 0.66<br>
-          <span>8 yr</span> → risk 0.48 &nbsp;|&nbsp; <span>15 yr</span> → risk 0.00
-        </div>
-      </div>
-      <div class="norm-card">
-        <div class="nc-dim">Regional Multiplier Normalization</div>
-        <div class="nc-formula">risk = clamp(0, 1 − (region − 0.8) / 0.4, 1)</div>
-        <div class="nc-range">
-          <span>0.80×</span> → risk 1.00 &nbsp;|&nbsp; <span>1.00×</span> → risk 0.50<br>
-          <span>1.10×</span> → risk 0.25 &nbsp;|&nbsp; <span>1.20×</span> → risk 0.00
-        </div>
-      </div>
-      <div class="norm-card">
-        <div class="nc-dim">Employment Outlook Normalization</div>
-        <div class="nc-formula">risk = clamp(0, −empOut / 0.15, 1)</div>
-        <div class="nc-range">
-          <span>−15%</span> → risk 1.00 &nbsp;|&nbsp; <span>−8%</span> → risk 0.53<br>
-          <span>0%</span> → risk 0.00 &nbsp;|&nbsp; <span>+15%</span> → risk 0.00
-        </div>
-      </div>
-      <div class="norm-card">
-        <div class="nc-dim">Faculty Readiness Normalization</div>
-        <div class="nc-formula">risk = 1 − (facultyReady / 100)</div>
-        <div class="nc-range">
-          <span>10%</span> ready → risk 0.90<br>
-          <span>40%</span> ready → risk 0.60<br>
-          <span>70%</span> ready → risk 0.30
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- 6. COMPOSITE SCORE -->
-  <div class="sec" id="composite">
-    <div class="sec-num">06</div>
-    <div class="sec-title">Composite Score Formula</div>
-    <div class="sec-divider"></div>
-    <p>The composite risk score is a <strong>weighted linear combination</strong> of the five normalized dimensions. This is the exact formula used in the application source code:</p>
-
-    <div class="formula">
-      <pre><span class="fn">compositeScore</span>(p) =
-    task  × w.task         <span class="cmt">// Task Automation Potential × weight</span>
-  + hl    × w.halfLife     <span class="cmt">// Curriculum Half-Life × weight</span>
-  + fac   × w.faculty      <span class="cmt">// Faculty Readiness Gap × weight</span>
-  + reg   × w.regional     <span class="cmt">// Regional Labor Market × weight</span>
-  + emp   × w.employment   <span class="cmt">// Employment Outlook × weight</span>
-
-<span class="cmt">// Default weights (must sum to 1.0):</span>
-w = { task: <span class="val">0.40</span>, halfLife: <span class="val">0.20</span>, faculty: <span class="val">0.15</span>, regional: <span class="val">0.15</span>, employment: <span class="val">0.10</span> }
-
-<span class="cmt">// Result range: [0.0, 1.0]
-// Higher score = greater overall risk</span></pre>
-    </div>
-
-    <p>The composite score integrates all five dimensions into a single 0–1 risk value. It is <strong>not</strong> the same as the raw AI exposure percentage shown on each card — the exposure score is just one of the five inputs. The composite score can be higher or lower than the raw exposure depending on the other dimensions. The program detail drawer shows both figures and notes when they diverge significantly.</p>
-
-    <div class="callout callout-info">
-      <div class="callout-label">On the choice of linear weighting</div>
-      <p>A weighted linear model was chosen over more complex aggregation methods (multiplicative, fuzzy, or non-linear) for three reasons: interpretability (administrators can directly see how changing a weight changes the output), auditability (the calculation can be reproduced manually), and appropriate epistemic humility (the data quality does not justify the precision implied by a non-linear model). Users are encouraged to test multiple presets before drawing conclusions about borderline programs.</p>
-    </div>
-  </div>
-
-
-  <!-- 7. CLASSIFICATION -->
-  <div class="sec" id="classification">
-    <div class="sec-num">07</div>
-    <div class="sec-title">Classification Thresholds</div>
-    <div class="sec-divider"></div>
-    <p>The composite score is mapped to one of four recommendation categories using the following decision rules, applied <strong>in order</strong>. The mechanism field (whether AI primarily <em>replaces</em> or <em>augments</em> the target occupation) modifies the first check:</p>
-
-    <table class="thresh-table">
-      <thead>
-        <tr>
-          <th>Priority</th>
-          <th>Condition</th>
-          <th>Output</th>
-          <th>Rationale</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1st</td>
-          <td class="cond">mechanism = "rep" AND compositeScore &gt; 0.67</td>
-          <td><span class="rec-pill rp-sunset">🌅 Sunset</span></td>
-          <td>AI is replacing — not augmenting — the core tasks, and the composite risk is high. Employer demand for graduates is expected to contract. The program requires wind-down planning.</td>
-        </tr>
-        <tr>
-          <td>2nd</td>
-          <td class="cond">compositeScore &gt; 0.57</td>
-          <td><span class="rec-pill rp-pivot">⚡ Urgent Pivot</span></td>
-          <td>High composite risk, but AI augments rather than fully replaces workers. Graduates remain in demand if they can manage AI tools. The curriculum must shift from task execution to task direction and oversight.</td>
-        </tr>
-        <tr>
-          <td>3rd</td>
-          <td class="cond">compositeScore &lt; 0.30</td>
-          <td><span class="rec-pill rp-invest">🌱 Invest & Grow</span></td>
-          <td>Low composite risk. The program trains students for work AI cannot easily replicate — physical skill, direct care, human judgment. Employer demand is typically stable or growing. Expand capacity.</td>
-        </tr>
-        <tr>
-          <td>4th</td>
-          <td class="cond">Otherwise (0.30 ≤ score ≤ 0.57)</td>
-          <td><span class="rec-pill rp-maintain">🔒 Maintain</span></td>
-          <td>Moderate risk. AI will change some tasks but is unlikely to reshape the field fundamentally in the near term. Monitor annually. Add AI fluency modules without wholesale redesign.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="callout callout-warn">
-      <div class="callout-label">On threshold sensitivity</div>
-      <p>Programs with composite scores near the boundaries (particularly in the 0.54–0.60 and 0.28–0.33 ranges) should be treated as uncertain. A small change in methodology weights — or the arrival of updated source data — could shift these programs between categories. The Methodology panel's weight sliders allow users to test the sensitivity of borderline programs to different assumptions.</p>
-    </div>
-  </div>
-
-
-  <!-- 8. TASK SCORING -->
-  <div class="sec" id="tasks">
-    <div class="sec-num">08</div>
-    <div class="sec-title">Task-Level Scoring</div>
-    <div class="sec-divider"></div>
-    <p>Each program's detail drawer shows a breakdown of 4–6 representative tasks for the target occupation, each rated for its individual AI impact score and classified as either <strong>AI Replaces</strong> or <strong>AI Assists</strong>.</p>
-
-    <p>Task statements are drawn directly from O*NET for the relevant SOC code(s). The individual task-level AI impact score (0–1) represents the probability that AI can perform that specific task at human-level quality within the current generation of tools. This is assigned using the following classification criteria:</p>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Task characteristic</th>
-          <th>Classification</th>
-          <th>Basis</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Pattern recognition, text generation, data processing, code generation, translation, scheduling, routing</td>
-          <td>AI Replaces (score 0.65–0.98)</td>
-          <td>Tasks well within demonstrated GPT-4 class capability. Score calibrated to Eloundou et al. β scores for the task category.</td>
-        </tr>
-        <tr>
-          <td>Analysis, research, synthesis, recommendation with human review</td>
-          <td>AI Assists (score 0.40–0.75)</td>
-          <td>Tasks where AI substantially accelerates completion but human judgment remains essential for quality assurance. Score reflects degree of AI contribution.</td>
-        </tr>
-        <tr>
-          <td>Physical manipulation, direct patient/client interaction, novel judgment calls, real-time situational response</td>
-          <td>AI Assists (score 0.02–0.25)</td>
-          <td>Tasks dependent on embodied action, social presence, or contextual judgment that current AI cannot replicate. Low scores reflect near-zero automation probability with current technology.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p>The <strong>mechanism field</strong> (rep = Replaces, aug = Augments) at the program level is assigned based on whether the <em>modal task</em> — the highest-frequency, highest-importance task — falls in the Replaces or Assists category. A program classified as "rep" has its primary recurring work targeted for substitution, not enhancement.</p>
-  </div>
-
-
-  <!-- 9. CRITICAL NOW -->
-  <div class="sec" id="critical">
-    <div class="sec-num">09</div>
-    <div class="sec-title">"Critical Now" Logic</div>
-    <div class="sec-divider"></div>
-    <p>The <strong>🚨 Critical Now</strong> filter surfaces programs that meet all three of the following conditions simultaneously:</p>
-
-    <div class="formula">
-      <pre><span class="fn">isCritical</span>(p) =
-    p.exposure          ≥ <span class="val">0.65</span>   <span class="cmt">// High raw AI exposure</span>
-    AND p.halfLife      ≤ <span class="val">3.0</span>    <span class="cmt">// Short runway — less than 3 years</span>
-    AND facultyReady(p) ≤ <span class="val">35</span>     <span class="cmt">// Faculty not prepared to respond</span></pre>
-    </div>
-
-    <p>This combination is particularly actionable because it identifies programs where the <strong>problem is urgent</strong> (high exposure, short runway) and the <strong>institution's ability to respond is constrained</strong> (low faculty readiness). A program that needs a curriculum overhaul in under three years but has fewer than a third of its faculty with relevant AI fluency cannot respond at the pace the situation requires without deliberate faculty development investment starting now.</p>
-
-    <p>The three thresholds were set to reflect meaningful operational significance rather than statistical significance: 65% exposure represents a clear majority of tasks affected; 3 years reflects the outer edge of a standard annual curriculum review cycle; 35% faculty readiness represents the range at which a critical mass for change cannot easily be assembled without a structured development program.</p>
-  </div>
-
-
-  <!-- 10. WORKED EXAMPLE -->
-  <div class="sec" id="worked-example">
-    <div class="sec-num">10</div>
-    <div class="sec-title">Worked Example: Accounting</div>
-    <div class="sec-divider"></div>
-    <p>The following traces the full calculation for the Accounting program (CIP 52.0301, SOC 13-2011 Accountants and Auditors) using default weights.</p>
-
-    <p><strong>Raw input values:</strong> exposure = 0.83, halfLife = 1.8 years, facultyReady = 22%, region = 0.90×, empOut = −0.02 (2% projected decline), mechanism = aug.</p>
-
-    <p><strong>Step 1 — Normalize each dimension:</strong></p>
-
-    <div class="formula">
-      <pre>task  = <span class="val">0.83</span>                                          <span class="cmt">→ 0.83</span>
-hl    = min(1, max(0, 1 - (1.8 - 0.5) / 14.5))       <span class="cmt">→ 1 - (1.3/14.5) = 1 - 0.090 = 0.910</span>
-fac   = 1 - (22 / 100)                                <span class="cmt">→ 0.780</span>
-reg   = max(0, 1 - (0.90 - 0.8) / 0.4)               <span class="cmt">→ 1 - (0.10/0.4) = 1 - 0.25 = 0.750</span>
-emp   = max(0, min(1, -(-0.02) / 0.15))               <span class="cmt">→ 0.02/0.15 = 0.133</span></pre>
-    </div>
-
-    <p><strong>Step 2 — Apply default weights and sum:</strong></p>
-
-    <div class="example-box">
-      <div class="ex-title">Accounting — Composite Score Calculation</div>
-      <div class="ex-row">
-        <span class="ex-dim">Task Automation (0.83)</span>
-        <span class="ex-calc">0.83 × 0.40</span>
-        <span class="ex-result">= 0.332</span>
-      </div>
-      <div class="ex-row">
-        <span class="ex-dim">Curriculum Half-Life (0.91)</span>
-        <span class="ex-calc">0.91 × 0.20</span>
-        <span class="ex-result">= 0.182</span>
-      </div>
-      <div class="ex-row">
-        <span class="ex-dim">Faculty Readiness Gap (0.78)</span>
-        <span class="ex-calc">0.78 × 0.15</span>
-        <span class="ex-result">= 0.117</span>
-      </div>
-      <div class="ex-row">
-        <span class="ex-dim">Regional Labor Market (0.75)</span>
-        <span class="ex-calc">0.75 × 0.15</span>
-        <span class="ex-result">= 0.113</span>
-      </div>
-      <div class="ex-row">
-        <span class="ex-dim">Employment Outlook (0.13)</span>
-        <span class="ex-calc">0.13 × 0.10</span>
-        <span class="ex-result">= 0.013</span>
-      </div>
-      <div class="ex-row" style="border-top:2px solid var(--forest)">
-        <span class="ex-dim">Composite Score</span>
-        <span class="ex-calc">sum of above</span>
-        <span class="ex-result" style="font-size:16px;color:var(--orange)">= 0.757</span>
-      </div>
-    </div>
-
-    <p><strong>Step 3 — Classify:</strong> mechanism = "aug" (not "rep"), so the Sunset check does not apply. compositeScore 0.757 > 0.57 → <strong>⚡ Urgent Pivot.</strong></p>
-
-    <p>Note that the composite score (0.757) is meaningfully higher than the raw exposure score (0.83) when all dimensions are combined — in this case the short half-life and low faculty readiness amplify the risk. The dashboard shows both numbers in the detail drawer and flags when they diverge by more than 5 percentage points.</p>
-  </div>
-
-
-  <!-- 11. ESTIMATED VS SOURCED -->
-  <div class="sec" id="estimated">
-    <div class="sec-num">11</div>
-    <div class="sec-title">What Is Estimated vs. Directly Sourced</div>
-    <div class="sec-divider"></div>
-    <p>This distinction is the most important one for anyone evaluating the tool's credibility. Being precise about it is more useful than overstating the rigor.</p>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Element</th>
-          <th>Status</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Scoring framework</td>
-          <td>✓ Directly sourced</td>
-          <td>The five-dimension framework and its components are grounded in Eloundou et al., Felten et al., O*NET, BLS, and NCES — all cited, peer-reviewed or federal.</td>
-        </tr>
-        <tr>
-          <td>SOC-level AI exposure scores</td>
-          <td>✓ Directly sourced</td>
-          <td>Drawn from Eloundou et al. (2023) β scores and Felten et al. index, both published in paper appendices. The weighted average methodology is documented in Section 3.</td>
-        </tr>
-        <tr>
-          <td>CIP-to-SOC mapping</td>
-          <td>✓ Directly sourced</td>
-          <td>NCES CIP-SOC crosswalk, publicly available.</td>
-        </tr>
-        <tr>
-          <td>O*NET task statements</td>
-          <td>✓ Directly sourced</td>
-          <td>Task text and importance/frequency ratings are drawn verbatim from O*NET bulk data files.</td>
-        </tr>
-        <tr>
-          <td>BLS employment projections</td>
-          <td>✓ Directly sourced</td>
-          <td>10-year projected growth/decline drawn from BLS Occupational Outlook Handbook by SOC code.</td>
-        </tr>
-        <tr>
-          <td>Program-level exposure scores</td>
-          <td>~ Informed estimate</td>
-          <td>Translating a SOC-level score to a CIP-level score requires judgment about which SOC codes best represent a program's graduates, and how to weight multiple SOC codes. This step involves methodological judgment that introduces estimation error.</td>
-        </tr>
-        <tr>
-          <td>Curriculum half-life values</td>
-          <td>~ Informed estimate</td>
-          <td>Derived from AI progress timelines in the literature and O*NET task frequency data, but no published half-life database exists. These are calibrated estimates, not direct measurements.</td>
-        </tr>
-        <tr>
-          <td>Faculty AI readiness figures</td>
-          <td>~ Informed estimate</td>
-          <td>National estimates calibrated to IPEDS professional development data and Educause faculty survey research, but institutional variation is high. These national averages may differ substantially from any specific institution's actual figures — which is why the CSV import feature exists.</td>
-        </tr>
-        <tr>
-          <td>Regional multipliers</td>
-          <td>~ Informed estimate</td>
-          <td>Derived from BLS OEWS metro-level employment data averaged across the top 20 US metro labor markets. Represents a typical national figure, not your specific region. Users with local labor market data should override via CSV import.</td>
-        </tr>
-        <tr>
-          <td>Task-level AI impact scores</td>
-          <td>~ Informed estimate</td>
-          <td>Assigned using the classification criteria in Section 8, calibrated to Eloundou et al. β scores by task category. Individual task scores are judgments, not measurements, and are most reliable as directional indicators of relative impact across tasks within a program.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-
-  <!-- 12. LIMITATIONS -->
-  <div class="sec" id="limitations">
-    <div class="sec-num">12</div>
-    <div class="sec-title">Limitations & Appropriate Use</div>
-    <div class="sec-divider"></div>
-    <p>The following limitations apply to all uses of Meridian and should be communicated to any audience relying on its outputs.</p>
-
-    <ul class="limit-list">
-      <li class="limit-item">
-        <div class="li-icon">⏱</div>
-        <div class="li-text"><strong>Point-in-time data, no automatic refresh.</strong> All underlying data sources — AI exposure research, BLS projections, O*NET task data — change over time. Meridian reflects a fixed snapshot at the time of publication (2025). The AI capability landscape in particular evolves rapidly. Scores should be reviewed and recalibrated against updated source data at intervals of no more than 18 months. Programs near category boundaries (within ±0.05 of a threshold) are most sensitive to this staleness risk.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">📍</div>
-        <div class="li-text"><strong>National scores, not institutional scores.</strong> All estimates represent national averages. Faculty readiness, regional labor market strength, and enrollment patterns vary substantially across institutions. The CSV import feature exists specifically to address this — institutions with local data should overlay it to produce more accurate institution-specific scores.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">🎓</div>
-        <div class="li-text"><strong>Program categories are not programs.</strong> Meridian scores "Accounting" as a category. The actual curriculum at any given institution may differ substantially from the national average — some accounting programs may already be heavily AI-integrated, others may not. Scores describe the modal program, not every program.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">⚖️</div>
-        <div class="li-text"><strong>Classification thresholds are not natural laws.</strong> The 0.57 and 0.30 thresholds are defensible choices, not empirically derived cutoffs. A program scoring 0.56 is not meaningfully different from one scoring 0.58 — but one will appear as "Maintain" and the other as "Urgent Pivot." Use the Methodology panel to test sensitivity around borderline programs before making planning decisions based on them.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">🚫</div>
-        <div class="li-text"><strong>This tool does not predict the future of AI.</strong> The scores are grounded in the current generation of AI capabilities. They do not attempt to forecast capabilities two or three generations out, which would require speculative assumptions well beyond what the cited research supports.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">🏛️</div>
-        <div class="li-text"><strong>Not a substitute for formal review.</strong> Meridian is designed to help leaders identify where to focus and what questions to ask. Decisions about program restructuring, resource reallocation, or sunset planning should involve formal curriculum review, accreditation consultation, faculty governance, and institution-specific enrollment and labor market analysis.</div>
-      </li>
-      <li class="limit-item">
-        <div class="li-icon">📊</div>
-        <div class="li-text"><strong>Not for citation as a primary source.</strong> The tool may be cited as an analytical instrument in planning documents. Specific numerical claims (e.g., "Accounting has a 0.83 AI exposure score") should be attributed to the underlying sources (Eloundou et al., BLS) rather than to Meridian, with a note that the program-level figure involves methodological judgment in applying those sources.</div>
-      </li>
-    </ul>
-
-    <div class="callout callout-warn" style="margin-top:28px">
-      <div class="callout-label">Suggested citation language for institutional documents</div>
-      <p>"Program AI exposure scores are derived from a composite index informed by Eloundou et al. (2023), the Felten, Raj &amp; Seamans Princeton AI Exposure Index, O*NET task data, and BLS employment projections, aggregated using the Meridian analytical framework (George, 2025). Individual program-level scores involve methodological judgment in applying national occupational data to specific academic programs and should be interpreted as directional indicators rather than precise measurements."</p>
-    </div>
-  </div>
-
-</div><!-- end .page -->
-
+<p>Where a CIP code maps to several SOC codes — common for broad degrees such as Psychology, Business or English — exposure is weighted by the approximate share of graduates entering each occupation. That weighting is a judgement, and it is the single largest source of error in the program-level figures. 111 of 113 programs have a single dominant SOC code recorded; the remainder disperse widely enough that no one code represents them, and the application says so in the program panel rather than implying a precision it does not have.</p>
+<div class="note n-amber"><p class="nh">Narrow and broad pipelines</p>
+<p>Version 2 records, for each program, whether the credential maps to essentially one occupation (<strong>narrow</strong>: 32 programs — medical assisting, welding, court reporting, dental hygiene, most licensure-gated health credentials) or whether graduates disperse across many (<strong>broad</strong>: 81 programs — English, psychology, biology, business).</p>
+<p>The distinction matters because occupational decline translates into graduate outcomes very differently in the two cases. When court reporting contracts, a court reporting certificate loses much of its value. When writing and editing tasks are automated, an English degree does not, because most English graduates were never going to be writers by trade. Conflating the two is what produced the wind-down recommendations that v2 removes.</p></div></section><section class="s" id="sources"><h2><span class="num">03</span>Primary data sources</h2>
+<p>All five are public, freely available, and either peer reviewed or published by a US federal agency. No proprietary vendor data is used. Publication status is labelled honestly: one of the five is a working paper, and saying so costs nothing.</p>
+<div class="src"><div class="hd"><div class="ttl">Eloundou, Manning, Mishkin &amp; Rock (2024)</div><span class="chip c-peer">Peer reviewed</span></div>
+<p style="margin-bottom:0">“GPTs are GPTs: Labor market impact potential of LLMs.” <em>Science</em> 384(6702), 1306–1308. <a href="https://doi.org/10.1126/science.adj0998">doi:10.1126/science.adj0998</a>. Originally circulated as arXiv:2303.10130 (2023). Provides occupation-level exposure scores by SOC code, where α covers tasks an LLM can do alone and β covers tasks it can do with complementary tooling. Meridian uses β, which better reflects how these systems are actually deployed.</p><div class="use"><strong>Used for:</strong> Primary AI exposure score (0–1) by SOC code, mapped to CIP through the NCES crosswalk.</div></div><div class="src"><div class="hd"><div class="ttl">Felten, Raj &amp; Seamans</div><span class="chip c-wp">Working paper + peer-reviewed method</span></div>
+<p style="margin-bottom:0">The 2023 language-model paper, “How will Language Modelers like ChatGPT Affect Occupations and Industries?” (<a href="https://arxiv.org/abs/2303.01157">arXiv:2303.01157</a>), is a working paper and is cited as such. The underlying AI Occupational Exposure method is peer reviewed: “Occupational, industry, and geographic exposure to artificial intelligence: a novel dataset and its potential uses,” <em>Strategic Management Journal</em> 42(12), 2195–2217 (2021). Data at <a href="https://github.com/AIOE-Data/AIOE">github.com/AIOE-Data/AIOE</a>. The method links AI application areas to human abilities in O*NET, then abilities to occupations — a genuinely different route to the same question than Eloundou et al. take.</p><div class="use"><strong>Used for:</strong> Cross-validation. Where both cover an occupation, the exposure estimate leans 60% on Eloundou β and 40% on the Felten index, reflecting the former’s wider occupational coverage.</div></div><div class="src"><div class="hd"><div class="ttl">O*NET Resource Center</div><span class="chip c-fed">US federal database</span></div>
+<p style="margin-bottom:0">Maintained by the Employment and Training Administration, US Department of Labor. Structured task statements for every SOC occupation, each rated for importance and frequency by incumbent workers. <a href="https://www.onetcenter.org/database.html">onetcenter.org/database.html</a></p><div class="use"><strong>Used for:</strong> Task breakdowns in each program panel. Statements are selected at importance ≥ 3.0 and frequency ≥ 2.5.</div></div><div class="src"><div class="hd"><div class="ttl">BLS Employment Projections and the Occupational Outlook Handbook</div><span class="chip c-fed">US federal database</span></div>
+<p style="margin-bottom:0">Bureau of Labor Statistics. Ten-year projected employment change by SOC code, published on a rolling cycle. <a href="https://www.bls.gov/ooh/">bls.gov/ooh</a>; national matrix at <a href="https://www.bls.gov/emp/">bls.gov/emp</a>. Note that BLS advances its projection window periodically: figures used here are drawn from the 2024–34 and 2025–35 cycles, and each program records which.</p><div class="use"><strong>Used for:</strong> The employment outlook dimension. All 113 programs are documented: 103 read directly from the current OOH entry for the named SOC code, and 10 using the all-occupation projection of +3.5% where graduates disperse too widely for a single occupation to represent them.</div></div><div class="src"><div class="hd"><div class="ttl">NCES IPEDS and the CIP–SOC crosswalk</div><span class="chip c-fed">US federal database</span></div>
+<p style="margin-bottom:0">National Center for Education Statistics. Enrolment, completions and program data by CIP code across all US institutions; the crosswalk is the published bridge from program to occupation. <a href="https://nces.ed.gov/ipeds/cipcode/">nces.ed.gov/ipeds/cipcode</a></p><div class="use"><strong>Used for:</strong> Program identification and the CIP-to-SOC bridge.</div></div>
+</section><section class="s" id="dims"><h2><span class="num">04</span>The five scoring dimensions</h2>
+<p>Each dimension is expressed on a 0–1 risk scale, where 0 is no risk and 1 is maximum risk, then combined into a weighted composite.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Dimension</th><th>Variable</th><th class="num">Default weight</th><th>What it measures</th></tr></thead><tbody>
+<tr><td><strong>Task automation potential</strong></td><td><code>task</code></td><td class="num">40%</td><td>The share of the occupation’s O*NET tasks that current AI can perform, from Eloundou et al. β scores cross-checked against the Felten index. The strongest single predictor of near-term disruption, and weighted accordingly.</td></tr><tr><td><strong>Curriculum half-life</strong></td><td><code>halfLife</code></td><td class="num">20%</td><td>Estimated years until roughly 40% or more of the program’s target tasks are automated at scale — the point where a curriculum built to today’s standards is substantially misaligned with what employers need. Shorter means higher risk.</td></tr><tr><td><strong>Faculty AI readiness</strong></td><td><code>faculty</code></td><td class="num">15%</td><td>The estimated share of faculty in the program area with working AI fluency: able to use these tools in instruction and to assess AI-assisted student work critically. This is the implementation constraint. A program that must change may be unable to change quickly.</td></tr><tr><td><strong>Regional labour market</strong></td><td><code>region</code></td><td class="num">15%</td><td>A multiplier comparing local employer demand with the national average. Above 1.0 means local demand exceeds national; below 1.0 means it lags, which brings recommended changes forward.</td></tr><tr><td><strong>Employment outlook</strong></td><td><code>empOut</code></td><td class="num">10%</td><td>BLS ten-year projected change for the primary SOC code. Captures whether the labour market is contracting independently of AI, which compounds risk when exposure is also high.</td></tr>
+</tbody></table></div>
+<div class="note n-amber"><p class="nh">On the choice of weights</p>
+<p>The 40/20/15/15/10 default puts task automation first, consistent with how the Eloundou and Felten research frames the question, and distributes the remainder across implementation capacity, market context and timing. These are defensible choices, not derived ones. Every weight is adjustable in the application, and four presets are provided so that any conclusion can be tested against a different set of priorities before it is acted on. A recommendation that survives only one weighting is not a finding.</p></div></section><section class="s" id="norm"><h2><span class="num">05</span>Normalisation functions</h2>
+<p>The five dimensions arrive in different units — fractions, years, percentages, multipliers — so each is mapped onto a 0–1 risk scale before combination. These are the functions the application actually runs, reproduced verbatim.</p>
+<pre><span class="c">// Task automation — already 0–1 from the source research</span>
+task = p.exposure
+
+<span class="c">// Curriculum half-life — years until ~40% of tasks are automated</span>
+hl = <span class="k">min</span>(1, <span class="k">max</span>(0, 1 - (p.halfLife - 0.5) / 14.5))
+<span class="c">//   0.5 yr → 1.00 (maximum urgency)   15 yr → 0.00</span>
+
+<span class="c">// Faculty readiness — inverted; less ready means more risk</span>
+fac = 1 - (facultyReady(p) / 100)
+
+<span class="c">// Regional labour market — inverted multiplier, clamped both ends</span>
+reg = <span class="k">min</span>(1, <span class="k">max</span>(0, 1 - (region(p) - 0.8) / 0.4))
+<span class="c">//   ≤0.80× → 1.00        ≥1.20× → 0.00</span>
+
+<span class="c">// Employment outlook — projected decline becomes risk</span>
+emp = <span class="k">max</span>(0, <span class="k">min</span>(1, -p.empOut / 0.15))
+<span class="c">//   ≤-15% → 1.00         ≥0% → 0.00</span></pre>
+<div class="note n-blue"><p class="nh">Two fixes carried into v2</p>
+<p>The regional function is now clamped at both ends. Previously a multiplier above 1.2 produced a negative risk contribution, which silently subtracted from the composite rather than bottoming out at zero.</p>
+<p>The faculty and regional functions now read the institution’s own uploaded figures where they exist. In v1 the regional term read the national default even when a user had supplied a local multiplier, so the regional column of an uploaded CSV changed the displayed number in the program panel but not the score behind the recommendation.</p></div>
+<div class="tbl-wrap"><table><thead><tr><th>Input</th><th class="num">Value</th><th class="num">Risk</th><th class="num">Value</th><th class="num">Risk</th><th class="num">Value</th><th class="num">Risk</th></tr></thead><tbody>
+<tr><td><strong>Half-life</strong></td><td class="num">0.5 yr</td><td class="num">1.00</td><td class="num">5 yr</td><td class="num">0.69</td><td class="num">15 yr</td><td class="num">0.00</td></tr>
+<tr><td><strong>Regional</strong></td><td class="num">0.80×</td><td class="num">1.00</td><td class="num">1.00×</td><td class="num">0.50</td><td class="num">1.20×</td><td class="num">0.00</td></tr>
+<tr><td><strong>Employment</strong></td><td class="num">−15%</td><td class="num">1.00</td><td class="num">−8%</td><td class="num">0.53</td><td class="num">0%</td><td class="num">0.00</td></tr>
+<tr><td><strong>Faculty ready</strong></td><td class="num">10%</td><td class="num">0.90</td><td class="num">40%</td><td class="num">0.60</td><td class="num">70%</td><td class="num">0.30</td></tr>
+</tbody></table></div></section><section class="s" id="formula"><h2><span class="num">06</span>The composite score</h2>
+<pre>compositeScore(p) =
+    task × w.task          <span class="c">// task automation potential</span>
+  + hl   × w.halfLife      <span class="c">// curriculum half-life</span>
+  + fac  × w.faculty       <span class="c">// faculty readiness gap</span>
+  + reg  × w.regional      <span class="c">// regional labour market</span>
+  + emp  × w.employment    <span class="c">// employment outlook</span>
+
+<span class="c">// defaults, which must sum to 1.0</span>
+w = { task: 0.40, halfLife: 0.20, faculty: 0.15, regional: 0.15, employment: 0.10 }
+<span class="c">// range [0, 1]; higher is greater risk</span></pre>
+<p>The composite is not the same quantity as the AI exposure percentage on each card. Exposure is one of five inputs. The composite can sit above or below it depending on the other four, and the program panel says which and why whenever the two differ by more than five points.</p>
+<div class="note n-amber"><p class="nh">Why a linear model</p>
+<p>A weighted linear combination was chosen over multiplicative, fuzzy or non-linear aggregation for three reasons: an administrator can see directly how moving a weight moves the output; the calculation can be reproduced by hand from the numbers on screen; and the quality of the underlying data does not justify the precision a more elaborate model would imply. Sophistication in the aggregation would be borrowed authority.</p></div></section><section class="s" id="thresholds"><h2><span class="num">07</span>Classification thresholds</h2>
+<p>Rules are applied in order. The first that matches decides the recommendation.</p>
+<div class="tbl-wrap"><table><thead><tr><th class="num">#</th><th>Condition</th><th>Result</th><th>Reasoning</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>pipeline = narrow</code><br><code>AND mechanism = rep</code><br><code>AND empOut ≤ −0.03</code><br><code>AND composite &gt; 0.62</code></td><td><strong>● Restructure</strong></td><td>All four at once: the credential trains for essentially one occupation, AI substitutes for rather than augments the core tasks, employment is genuinely projected to contract, and overall risk is high. Indicates a merge, a teach-out or a substantial repositioning with a defined pathway for enrolled students.</td></tr>
+<tr><td class="num">2</td><td><code>composite &gt; 0.555</code></td><td><strong>◆ Pivot</strong></td><td>High risk, but graduates are still being hired. The curriculum must move from performing the tasks to directing and auditing the systems that perform them.</td></tr>
+<tr><td class="num">3</td><td><code>composite &lt; 0.36</code></td><td><strong>▲ Expand</strong></td><td>Low risk. The work resists substitution — physical skill, direct care, accountable judgement — and demand is stable or growing. The constraint is capacity.</td></tr>
+<tr><td class="num">4</td><td>otherwise</td><td><strong>■ Augment</strong></td><td>Moderate risk. Add AI fluency without redesign; review annually.</td></tr>
+</tbody></table></div>
+<div class="note n-red"><p class="nh">Why rule 1 was rewritten</p>
+<p>Version 1 required only <code>mechanism = rep AND composite &gt; 0.67</code>. Every program flagged as substitution-type cleared 0.67, so in practice the flag alone decided the outcome, and the flag was being set from task content. The result: English, creative writing, journalism, photography, foreign languages, paralegal studies and medical assisting were all recommended for wind-down.</p>
+<p>Checked against BLS, medical assistants are projected to grow 13%, medical records specialists 8%, paralegals and interpreters roughly flat, writers flat, court reporters flat. Only journalism showed the decline v1 assumed. The tool was reading “AI can do this task” as “this occupation is disappearing,” which does not follow, and was most damaging exactly where a public university can least afford an unfounded claim.</p>
+<p>With the pipeline and employment tests added, <strong>2 of 113</strong> programs now meet rule 1: Insurance &amp; Risk Management, whose target occupation (claims adjusters) BLS projects at −5%, and Network Administration, whose target occupation (network and computer systems administrators) BLS projects at −4%. Both are single-occupation credentials in fields where AI substitutes for the core task. That is a substantive claim about the labour market, not a softening: only 7 of 113 programs feed an occupation projected to shrink at all.</p></div>
+<p>Current distribution at default weights: <strong>41 Pivot, 32 Expand, 38 Augment, 2 Restructure</strong>.</p>
+<div class="note n-amber"><p class="nh">Threshold sensitivity</p>
+<p>The 0.555 and 0.36 cut points are calibrated choices, not natural kinds. A program scoring 0.550 is not meaningfully different from one scoring 0.560, yet they appear in different categories. <strong>28 of 113 programs</strong> sit within 0.04 of a boundary, and the application marks each of them <em>Borderline</em> on the card rather than leaving the reader to discover it. Programs whose category changes across the four weighting presets are additionally marked <em>Sensitive to weighting</em>.</p></div></section><section class="s" id="tasks"><h2><span class="num">08</span>Task-level scoring</h2>
+<p>Each program panel shows four to six representative tasks for the target occupation, each with an impact score and a classification. Task statements come from O*NET for the mapped SOC code. The score estimates how much of that task current AI can perform at acceptable quality — an estimate of capability, not an observed displacement rate.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Task character</th><th>Classification</th><th>Basis</th></tr></thead><tbody>
+<tr><td>Pattern recognition, text and code generation, data processing, translation, scheduling, routing</td><td><strong>AI replaces</strong><br>score 0.65–0.98</td><td>Well within demonstrated capability of current frontier models. Calibrated to Eloundou β for the task category.</td></tr>
+<tr><td>Analysis, research, synthesis, recommendation subject to human review</td><td><strong>AI assists</strong><br>score 0.40–0.75</td><td>AI substantially accelerates the work while human judgement remains necessary for quality. The score reflects how much of the effort shifts.</td></tr>
+<tr><td>Physical manipulation, direct patient or client interaction, novel judgement, real-time situational response</td><td><strong>AI assists</strong><br>score 0.02–0.25</td><td>Dependent on embodied action, social presence or contextual judgement that current systems cannot replicate.</td></tr>
+</tbody></table></div>
+<p>The program-level <code>mechanism</code> flag is set from the modal task — the highest-importance, highest-frequency one. A program flagged <code>rep</code> has its central recurring work targeted for substitution rather than acceleration. Since v2 that flag informs the recommendation but, on its own, no longer determines it.</p></section><section class="s" id="critical"><h2><span class="num">09</span>The “urgent and under-resourced” filter</h2>
+<pre>isCritical(p) =
+      p.exposure ≥ 0.65        <span class="c">// high task exposure</span>
+  AND p.halfLife ≤ 3.0         <span class="c">// under three years of runway</span>
+  AND facultyReady(p) ≤ 35     <span class="c">// faculty not positioned to respond</span>
+  AND verdict(p) ≠ "expand"    <span class="c">// added in v2</span></pre>
+<p>This combination is worth isolating because it identifies programs where the problem is pressing and the institution’s capacity to respond is constrained at the same time. A program needing curriculum overhaul inside three years, with fewer than a third of its faculty holding relevant fluency, cannot move at the pace the situation asks without deliberate investment beginning now.</p>
+<p>The thresholds mark operational significance rather than statistical significance: 65% exposure is a clear majority of tasks affected; three years is the outer edge of an ordinary annual review cycle; 35% readiness is roughly where a critical mass for change cannot be assembled without a structured development program. The exclusion of Expand programs was added in v2 because a growing, low-substitution program with unprepared faculty has a staffing problem, not an urgency problem, and mixing the two obscured both.</p></section><section class="s" id="example"><h2><span class="num">10</span>Worked example: Accounting</h2>
+<p>Accounting, CIP 52.0301, mapped to SOC 13-2011 (Accountants and auditors), at default weights.</p>
+<p><strong>Inputs.</strong> exposure = 0.83; halfLife = 1.8 years; facultyReady = 22%; region = 0.90×; empOut = 5% <span class="tier t-src">BLS verified</span> (SOC 13-2011, 2025-35); mechanism = aug; pipeline = broad.</p>
+<h3>Step 1 — normalise</h3>
+<pre>task = 0.83                                              → 0.830
+hl   = min(1, max(0, 1 - (1.8 - 0.5) / 14.5))            → 0.910
+fac  = 1 - (22 / 100)                                  → 0.780
+reg  = min(1, max(0, 1 - (0.90 - 0.8) / 0.4))            → 0.750
+emp  = max(0, min(1, -(0.05) / 0.15))                   → 0.000</pre>
+<h3>Step 2 — weight and sum</h3>
+<div class="calc">
+<div class="row"><span>Task automation (0.830)</span><span>0.830 × 0.40</span><span>0.332</span></div><div class="row"><span>Curriculum half-life (0.910)</span><span>0.910 × 0.20</span><span>0.182</span></div><div class="row"><span>Faculty readiness gap (0.780)</span><span>0.780 × 0.15</span><span>0.117</span></div><div class="row"><span>Regional labour market (0.750)</span><span>0.750 × 0.15</span><span>0.112</span></div><div class="row"><span>Employment outlook (0.000)</span><span>0.000 × 0.10</span><span>0.000</span></div>
+<div class="row"><span>Composite score</span><span>sum</span><span>0.744</span></div></div>
+<h3>Step 3 — classify</h3>
+<p>Rule 1 requires a narrow pipeline; Accounting is broad, so it does not apply regardless of the other conditions. The composite of 0.744 exceeds 0.555, so the result is <strong>◆ Pivot</strong>.</p>
+<div class="note n-blue"><p class="nh">Reading the two numbers together</p>
+<p>The composite (0.744) is <em>lower</em> than raw task exposure (0.83). Accounting is among the most task-exposed programs in the set, but accountants and auditors are projected to grow 5% over the decade, so the employment dimension contributes nothing to risk and pulls the composite down. That gap is the whole argument: the work is changing sharply while the demand for people who can do it is not falling. Version 1 of this document asserted the opposite direction here, which was an error.</p></div></section><section class="s" id="corrections"><h2><span class="num">11</span>Every employment figure and where it comes from</h2>
+<p>Every program in Meridian carries a projected ten-year employment change, and that figure feeds the composite score directly. Version 1 described these as drawn from BLS. On checking each one against the Occupational Outlook Handbook, 96 of 113 did not match — some by margins large enough to reverse the recommendation.</p>
+<p>All 113 are now documented. <strong>103</strong> were read directly from the OOH entry for the program's SOC code in the current 2025–35 round. <strong>10</strong> are degrees whose graduates disperse too widely for any single occupational projection to represent them; those use the BLS all-occupation projection of <strong>+3.5%</strong> rather than an asserted figure. None remains an unsupported estimate.</p>
+<div class="note n-red"><p class="nh">The four that mattered most</p>
+<p><strong>Medical assistants</strong> were recorded at −4%. BLS projects <strong>+13%</strong>, among the faster-growing occupations in the country. The program had been recommended for wind-down.</p>
+<p><strong>Medical records specialists</strong>, the occupation behind Medical Billing &amp; Coding, were recorded at −12%. BLS projects <strong>+8%</strong>. This program was the worked example of a dying field in the v1 documentation.</p>
+<p><strong>Court reporters and simultaneous captioners</strong> were recorded at −18%. BLS projects <strong>little or no change</strong>. (Its SOC code was also wrong: court reporters moved to 27-3092 under the 2018 SOC.)</p>
+<p><strong>Interpreters and translators</strong>, behind Foreign Languages, were recorded at −8%. BLS projects <strong>+2%</strong>.</p>
+<p>These were not rounding differences. They were the load-bearing evidence for the most consequential recommendations the tool made.</p></div>
+
+<h3>Occupations projected to contract</h3>
+<p>Only 7 of the 113 programs feed an occupation that BLS projects will shrink at all. This short list is the entire empirical basis for any claim in this tool that employer demand is falling.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Program</th><th>SOC</th><th>Occupation</th><th class="num">2025–35</th><th>Verdict</th></tr></thead><tbody>
+<tr><td><strong>Journalism</strong></td><td class="num">27-3023</td><td>News analysts, reporters, and journalists</td><td class="num" style="color:var(--red);font-weight:600">-6%</td><td>Pivot</td></tr><tr><td><strong>Insurance &amp; Risk Management</strong></td><td class="num">13-1031</td><td>Claims adjusters, examiners, and investigators</td><td class="num" style="color:var(--red);font-weight:600">-5%</td><td>Restructure</td></tr><tr><td><strong>Information Technology</strong></td><td class="num">15-1244</td><td>Network and computer systems administrators</td><td class="num" style="color:var(--red);font-weight:600">-4%</td><td>Pivot</td></tr><tr><td><strong>Network Administration</strong></td><td class="num">15-1244</td><td>Network and computer systems administrators</td><td class="num" style="color:var(--red);font-weight:600">-4%</td><td>Restructure</td></tr><tr><td><strong>Agriculture Business</strong></td><td class="num">11-9013</td><td>Farmers, ranchers, and other agricultural managers</td><td class="num" style="color:var(--red);font-weight:600">-3%</td><td>Augment</td></tr><tr><td><strong>Graphic Design</strong></td><td class="num">27-1024</td><td>Graphic designers</td><td class="num" style="color:var(--red);font-weight:600">-2%</td><td>Pivot</td></tr><tr><td><strong>Photography</strong></td><td class="num">27-4021</td><td>Photographers</td><td class="num" style="color:var(--red);font-weight:600">-1%</td><td>Pivot</td></tr>
+</tbody></table></div>
+
+<h3>The twenty largest revisions</h3>
+<div class="tbl-wrap"><table><thead><tr><th>Program</th><th>SOC</th><th>Occupation</th><th class="num">v1</th><th class="num">BLS 2025–35</th></tr></thead><tbody>
+<tr><td><strong>Medical Billing &amp; Coding</strong></td><td class="num">29-2072</td><td>Medical records specialists</td><td class="num" style="color:var(--t3)">-12%</td><td class="num" style="color:var(--green);font-weight:600">+8%</td></tr><tr><td><strong>Court Reporting</strong></td><td class="num">27-3092</td><td>Court reporters and simultaneous captioners</td><td class="num" style="color:var(--t3)">-18%</td><td class="num" style="color:var(--green);font-weight:600">0%</td></tr><tr><td><strong>Medical Assistant</strong></td><td class="num">31-9092</td><td>Medical assistants</td><td class="num" style="color:var(--t3)">-4%</td><td class="num" style="color:var(--green);font-weight:600">+13%</td></tr><tr><td><strong>Data Science</strong></td><td class="num">15-2051</td><td>Data scientists</td><td class="num" style="color:var(--t3)">+18%</td><td class="num" style="color:var(--green);font-weight:600">+35%</td></tr><tr><td><strong>Health Administration</strong></td><td class="num">11-9111</td><td>Medical and health services managers</td><td class="num" style="color:var(--t3)">+9%</td><td class="num" style="color:var(--green);font-weight:600">+24%</td></tr><tr><td><strong>Cloud Computing</strong></td><td class="num">15-1241</td><td>Computer network architects</td><td class="num" style="color:var(--t3)">+22%</td><td class="num" style="color:var(--green);font-weight:600">+8%</td></tr><tr><td><strong>Supply Chain &amp; Logistics</strong></td><td class="num">13-1081</td><td>Logisticians</td><td class="num" style="color:var(--t3)">+5%</td><td class="num" style="color:var(--green);font-weight:600">+18%</td></tr><tr><td><strong>Cybersecurity</strong></td><td class="num">15-1212</td><td>Information security analysts</td><td class="num" style="color:var(--t3)">+33%</td><td class="num" style="color:var(--green);font-weight:600">+21%</td></tr><tr><td><strong>Information Technology</strong></td><td class="num">15-1244</td><td>Network and computer systems administrators</td><td class="num" style="color:var(--t3)">+8%</td><td class="num" style="color:var(--red);font-weight:600">-4%</td></tr><tr><td><strong>Foreign Languages</strong></td><td class="num">27-3091</td><td>Interpreters and translators</td><td class="num" style="color:var(--t3)">-8%</td><td class="num" style="color:var(--green);font-weight:600">+2%</td></tr><tr><td><strong>Health Informatics</strong></td><td class="num">29-2072</td><td>Medical records specialists</td><td class="num" style="color:var(--t3)">+18%</td><td class="num" style="color:var(--green);font-weight:600">+8%</td></tr><tr><td><strong>Instructional Design &amp; Technology</strong></td><td class="num">25-9031</td><td>Instructional coordinators</td><td class="num" style="color:var(--t3)">+12%</td><td class="num" style="color:var(--green);font-weight:600">+2%</td></tr><tr><td><strong>Finance</strong></td><td class="num">13-2051</td><td>Financial analysts</td><td class="num" style="color:var(--t3)">-1%</td><td class="num" style="color:var(--green);font-weight:600">+7%</td></tr><tr><td><strong>Special Education</strong></td><td class="num">25-2052</td><td>Special education teachers, kindergarten and elementary</td><td class="num" style="color:var(--t3)">+8%</td><td class="num" style="color:var(--green);font-weight:600">0%</td></tr><tr><td><strong>Physician Assistant Studies</strong></td><td class="num">29-1071</td><td>Physician assistants</td><td class="num" style="color:var(--t3)">+28%</td><td class="num" style="color:var(--green);font-weight:600">+21%</td></tr><tr><td><strong>Accounting</strong></td><td class="num">13-2011</td><td>Accountants and auditors</td><td class="num" style="color:var(--t3)">-2%</td><td class="num" style="color:var(--green);font-weight:600">+5%</td></tr><tr><td><strong>Social Work (BSW/MSW)</strong></td><td class="num">21-1021</td><td>Child, family, and school social workers</td><td class="num" style="color:var(--t3)">+11%</td><td class="num" style="color:var(--green);font-weight:600">+4%</td></tr><tr><td><strong>Geographic Information Systems</strong></td><td class="num">17-1021</td><td>Cartographers and photogrammetrists</td><td class="num" style="color:var(--t3)">+14%</td><td class="num" style="color:var(--green);font-weight:600">+7%</td></tr><tr><td><strong>Industrial Engineering</strong></td><td class="num">17-2112</td><td>Industrial engineers</td><td class="num" style="color:var(--t3)">+5%</td><td class="num" style="color:var(--green);font-weight:600">+12%</td></tr><tr><td><strong>Artificial Intelligence &amp; Machine Learning</strong></td><td class="num">15-1221</td><td>Computer and information research scientists</td><td class="num" style="color:var(--t3)">+28%</td><td class="num" style="color:var(--green);font-weight:600">+22%</td></tr>
+</tbody></table></div>
+
+<h3>Degrees with no representative occupation</h3>
+<p>Ten programs graduate far more people each year than their nominal destination occupation employs in total. Sociologists number about 2,700 nationally; historians about 3,800; political scientists about 6,100. Attaching those projections to the corresponding majors would be worse than useless, because it would imply a precision and a relevance that neither the occupation nor the degree supports. These programs use the all-occupation baseline, and the panel says so and names the reference occupation.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Program</th><th>Closest named occupation</th><th class="num">Its projection</th><th class="num">National jobs</th></tr></thead><tbody>
+<tr><td><strong>Anthropology</strong></td><td>Anthropologists and archeologists (19-3091)</td><td class="num">+6%</td><td class="num">10,200</td></tr><tr><td><strong>Entrepreneurship</strong></td><td>General and operations managers (11-1021)</td><td class="num">+5%</td><td class="num">—</td></tr><tr><td><strong>Fine Arts (BFA)</strong></td><td>Fine artists, including painters, sculptors and illustrators (27-1013)</td><td class="num">-3%</td><td class="num">28,900</td></tr><tr><td><strong>History</strong></td><td>Historians (19-3093)</td><td class="num">+3%</td><td class="num">3,800</td></tr><tr><td><strong>International Business</strong></td><td>General and operations managers (11-1021)</td><td class="num">+5%</td><td class="num">—</td></tr><tr><td><strong>Liberal Arts &amp; General Studies</strong></td><td><em>no single destination occupation</em></td><td class="num">—</td><td class="num">—</td></tr><tr><td><strong>Mathematics</strong></td><td>Mathematicians (15-2021)</td><td class="num">+1%</td><td class="num">2,000</td></tr><tr><td><strong>Philosophy</strong></td><td><em>no single destination occupation</em></td><td class="num">—</td><td class="num">—</td></tr><tr><td><strong>Political Science</strong></td><td>Political scientists (19-3094)</td><td class="num">-2%</td><td class="num">6,100</td></tr><tr><td><strong>Sociology</strong></td><td>Sociologists (19-3041)</td><td class="num">+4%</td><td class="num">2,700</td></tr>
+</tbody></table></div>
+
+<h3>The full record</h3>
+<p>Every program, its SOC code, its figure and its evidence tier. Each BLS figure can be checked in under a minute at <a href="https://www.bls.gov/ooh/">bls.gov/ooh</a>.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Program</th><th>SOC</th><th>Occupation</th><th class="num">2025–35</th><th>Source</th></tr></thead><tbody>
+<tr><td><strong>Accounting</strong></td><td class="num">13-2011</td><td>Accountants and auditors</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Aerospace Engineering</strong></td><td class="num">17-2011</td><td>Aerospace engineers</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Agriculture Business</strong></td><td class="num">11-9013</td><td>Farmers, ranchers, and other agricultural managers</td><td class="num" style="color:var(--red)">-3%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Animal Science</strong></td><td class="num">19-1011</td><td>Animal scientists</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Animation &amp; Digital Media</strong></td><td class="num">27-1014</td><td>Special effects artists and animators</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Anthropology</strong></td><td class="num">19-3091</td><td>Anthropologists and archeologists</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Architecture</strong></td><td class="num">17-1011</td><td>Architects</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Artificial Intelligence &amp; Machine Learning</strong></td><td class="num">15-1221</td><td>Computer and information research scientists</td><td class="num" style="color:var(--t2)">+22%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Automotive Technology</strong></td><td class="num">49-3023</td><td>Automotive service technicians and mechanics</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Biochemistry</strong></td><td class="num">19-1021</td><td>Biochemists and biophysicists</td><td class="num" style="color:var(--t2)">+12%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Biology</strong></td><td class="num">19-1029</td><td>Biological scientists, all other <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Biomedical Engineering</strong></td><td class="num">17-2031</td><td>Bioengineers and biomedical engineers</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Business Analytics</strong></td><td class="num">13-1111</td><td>Management analysts <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+10%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Carpentry &amp; Construction Technology</strong></td><td class="num">47-2031</td><td>Carpenters</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Chemical Engineering</strong></td><td class="num">17-2041</td><td>Chemical engineers</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Chemistry</strong></td><td class="num">19-2031</td><td>Chemists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Civil Engineering</strong></td><td class="num">17-2051</td><td>Civil engineers</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Clinical / Counseling Psychology</strong></td><td class="num">19-3033</td><td>Clinical and counseling psychologists</td><td class="num" style="color:var(--t2)">+12%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Cloud Computing</strong></td><td class="num">15-1241</td><td>Computer network architects</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Communications</strong></td><td class="num">27-3031</td><td>Public relations specialists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Compliance &amp; Regulatory Affairs</strong></td><td class="num">13-1041</td><td>Compliance officers</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Computer Science</strong></td><td class="num">15-1252</td><td>Software developers</td><td class="num" style="color:var(--t2)">+10%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Construction Management</strong></td><td class="num">11-9021</td><td>Construction managers</td><td class="num" style="color:var(--t2)">+9%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Cosmetology</strong></td><td class="num">39-5012</td><td>Hairdressers, hairstylists, and cosmetologists</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Court Reporting</strong></td><td class="num">27-3092</td><td>Court reporters and simultaneous captioners</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Creative Writing</strong></td><td class="num">27-3043</td><td>Writers and authors <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Criminal Justice</strong></td><td class="num">33-3051</td><td>Police and sheriff's patrol officers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+3%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Culinary Arts</strong></td><td class="num">35-1011</td><td>Chefs and head cooks</td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Cybersecurity</strong></td><td class="num">15-1212</td><td>Information security analysts</td><td class="num" style="color:var(--t2)">+21%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Data Science</strong></td><td class="num">15-2051</td><td>Data scientists</td><td class="num" style="color:var(--t2)">+35%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Dental Hygiene</strong></td><td class="num">29-1292</td><td>Dental hygienists</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Diagnostic Medical Sonography</strong></td><td class="num">29-2032</td><td>Diagnostic medical sonographers</td><td class="num" style="color:var(--t2)">+14%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Early Childhood Education</strong></td><td class="num">25-2011</td><td>Preschool teachers</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Economics</strong></td><td class="num">19-3011</td><td>Economists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Electrical Engineering</strong></td><td class="num">17-2071</td><td>Electrical engineers</td><td class="num" style="color:var(--t2)">+10%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Electrical Technology</strong></td><td class="num">47-2111</td><td>Electricians</td><td class="num" style="color:var(--t2)">+9%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Elementary Education</strong></td><td class="num">25-2021</td><td>Elementary school teachers</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Emergency Medical Services / Paramedic</strong></td><td class="num">29-2042</td><td>Emergency medical technicians</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>English / Literature</strong></td><td class="num">27-3043</td><td>Writers and authors <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Entrepreneurship</strong></td><td class="num">11-1021</td><td>General and operations managers</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Environmental Engineering</strong></td><td class="num">17-2081</td><td>Environmental engineers</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Environmental Science</strong></td><td class="num">19-2041</td><td>Environmental scientists and specialists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Fashion Design</strong></td><td class="num">27-1022</td><td>Fashion designers</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Film, Video &amp; Media Production</strong></td><td class="num">27-4032</td><td>Film and video editors</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Finance</strong></td><td class="num">13-2051</td><td>Financial analysts</td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Fine Arts (BFA)</strong></td><td class="num">27-1013</td><td>Fine artists, including painters, sculptors and illustrators</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Food Science &amp; Technology</strong></td><td class="num">19-1012</td><td>Food scientists and technologists</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Foreign Languages</strong></td><td class="num">27-3091</td><td>Interpreters and translators</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Forestry &amp; Natural Resources</strong></td><td class="num">19-1032</td><td>Foresters</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Game Design &amp; Development</strong></td><td class="num">15-1255</td><td>Web and digital interface designers</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Geographic Information Systems</strong></td><td class="num">17-1021</td><td>Cartographers and photogrammetrists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Graphic Design</strong></td><td class="num">27-1024</td><td>Graphic designers</td><td class="num" style="color:var(--red)">-2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Health Administration</strong></td><td class="num">11-9111</td><td>Medical and health services managers</td><td class="num" style="color:var(--t2)">+24%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Health Informatics</strong></td><td class="num">29-2072</td><td>Medical records specialists</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Higher Education Administration</strong></td><td class="num">11-9033</td><td>Postsecondary education administrators</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>History</strong></td><td class="num">19-3093</td><td>Historians</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Horticulture</strong></td><td class="num">37-3011</td><td>Landscaping and groundskeeping workers</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Hospitality Management</strong></td><td class="num">11-9051</td><td>Food service managers</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Human Resources</strong></td><td class="num">13-1071</td><td>Human resources specialists</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>HVAC Technology</strong></td><td class="num">49-9021</td><td>Heating, air conditioning, and refrigeration mechanics</td><td class="num" style="color:var(--t2)">+11%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Industrial Engineering</strong></td><td class="num">17-2112</td><td>Industrial engineers</td><td class="num" style="color:var(--t2)">+12%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Information Technology</strong></td><td class="num">15-1244</td><td>Network and computer systems administrators</td><td class="num" style="color:var(--red)">-4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Instructional Design &amp; Technology</strong></td><td class="num">25-9031</td><td>Instructional coordinators</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Insurance &amp; Risk Management</strong></td><td class="num">13-1031</td><td>Claims adjusters, examiners, and investigators</td><td class="num" style="color:var(--red)">-5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Interior Design</strong></td><td class="num">27-1025</td><td>Interior designers</td><td class="num" style="color:var(--t2)">+3%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>International Business</strong></td><td class="num">11-1021</td><td>General and operations managers</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Journalism</strong></td><td class="num">27-3023</td><td>News analysts, reporters, and journalists</td><td class="num" style="color:var(--red)">-6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Kinesiology / Exercise Science</strong></td><td class="num">29-1128</td><td>Exercise physiologists</td><td class="num" style="color:var(--t2)">+13%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Legal Studies / Pre-Law</strong></td><td class="num">23-1011</td><td>Lawyers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Liberal Arts &amp; General Studies</strong></td><td class="num">—</td><td>—</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Library &amp; Information Science</strong></td><td class="num">25-4022</td><td>Librarians and media collections specialists</td><td class="num" style="color:var(--t2)">+3%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Management</strong></td><td class="num">11-1021</td><td>General and operations managers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Marketing</strong></td><td class="num">11-2021</td><td>Marketing managers</td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Mathematics</strong></td><td class="num">15-2021</td><td>Mathematicians</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Mechanical Engineering</strong></td><td class="num">17-2141</td><td>Mechanical engineers</td><td class="num" style="color:var(--t2)">+11%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Medical Assistant</strong></td><td class="num">31-9092</td><td>Medical assistants</td><td class="num" style="color:var(--t2)">+13%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Medical Billing &amp; Coding</strong></td><td class="num">29-2072</td><td>Medical records specialists</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Music</strong></td><td class="num">27-2042</td><td>Musicians and singers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Network Administration</strong></td><td class="num">15-1244</td><td>Network and computer systems administrators</td><td class="num" style="color:var(--red)">-4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Nursing - ADN</strong></td><td class="num">29-1141</td><td>Registered nurses</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Nursing (BSN)</strong></td><td class="num">29-1141</td><td>Registered nurses</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Nutrition &amp; Dietetics</strong></td><td class="num">29-1031</td><td>Dietitians and nutritionists</td><td class="num" style="color:var(--t2)">+8%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Occupational Therapy</strong></td><td class="num">29-1122</td><td>Occupational therapists</td><td class="num" style="color:var(--t2)">+15%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Paralegal Studies</strong></td><td class="num">23-2011</td><td>Paralegals and legal assistants</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Pharmacy (PharmD)</strong></td><td class="num">29-1051</td><td>Pharmacists</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Philosophy</strong></td><td class="num">—</td><td>—</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Photography</strong></td><td class="num">27-4021</td><td>Photographers</td><td class="num" style="color:var(--red)">-1%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Physical Therapy (DPT)</strong></td><td class="num">29-1123</td><td>Physical therapists</td><td class="num" style="color:var(--t2)">+12%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Physician Assistant Studies</strong></td><td class="num">29-1071</td><td>Physician assistants</td><td class="num" style="color:var(--t2)">+21%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Physics</strong></td><td class="num">19-2012</td><td>Physicists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Plumbing Technology</strong></td><td class="num">47-2152</td><td>Plumbers, pipefitters, and steamfitters</td><td class="num" style="color:var(--t2)">+7%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Political Science</strong></td><td class="num">19-3094</td><td>Political scientists</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Psychology</strong></td><td class="num">19-3033</td><td>Clinical and counseling psychologists <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+12%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Public Administration (MPA)</strong></td><td class="num">11-1021</td><td>General and operations managers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Public Health (MPH)</strong></td><td class="num">21-1094</td><td>Community health workers <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+13%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Radiologic Technology</strong></td><td class="num">29-2034</td><td>Radiologic technologists and technicians</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Real Estate</strong></td><td class="num">41-9022</td><td>Real estate sales agents</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Religious Studies / Theology</strong></td><td class="num">21-2011</td><td>Clergy <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Respiratory Therapy</strong></td><td class="num">29-1126</td><td>Respiratory therapists</td><td class="num" style="color:var(--t2)">+9%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Secondary Education</strong></td><td class="num">25-2031</td><td>Secondary school teachers</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Social Work (BSW/MSW)</strong></td><td class="num">21-1021</td><td>Child, family, and school social workers</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Sociology</strong></td><td class="num">19-3041</td><td>Sociologists</td><td class="num" style="color:var(--t2)">+3.5%</td><td><span class="tier t-base">baseline</span></td></tr><tr><td><strong>Software Engineering</strong></td><td class="num">15-1252</td><td>Software developers</td><td class="num" style="color:var(--t2)">+10%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Special Education</strong></td><td class="num">25-2052</td><td>Special education teachers, kindergarten and elementary</td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Speech-Language Pathology</strong></td><td class="num">29-1127</td><td>Speech-language pathologists</td><td class="num" style="color:var(--t2)">+17%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Statistics</strong></td><td class="num">15-2041</td><td>Statisticians <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">+11%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Supply Chain &amp; Logistics</strong></td><td class="num">13-1081</td><td>Logisticians</td><td class="num" style="color:var(--t2)">+18%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Surgical Technology</strong></td><td class="num">29-2055</td><td>Surgical technologists</td><td class="num" style="color:var(--t2)">+5%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Theater Arts / Performing Arts</strong></td><td class="num">27-2011</td><td>Actors <span style="color:var(--t3)">(indicative)</span></td><td class="num" style="color:var(--t2)">0%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Urban Planning</strong></td><td class="num">19-3051</td><td>Urban and regional planners</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>UX / UI Design</strong></td><td class="num">15-1255</td><td>Web and digital interface designers</td><td class="num" style="color:var(--t2)">+6%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Web Development</strong></td><td class="num">15-1254</td><td>Web developers</td><td class="num" style="color:var(--t2)">+4%</td><td><span class="tier t-src">BLS</span></td></tr><tr><td><strong>Welding Technology</strong></td><td class="num">51-4121</td><td>Welders, cutters, solderers, and brazers</td><td class="num" style="color:var(--t2)">+2%</td><td><span class="tier t-src">BLS</span></td></tr>
+</tbody></table></div>
+
+<div class="note n-amber"><p class="nh">Three cautions</p>
+<p><strong>Group pages versus SOC rows.</strong> Many OOH pages cover a group of occupations and publish a headline figure for the group. Where the SOC code sits inside such a group, the figure here is the SOC-specific row from the page's projections table, not the headline. Mathematicians (+1%) and statisticians (+11%) share a page whose headline is +10%; using the headline would have been badly wrong for one of them.</p>
+<p><strong>"Indicative" occupations.</strong> 20 programs are marked indicative: the named occupation is the largest single destination for graduates but still a minority of them. Psychology is mapped to clinical and counselling psychologists, English to writers and authors. The figure is real; its relevance to the whole cohort is partial, and the panel says so.</p>
+<p><strong>Projections are models.</strong> BLS employment projections are the best publicly available account of occupational demand, and they have historically been conservative about technological displacement. They are one considered view, not settled fact about 2035. The all-occupation figure for this round is +3.5%, down from 10.9% over 2015–25, so what reads as "growth" in this dataset is often growth relative to an unusually flat baseline.</p></div></section><section class="s" id="sourced"><h2><span class="num">12</span>What is sourced and what is estimated</h2>
+<p>This is the section that matters most for anyone deciding how much weight to place on the tool. Being precise about it is more useful than claiming more rigour than the method has.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Element</th><th>Status</th><th>Detail</th></tr></thead><tbody>
+<tr><td><strong>Scoring framework</strong></td><td><span class="tier t-src">Sourced</span></td><td>The five-dimension structure and its components derive from Eloundou et al., Felten et al., O*NET, BLS and NCES — all cited, and either peer reviewed or federal.</td></tr><tr><td><strong>SOC-level AI exposure</strong></td><td><span class="tier t-src">Sourced</span></td><td>From the published appendices of Eloundou et al. (β scores) and the Felten index. The 60/40 blend is documented in section 3.</td></tr><tr><td><strong>CIP-to-SOC mapping</strong></td><td><span class="tier t-src">Sourced</span></td><td>NCES CIP–SOC crosswalk, publicly available.</td></tr><tr><td><strong>O*NET task statements</strong></td><td><span class="tier t-src">Sourced</span></td><td>Task text and importance/frequency ratings taken from O*NET bulk data.</td></tr><tr><td><strong>BLS employment projections</strong></td><td><span class="tier t-src">Sourced</span></td><td>All 113 documented: 103 read from the current OOH entry for the program’s SOC code, and 10 using the BLS all-occupation projection where graduates disperse too widely for one occupation to represent them. Section 11 lists every figure.</td></tr><tr><td><strong>Program-level exposure scores</strong></td><td><span class="tier t-est">Estimate</span></td><td>Moving a SOC-level score to a CIP-level score requires judgement about which occupations represent a program’s graduates and how to weight several. This is the largest source of estimation error in the model.</td></tr><tr><td><strong>Curriculum half-life</strong></td><td><span class="tier t-est">Estimate</span></td><td>Derived from task automation timelines in the literature combined with O*NET frequency data. No published half-life database exists. Displayed as a band rather than a decimal, because a decimal would claim precision the method does not have.</td></tr><tr><td><strong>Faculty AI readiness</strong></td><td><span class="tier t-est">Estimate</span></td><td>National estimates calibrated against professional-development data and published faculty surveys. Institutional variation is very large, which is what the CSV overlay exists to address.</td></tr><tr><td><strong>Regional multipliers</strong></td><td><span class="tier t-est">Estimate</span></td><td>Derived from metro-level employment concentration averaged across major US markets. A national representative figure, not your region. The single input most worth replacing with local data.</td></tr><tr><td><strong>Task-level impact scores</strong></td><td><span class="tier t-est">Estimate</span></td><td>Assigned by the criteria in section 8, calibrated to Eloundou β by task category. Judgements, most reliable as a ranking of relative impact within a program rather than as absolute values.</td></tr><tr><td><strong>Narrow / broad pipeline</strong></td><td><span class="tier t-est">Estimate</span></td><td>Assigned by whether the credential trains for essentially one occupation. Defensible in clear cases, a judgement call at the margins (Architecture and Nutrition, for example, sit near the line).</td></tr><tr><td><strong>CIP-to-SOC destination mapping</strong></td><td><span class="tier t-est">Estimate</span></td><td>Which occupation best represents a program’s graduates is a judgement. 20 mappings are marked indicative, meaning the occupation is the largest single destination but still a minority of graduates.</td></tr>
+</tbody></table></div></section><section class="s" id="calibration"><h2><span class="num">13</span>Calibration and disagreement</h2>
+<p>Every program carries a second field alongside the computed score: the author’s own assessment of what that program needs, recorded independently of the formula. The thresholds in section 7 were then chosen to maximise agreement between the two. At default weights the model reproduces the human assessment for <strong>96 of 113 programs (85%)</strong>.</p>
+<p>In version 1 the human assessment was recorded in the data but never read. The displayed recommendation came entirely from the formula, which disagreed with it for 29 programs — so a quarter of the site said something its author had not concluded, with no indication that this was happening.</p>
+<p>Version 2 keeps both and shows the disagreement. Where the model and the recorded assessment differ, the program is marked <em>Contested</em> and the panel names both verdicts. A disagreement between a formula and a considered human judgement is information, and burying it would be the wrong instinct for a tool whose purpose is to start a conversation.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Program</th><th>Model says</th><th>Author’s assessment</th><th class="num">Composite</th></tr></thead><tbody>
+<tr><td><strong>Artificial Intelligence &amp; Machine Learning</strong></td><td>Augment</td><td>Expand</td><td class="num">0.452</td></tr><tr><td><strong>Court Reporting</strong></td><td>Pivot</td><td>Restructure</td><td class="num">0.858</td></tr><tr><td><strong>Culinary Arts</strong></td><td>Expand</td><td>Augment</td><td class="num">0.248</td></tr><tr><td><strong>Cybersecurity</strong></td><td>Augment</td><td>Expand</td><td class="num">0.521</td></tr><tr><td><strong>Diagnostic Medical Sonography</strong></td><td>Augment</td><td>Pivot</td><td class="num">0.535</td></tr><tr><td><strong>Foreign Languages</strong></td><td>Pivot</td><td>Restructure</td><td class="num">0.772</td></tr><tr><td><strong>Forestry &amp; Natural Resources</strong></td><td>Expand</td><td>Augment</td><td class="num">0.264</td></tr><tr><td><strong>Geographic Information Systems</strong></td><td>Augment</td><td>Expand</td><td class="num">0.385</td></tr><tr><td><strong>Health Informatics</strong></td><td>Augment</td><td>Expand</td><td class="num">0.469</td></tr><tr><td><strong>Industrial Engineering</strong></td><td>Augment</td><td>Pivot</td><td class="num">0.519</td></tr><tr><td><strong>International Business</strong></td><td>Pivot</td><td>Augment</td><td class="num">0.567</td></tr><tr><td><strong>Legal Studies / Pre-Law</strong></td><td>Pivot</td><td>Augment</td><td class="num">0.593</td></tr><tr><td><strong>Medical Assistant</strong></td><td>Pivot</td><td>Restructure</td><td class="num">0.734</td></tr><tr><td><strong>Medical Billing &amp; Coding</strong></td><td>Pivot</td><td>Restructure</td><td class="num">0.815</td></tr><tr><td><strong>Network Administration</strong></td><td>Restructure</td><td>Pivot</td><td class="num">0.707</td></tr><tr><td><strong>Public Health (MPH)</strong></td><td>Augment</td><td>Pivot</td><td class="num">0.540</td></tr><tr><td><strong>Real Estate</strong></td><td>Pivot</td><td>Augment</td><td class="num">0.566</td></tr>
+</tbody></table></div>
+<p>Most of these sit close to a boundary, which is what one would expect: agreement is high in the clear cases and breaks down exactly where the question is genuinely difficult. Treat every row above as a program to examine rather than to classify.</p></section><section class="s" id="limits"><h2><span class="num">14</span>Limitations and appropriate use</h2>
+<p>These apply to every use of Meridian and should be passed on to any audience relying on its outputs.</p>
+<div class="lim"><span class="ic" aria-hidden="true">⏱</span><p><strong>A point-in-time snapshot with no automatic refresh.</strong> Employment figures were read from the 2025–35 OOH round in September 2026. BLS advances its projection window roughly annually, and each new round revises figures materially — physician assistants moved from +25% to +21% between the two most recent rounds, and graphic designers from +2% to −2%. Exposure research and O*NET task data move too, and AI capability fastest of the three. Re-read section 11 against the current OOH round at least every eighteen months; programs within ±0.05 of a threshold are the most vulnerable.</p></div><div class="lim"><span class="ic" aria-hidden="true">📍</span><p><strong>National figures, not institutional ones.</strong> Faculty readiness, regional demand and enrolment vary enormously between institutions. The CSV overlay exists precisely for this; a score computed from national defaults describes no real institution.</p></div><div class="lim"><span class="ic" aria-hidden="true">🎓</span><p><strong>A program category is not a program.</strong> Meridian scores “Accounting,” not your accounting department. Some are already deeply AI-integrated and some are not. These figures describe the modal program.</p></div><div class="lim"><span class="ic" aria-hidden="true">⚖️</span><p><strong>Thresholds are choices.</strong> 0.555 and 0.36 are defensible, not derived. A program at 0.550 and one at 0.560 are not meaningfully different, yet they display differently. Use the weight sliders on any borderline program before acting.</p></div><div class="lim"><span class="ic" aria-hidden="true">🚫</span><p><strong>This does not forecast AI.</strong> Scores reflect the current generation of systems. They make no attempt to anticipate capabilities two or three generations out, which the cited research does not support and which nobody can presently do well.</p></div><div class="lim"><span class="ic" aria-hidden="true">🏛️</span><p><strong>Not a substitute for formal review.</strong> Decisions about restructuring, resource reallocation or teach-out belong to curriculum review, accreditation consultation, faculty governance and institution-specific labour market analysis. Meridian tells you where to start that work.</p></div><div class="lim"><span class="ic" aria-hidden="true">🔢</span><p><strong>Whole percentages, group pages, and the baseline.</strong> OOH publishes whole percentages, so figures here carry no decimals. Where a SOC sits inside a broader OOH page, the SOC row is used rather than the page headline. Ten dispersed degrees use the all-occupation baseline of +3.5% instead of a single occupational figure — a deliberate refusal to assert what the evidence does not show, not a measurement.</p></div><div class="lim"><span class="ic" aria-hidden="true">🧭</span><p><strong>Exposure is not desert.</strong> A high score says AI can perform tasks the program teaches. It says nothing about whether the discipline is worth studying, whether its graduates lead good lives, or what a university is for. Those questions are prior to this one and are not answered by any of these numbers.</p></div><div class="lim"><span class="ic" aria-hidden="true">📊</span><p><strong>Not a primary source.</strong> Cite Meridian as an analytical instrument. Attribute specific numerical claims to the underlying sources, noting that the program-level figure involves methodological judgement.</p></div>
+<h3>Suggested citation</h3>
+<div class="quote">Program AI exposure scores are derived from a composite index informed by Eloundou et al. (2024), the Felten, Raj &amp; Seamans AI Occupational Exposure method, O*NET task data and BLS employment projections, aggregated using the Meridian analytical framework (George, 2026). Program-level scores involve methodological judgement in applying national occupational data to specific academic programs and should be read as directional indicators rather than measurements. Employment figures are drawn from the Bureau of Labor Statistics Occupational Outlook Handbook, 2025–35 projection round, for the SOC code named in each program record; programs whose graduates disperse across many occupations use the BLS all-occupation projection instead.</div>
+</section></div>
 <footer>
-  <div class="ft-credit">
-    Conceptualized &amp; Designed by <a href="https://www.linkedin.com/in/beingbabu/" target="_blank" rel="noopener noreferrer" class="ft-link">Professor Babu George</a><br>
-    Meridian is an open educational resource. This methodology document may be reproduced freely with attribution.
-  </div>
+  <p class="nm">Conceptualised and designed by <a href="https://www.linkedin.com/in/beingbabu/" target="_blank" rel="noopener">Professor Babu George</a></p>
+  <p>Meridian is a free, open educational resource. This methodology may be reproduced freely with attribution.<br>
+  <a href="index.html">Dashboard</a> · <a href="use-cases.html">How to use it</a></p>
 </footer>
-
 </body>
 </html>
