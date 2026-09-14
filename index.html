@@ -344,6 +344,30 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .st-line.err{display:block;background:var(--rb);border:1.5px solid var(--rbr);color:var(--red)}
 .st-line.busy{display:block;background:var(--bg2);border:1.5px solid var(--bg3);color:var(--t2)}
 
+/* ── SEARCH SUGGESTIONS ────────────────────────────────── */
+.sw{position:relative;z-index:40}
+#sug-list{position:absolute;top:calc(100% + 7px);left:0;right:0;background:var(--card);
+  border:1.5px solid var(--bg3);border-radius:12px;box-shadow:0 12px 40px rgba(22,39,31,.22);
+  list-style:none;margin:0;padding:6px;max-height:min(58vh,430px);overflow-y:auto;text-align:left;z-index:50}
+#sug-list[hidden]{display:none}
+.sug-h{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--t3);padding:9px 10px 4px}
+.sug{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer}
+.sug.on{background:var(--forest)}
+.sug.on .sug-lb{color:#fff}
+.sug.on .sug-mt{color:rgba(255,255,255,.72)}
+.sug-ic{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.sug-tx{flex:1;min-width:0}
+.sug-lb{display:block;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug-mt{display:block;font-size:11px;color:var(--t3);line-height:1.4;margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug .rbadge{flex-shrink:0}
+.srch-hint{font-size:11.5px;color:rgba(255,255,255,.66);margin-top:9px;text-align:center}
+.srch-hint kbd{font-family:var(--mono);font-size:10.5px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);border-radius:4px;padding:1px 5px;color:rgba(255,255,255,.88)}
+@media(max-width:480px){ .sug-mt{font-size:10.5px} .srch-hint{display:none} }
+
 /* ── MODALS ────────────────────────────────────────────── */
 .mbg{position:fixed;inset:0;background:rgba(22,39,31,.5);z-index:900;display:none;align-items:flex-start;justify-content:center;padding:26px 16px;overflow-y:auto}
 .mbg.on{display:flex}
@@ -497,10 +521,17 @@ footer{background:#10201b;padding:34px 20px;text-align:center;border-top:1px sol
   <h1 class="h-title" id="h-title"></h1>
   <p class="h-sub" id="h-sub"></p>
   <div class="sw">
-    <label class="vh" for="hsearch">Search for a degree program</label>
-    <input class="srch" type="search" id="hsearch" placeholder="Search a degree — Nursing, Accounting, History…" oninput="onSearch(this.value)" autocomplete="off" role="searchbox">
+    <label class="vh" for="hsearch">Search degree programs, fields or occupations</label>
+    <input class="srch" type="text" id="hsearch"
+      placeholder="Search a degree, a job, or a skill — nursing, lawyer, welding…"
+      autocomplete="off" spellcheck="false"
+      role="combobox" aria-expanded="false" aria-controls="sug-list"
+      aria-autocomplete="list" aria-activedescendant=""
+      oninput="onSearchInput(this.value)" onkeydown="onSearchKey(event)" onfocus="onSearchFocus()">
     <svg class="s-ico" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <ul id="sug-list" role="listbox" aria-label="Search suggestions" hidden></ul>
   </div>
+  <p class="srch-hint">Type a job title or a skill, not only a degree name. <kbd>↑</kbd><kbd>↓</kbd> to move, <kbd>Enter</kbd> to open, <kbd>/</kbd> from anywhere.</p>
   <div class="h-stats">
     <div class="hs"><span class="hs-v" id="stat-ct">113</span><span class="hs-l">Degree programs</span></div>
     <div class="hs"><span class="hs-v">12</span><span class="hs-l">Academic fields</span></div>
@@ -1058,6 +1089,436 @@ const slugify = n => n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g
 const byId = id => document.getElementById(id);
 function say(msg){ byId("live").textContent = msg; }
 
+/* ════════════════════════════════════════════════════════════════════════
+   SEARCH
+
+   The first version matched a raw substring against a few fields, which
+   failed the way people actually type. Someone looking for a nursing
+   programme types "nurse"; someone looking for Computer Science types
+   "coding"; someone thinking about their own future types "lawyer", not
+   "Legal Studies / Pre-Law". None of those matched anything.
+
+   This index ranks rather than filters, tolerates typos, and knows the
+   vocabulary a student or an employer would use rather than the vocabulary
+   the registrar uses.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Words people type, mapped to the programs they mean. Occupational titles,
+   colloquial names, skills and the informal name of a field. */
+const SYNONYMS = {
+  "nurse":["Nursing (BSN)","Nursing - ADN"], "nursing":["Nursing (BSN)","Nursing - ADN"],
+  "rn":["Nursing (BSN)","Nursing - ADN"], "bedside":["Nursing (BSN)"],
+  "doctor":["Biology","Biochemistry","Kinesiology / Exercise Science","Physician Assistant Studies"],
+  "premed":["Biology","Biochemistry","Chemistry"], "pre-med":["Biology","Biochemistry","Chemistry"],
+  "medicine":["Biology","Biochemistry","Physician Assistant Studies"],
+  "pa":["Physician Assistant Studies"], "physio":["Physical Therapy (DPT)"],
+  "physiotherapy":["Physical Therapy (DPT)"], "pt":["Physical Therapy (DPT)"],
+  "ot":["Occupational Therapy"], "dentist":["Dental Hygiene"], "dental":["Dental Hygiene"],
+  "pharmacist":["Pharmacy (PharmD)"], "dietitian":["Nutrition & Dietetics"],
+  "paramedic":["Emergency Medical Services / Paramedic"], "emt":["Emergency Medical Services / Paramedic"],
+  "ambulance":["Emergency Medical Services / Paramedic"], "ultrasound":["Diagnostic Medical Sonography"],
+  "xray":["Radiologic Technology"], "x-ray":["Radiologic Technology"], "imaging":["Radiologic Technology","Diagnostic Medical Sonography"],
+  "speech":["Speech-Language Pathology"], "therapist":["Physical Therapy (DPT)","Occupational Therapy","Respiratory Therapy","Clinical / Counseling Psychology"],
+  "hospital":["Health Administration","Nursing (BSN)","Health Informatics"],
+  "medical records":["Medical Billing & Coding","Health Informatics"],
+
+  "coding":["Computer Science","Software Engineering","Web Development"],
+  "programming":["Computer Science","Software Engineering"],
+  "programmer":["Computer Science","Software Engineering"],
+  "developer":["Software Engineering","Computer Science","Web Development"],
+  "software":["Software Engineering","Computer Science"],
+  "cs":["Computer Science"], "it":["Information Technology"], "tech":["Information Technology","Computer Science"],
+  "security":["Cybersecurity"], "hacking":["Cybersecurity"], "infosec":["Cybersecurity"],
+  "ai":["Artificial Intelligence & Machine Learning","Data Science"],
+  "machine learning":["Artificial Intelligence & Machine Learning"],
+  "ml":["Artificial Intelligence & Machine Learning"],
+  "data":["Data Science","Business Analytics","Statistics"],
+  "analytics":["Business Analytics","Data Science"],
+  "database":["Information Technology","Data Science"],
+  "web":["Web Development","UX / UI Design"], "website":["Web Development"],
+  "games":["Game Design & Development"], "gaming":["Game Design & Development"],
+  "ux":["UX / UI Design"], "ui":["UX / UI Design"], "designer":["Graphic Design","UX / UI Design","Interior Design","Fashion Design"],
+  "cloud":["Cloud Computing"], "aws":["Cloud Computing"], "devops":["Cloud Computing","Information Technology"],
+  "networking":["Network Administration","Cloud Computing"], "sysadmin":["Network Administration"],
+  "gis":["Geographic Information Systems"], "mapping":["Geographic Information Systems"],
+
+  "lawyer":["Legal Studies / Pre-Law","Paralegal Studies"], "attorney":["Legal Studies / Pre-Law"],
+  "law":["Legal Studies / Pre-Law","Paralegal Studies","Compliance & Regulatory Affairs"],
+  "prelaw":["Legal Studies / Pre-Law"], "pre-law":["Legal Studies / Pre-Law"],
+  "paralegal":["Paralegal Studies"], "court":["Court Reporting","Criminal Justice"],
+  "police":["Criminal Justice"], "policing":["Criminal Justice"], "cop":["Criminal Justice"],
+  "compliance":["Compliance & Regulatory Affairs"],
+
+  "teacher":["Elementary Education","Secondary Education","Early Childhood Education","Special Education"],
+  "teaching":["Elementary Education","Secondary Education","Early Childhood Education","Special Education"],
+  "school":["Elementary Education","Secondary Education","Higher Education Administration"],
+  "kindergarten":["Early Childhood Education"], "preschool":["Early Childhood Education"],
+  "sped":["Special Education"], "curriculum":["Instructional Design & Technology"],
+  "edtech":["Instructional Design & Technology"], "provost":["Higher Education Administration"],
+
+  "accountant":["Accounting"], "accountancy":["Accounting"], "cpa":["Accounting"], "audit":["Accounting"],
+  "tax":["Accounting"], "bookkeeping":["Accounting"], "banker":["Finance"], "banking":["Finance"],
+  "investment":["Finance"], "wall street":["Finance"], "advertising":["Marketing"],
+  "branding":["Marketing"], "seo":["Marketing"], "hr":["Human Resources"], "recruiting":["Human Resources"],
+  "recruitment":["Human Resources"], "payroll":["Human Resources"], "mba":["Management","Entrepreneurship"],
+  "manager":["Management"], "startup":["Entrepreneurship"], "founder":["Entrepreneurship"],
+  "logistics":["Supply Chain & Logistics"], "warehouse":["Supply Chain & Logistics"],
+  "shipping":["Supply Chain & Logistics"], "procurement":["Supply Chain & Logistics"],
+  "insurance":["Insurance & Risk Management"], "actuary":["Insurance & Risk Management","Statistics"],
+  "realtor":["Real Estate"], "property":["Real Estate"], "hotel":["Hospitality Management"],
+  "tourism":["Hospitality Management"], "restaurant":["Hospitality Management","Culinary Arts"],
+
+  "writer":["Creative Writing","English / Literature","Journalism"],
+  "writing":["Creative Writing","English / Literature"], "author":["Creative Writing"],
+  "novelist":["Creative Writing"], "editor":["English / Literature","Journalism"],
+  "reporter":["Journalism"], "news":["Journalism"], "media":["Communications","Film, Video & Media Production"],
+  "pr":["Communications"], "translator":["Foreign Languages"], "interpreter":["Foreign Languages"],
+  "language":["Foreign Languages","English / Literature"], "spanish":["Foreign Languages"],
+  "librarian":["Library & Information Science"], "library":["Library & Information Science"],
+  "theology":["Religious Studies / Theology"], "ministry":["Religious Studies / Theology"],
+  "priest":["Religious Studies / Theology"], "pastor":["Religious Studies / Theology"],
+  "ethics":["Philosophy"], "logic":["Philosophy"],
+
+  "counsellor":["Clinical / Counseling Psychology","Social Work (BSW/MSW)"],
+  "counselor":["Clinical / Counseling Psychology","Social Work (BSW/MSW)"],
+  "therapy":["Clinical / Counseling Psychology","Physical Therapy (DPT)","Occupational Therapy"],
+  "psych":["Psychology","Clinical / Counseling Psychology"],
+  "social worker":["Social Work (BSW/MSW)"], "economist":["Economics"],
+  "politics":["Political Science"], "government":["Political Science","Public Administration (MPA)"],
+  "diplomacy":["Political Science","International Business"], "planner":["Urban Planning"],
+  "city planning":["Urban Planning"], "archaeology":["Anthropology"],
+
+  "engineer":["Mechanical Engineering","Civil Engineering","Electrical Engineering","Chemical Engineering","Industrial Engineering"],
+  "engineering":["Mechanical Engineering","Civil Engineering","Electrical Engineering"],
+  "construction":["Construction Management","Carpentry & Construction Technology","Civil Engineering"],
+  "builder":["Construction Management","Carpentry & Construction Technology"],
+  "architect":["Architecture"], "buildings":["Architecture","Construction Management"],
+  "robotics":["Mechanical Engineering","Artificial Intelligence & Machine Learning"],
+  "aerospace":["Aerospace Engineering"], "aviation":["Aerospace Engineering"],
+  "environment":["Environmental Science","Environmental Engineering","Forestry & Natural Resources"],
+  "climate":["Environmental Science","Environmental Engineering"],
+  "sustainability":["Environmental Science","Environmental Engineering"],
+
+  "electrician":["Electrical Technology"], "plumber":["Plumbing Technology"],
+  "plumbing":["Plumbing Technology"], "welder":["Welding Technology"],
+  "welding":["Welding Technology"], "mechanic":["Automotive Technology"],
+  "cars":["Automotive Technology"], "automotive":["Automotive Technology"],
+  "hvac":["HVAC Technology"], "aircon":["HVAC Technology"], "carpenter":["Carpentry & Construction Technology"],
+  "trades":["Welding Technology","Electrical Technology","Plumbing Technology","HVAC Technology"],
+  "skilled trades":["Welding Technology","Electrical Technology","Plumbing Technology","HVAC Technology"],
+  "chef":["Culinary Arts"], "cooking":["Culinary Arts"], "baking":["Culinary Arts"],
+  "hairdresser":["Cosmetology"], "beauty":["Cosmetology"], "salon":["Cosmetology"],
+
+  "farming":["Agriculture Business","Horticulture","Animal Science"],
+  "agriculture":["Agriculture Business","Animal Science","Food Science & Technology"],
+  "vet":["Animal Science"], "veterinary":["Animal Science"], "animals":["Animal Science"],
+  "forestry":["Forestry & Natural Resources"], "plants":["Horticulture"],
+  "photographer":["Photography"], "film":["Film, Video & Media Production"],
+  "video":["Film, Video & Media Production"], "cinema":["Film, Video & Media Production"],
+  "animation":["Animation & Digital Media"], "acting":["Theater Arts / Performing Arts"],
+  "actor":["Theater Arts / Performing Arts"], "drama":["Theater Arts / Performing Arts"],
+  "theatre":["Theater Arts / Performing Arts"], "musician":["Music"], "fashion":["Fashion Design"],
+  "art":["Fine Arts (BFA)","Graphic Design"], "painting":["Fine Arts (BFA)"],
+  "maths":["Mathematics"], "math":["Mathematics"], "physicist":["Physics"], "chemist":["Chemistry"]
+};
+
+/* Reverse index, built once. */
+const SYN_INDEX = (()=>{
+  const m = new Map();
+  for(const [word, names] of Object.entries(SYNONYMS)){
+    names.forEach((n,rank)=>{
+      if(!m.has(n)) m.set(n, []);
+      /* rank 0 is the program the word most likely means */
+      m.get(n).push({word, rank});
+    });
+  }
+  return m;
+})();
+
+const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9\s./-]/g," ").replace(/\s+/g," ").trim();
+
+/* Built once at startup; each entry holds the text we match against at each
+   weight, so scoring stays a cheap pass over precomputed strings. */
+const SEARCH_INDEX = PROGRAMS.map(p=>{
+  const syns = SYN_INDEX.get(p.name) || [];
+  const nm = norm(p.name);
+  return {
+    p,
+    name: nm,
+    words: nm.split(" ").filter(Boolean),
+    field: norm(fieldOf(p.field).name),
+    occ: norm(p.socTitle||""),
+    occWords: norm(p.socTitle||"").split(" ").filter(Boolean),
+    syns,                                   /* [{word, rank}] */
+    synText: norm(syns.map(x=>x.word).join(" ")),
+    misc: norm([p.degree, p.cip, p.soc, p.accred].join(" ")),
+    deep: norm(p.tasks.map(t=>t.n).join(" ") + " " + p.actions.map(a=>a.n).join(" "))
+  };
+});
+
+/* One insertion, deletion or substitution apart. Cheap, and enough for the
+   typos people actually make in a search box. */
+function near(a,b){
+  if(Math.abs(a.length-b.length)>1) return false;
+  if(a===b) return true;
+  let i=0,j=0,edits=0;
+  while(i<a.length && j<b.length){
+    if(a[i]===b[j]){i++;j++;continue;}
+    if(++edits>1) return false;
+    if(a.length>b.length) i++;
+    else if(a.length<b.length) j++;
+    else {i++;j++;}
+  }
+  return edits + (a.length-i) + (b.length-j) <= 1;
+}
+
+function scoreProgram(entry, q, qWords){
+  /* A one- or two-letter query must match the start of a word or a synonym
+     outright. Substring matching at that length is noise: "ai" would
+     otherwise pull in Supply Chain and Regulatory Affairs. */
+  const tiny = q.length <= 2;
+  let s = 0;
+
+  if(entry.name === q) return 1000;
+
+  const syn = entry.syns.find(x=>x.word===q);
+  if(syn) s = Math.max(s, 900 - syn.rank*12);
+
+  if(entry.name.startsWith(q)) s = Math.max(s, 800);
+  if(entry.words.some(w=>w.startsWith(q))) s = Math.max(s, 720);
+
+  if(!tiny){
+    if(entry.name.includes(q)) s = Math.max(s, 640);
+    if(entry.synText.includes(q)) s = Math.max(s, 560);
+    if(entry.occ.startsWith(q)) s = Math.max(s, 500);
+    if(entry.occWords.some(w=>w.startsWith(q))) s = Math.max(s, 470);
+    if(entry.occ.includes(q)) s = Math.max(s, 430);
+    if(entry.field.includes(q)) s = Math.max(s, 390);
+    if(entry.misc.includes(q)) s = Math.max(s, 350);
+    if(entry.deep.includes(q)) s = Math.max(s, 200);
+  } else {
+    if(entry.occWords.some(w=>w.startsWith(q))) s = Math.max(s, 470);
+    if(entry.misc.split(" ").some(w=>w===q)) s = Math.max(s, 350);
+  }
+
+  /* typo tolerance, once the query is long enough for a near-miss to mean
+     something rather than to match half the catalogue */
+  if(!s && q.length >= 5){
+    if(entry.words.some(w=>w.length>=4 && near(w,q))) s = 300;
+    else if(entry.syns.some(x=>x.word.length>=4 && near(x.word,q))) s = 270;
+    else if(entry.occWords.some(w=>w.length>=5 && near(w,q))) s = 240;
+  }
+
+  /* Multi-word queries: score by where the words land. Matching only inside
+     task descriptions is weak evidence and must not outrank a real hit. */
+  if(qWords.length > 1){
+    const strong = entry.name+" "+entry.synText+" "+entry.occ+" "+entry.field;
+    if(qWords.every(w=>strong.includes(w))) s = Math.max(s, 620);
+    else if(qWords.every(w=>(strong+" "+entry.deep).includes(w))) s = Math.max(s, 180);
+  }
+
+  /* gentle preference for shorter names, so "Music" beats "Music Education" */
+  return s ? s - Math.min(30, entry.name.length/4) : 0;
+}
+
+function searchPrograms(query){
+  const q = norm(query);
+  if(!q) return [];
+  const qWords = q.split(" ").filter(Boolean);
+  return SEARCH_INDEX
+    .map(e=>({p:e.p, s:scoreProgram(e,q,qWords)}))
+    .filter(r=>r.s>0)
+    .sort((a,b)=> b.s-a.s || a.p.name.localeCompare(b.p.name));
+}
+
+/* ── SUGGESTIONS ───────────────────────────────────────── */
+const EXAMPLES = ["nursing","accounting","teacher","welding","philosophy","cybersecurity","lawyer","graphic design"];
+let sugItems = [], sugIndex = -1, sugOpen = false;
+
+function buildSuggestions(query){
+  const q = norm(query);
+  const out = [];
+  if(!q){
+    EXAMPLES.forEach(x=>out.push({kind:"example", label:x, icon:"🔍", meta:"example search"}));
+    return out.slice(0,6);
+  }
+  /* Programs first: they are what people are looking for. */
+  searchPrograms(query).slice(0,6).forEach(r=>{
+    const p=r.p, v=verdict(p);
+    out.push({kind:"program", id:p.id, label:p.name, icon:fieldOf(p.field).icon,
+      meta:`${fieldOf(p.field).name} · ${p.degree}`, verdict:v});
+  });
+  /* then fields whose name matches */
+  FIELDS.forEach(f=>{
+    const fn = norm(f.name);
+    if(fn.includes(q)){
+      const n = PROGRAMS.filter(p=>p.field===f.id).length;
+      out.push({kind:"field", id:f.id, label:f.name, icon:f.icon, meta:`${n} programs in this field`});
+    }
+  });
+  /* then occupations, deduplicated — several programs can share one SOC */
+  const occSeen = new Set();
+  PROGRAMS.forEach(p=>{
+    if(!p.socTitle || occSeen.has(p.socTitle)) return;
+    if(norm(p.socTitle).includes(q) && q.length>2){
+      occSeen.add(p.socTitle);
+      const n = PROGRAMS.filter(x=>x.socTitle===p.socTitle).length;
+      out.push({kind:"occupation", label:p.socTitle, icon:"🧭", soc:p.soc,
+        meta:`occupation · SOC ${p.soc} · ${n} program${n!==1?"s":""}`});
+    }
+  });
+  const trimmed = out.slice(0,8);
+  if(!trimmed.length){
+    trimmed.push({kind:"none", label:"No match for “"+query+"”", icon:"·",
+      meta:"Try a job title, a skill or a field — “nurse”, “coding”, “trades”"});
+    return trimmed;
+  }
+  trimmed.push({kind:"all", label:query, icon:"↳",
+    meta:`Show all ${searchPrograms(query).length} matching programs`});
+  return trimmed;
+}
+
+function renderSuggestions(){
+  const box = byId("sug-list");
+  if(!sugItems.length){ closeSuggestions(); return; }
+  let lastKind = "";
+  box.innerHTML = sugItems.map((it,i)=>{
+    let head = "";
+    const title = {program:"Programs", field:"Fields", occupation:"Occupations",
+                   example:"Try one of these", all:"", none:""}[it.kind];
+    if(it.kind!==lastKind && title){ head = `<li class="sug-h" role="presentation">${title}</li>`; }
+    lastKind = it.kind;
+    const badge = it.kind==="program" ? `<span class="rbadge rb-${it.verdict}">${REC[it.verdict]}</span>` : "";
+    return head + `<li class="sug${i===sugIndex?" on":""}" id="sug-${i}" role="option"
+      aria-selected="${i===sugIndex}" onmousedown="event.preventDefault();chooseSuggestion(${i})"
+      onmousemove="highlightSuggestion(${i})">
+      <span class="sug-ic" aria-hidden="true">${it.icon}</span>
+      <span class="sug-tx"><span class="sug-lb">${esc(it.label)}</span>
+        <span class="sug-mt">${esc(it.meta)}</span></span>${badge}</li>`;
+  }).join("");
+  box.hidden = false;
+  sugOpen = true;
+  const inp = byId("hsearch");
+  inp.setAttribute("aria-expanded","true");
+  inp.setAttribute("aria-activedescendant", sugIndex>=0 ? "sug-"+sugIndex : "");
+}
+
+function closeSuggestions(){
+  const box = byId("sug-list");
+  box.hidden = true; box.innerHTML = "";
+  sugOpen = false; sugIndex = -1; sugItems = [];
+  const inp = byId("hsearch");
+  inp.setAttribute("aria-expanded","false");
+  inp.setAttribute("aria-activedescendant","");
+}
+function highlightSuggestion(i){
+  if(i===sugIndex) return;
+  sugIndex = i;
+  document.querySelectorAll("#sug-list .sug").forEach((el,n)=>{
+    el.classList.toggle("on", n===i);
+    el.setAttribute("aria-selected", String(n===i));
+  });
+  byId("hsearch").setAttribute("aria-activedescendant","sug-"+i);
+}
+function moveSuggestion(delta){
+  if(!sugOpen || !sugItems.length) return;
+  let i = sugIndex + delta;
+  if(i < -1) i = sugItems.length - 1;
+  if(i >= sugItems.length) i = -1;
+  sugIndex = i;
+  document.querySelectorAll("#sug-list .sug").forEach((el,n)=>{
+    el.classList.toggle("on", n===i);
+    el.setAttribute("aria-selected", String(n===i));
+    if(n===i) el.scrollIntoView({block:"nearest"});
+  });
+  byId("hsearch").setAttribute("aria-activedescendant", i>=0 ? "sug-"+i : "");
+}
+
+function chooseSuggestion(i){
+  const it = sugItems[i];
+  if(!it || it.kind==="none") return;
+  closeSuggestions();
+  const inp = byId("hsearch");
+  switch(it.kind){
+    case "program":
+      inp.value = it.label; state.search = it.label; state.field=""; state.critical=false;
+      render(); openDrawer(it.id);
+      break;
+    case "field":
+      inp.value=""; state.search=""; state.critical=false; state.action="";
+      state.field = it.id; render(); goToResults();
+      break;
+    case "occupation":
+      inp.value = it.label; state.search = it.label; state.field=""; state.critical=false;
+      render(); goToResults();
+      break;
+    case "example":
+    case "all":
+    default:
+      inp.value = it.label; state.search = it.label; state.field=""; state.critical=false;
+      render(); goToResults();
+  }
+}
+
+/* The old search filtered a grid that sat well below the fold, so submitting
+   appeared to do nothing at all. Submitting now moves you to the results and
+   tells a screen reader what happened. */
+function goToResults(){
+  const h = byId("res-h");
+  if(!h) return;
+  const navH = (byId("nav").offsetHeight || 54) + 8;
+  const y = h.getBoundingClientRect().top + window.scrollY - navH;
+  window.scrollTo({top:Math.max(0,y), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  h.setAttribute("tabindex","-1");
+  setTimeout(()=>{ try{ h.focus({preventScroll:true}); }catch(e){} }, 380);
+  const n = filtered().length;
+  say(`${n} program${n!==1?"s":""} found. Results below.`);
+}
+
+function submitSearch(){
+  if(sugIndex >= 0 && sugItems[sugIndex]){ chooseSuggestion(sugIndex); return; }
+  const v = byId("hsearch").value;
+  closeSuggestions();
+  /* A single unambiguous hit should just open, rather than leaving someone
+     to click one card in a grid of one. */
+  const hits = searchPrograms(v);
+  state.search = v; state.field=""; state.critical=false;
+  render();
+  if(hits.length === 1){ openDrawer(hits[0].p.id); return; }
+  goToResults();
+}
+
+let sugTimer = null;
+function onSearchInput(v){
+  state.search = v;
+  state.field = "";
+  render();
+  clearTimeout(sugTimer);
+  sugTimer = setTimeout(()=>{
+    sugItems = buildSuggestions(v);
+    sugIndex = -1;
+    renderSuggestions();
+  }, 90);
+}
+function onSearchFocus(){
+  if(!byId("hsearch").value.trim()){
+    sugItems = buildSuggestions(""); sugIndex = -1; renderSuggestions();
+  }
+}
+function onSearchKey(e){
+  if(e.key === "ArrowDown"){ e.preventDefault(); if(!sugOpen){ sugItems=buildSuggestions(byId("hsearch").value); renderSuggestions(); } else moveSuggestion(1); }
+  else if(e.key === "ArrowUp"){ e.preventDefault(); moveSuggestion(-1); }
+  else if(e.key === "Enter"){ e.preventDefault(); submitSearch(); }
+  else if(e.key === "Escape"){ if(sugOpen){ e.stopPropagation(); closeSuggestions(); } }
+  else if(e.key === "Tab"){ closeSuggestions(); }
+}
+
+function runExample(q){
+  const inp = byId("hsearch");
+  inp.value = q; state.search = q; state.field=""; state.critical=false; state.action="";
+  closeSuggestions(); render(); goToResults();
+}
+
 /* ── URL ───────────────────────────────────────────────── */
 function writeURL(push){
   const q = new URLSearchParams();
@@ -1092,15 +1553,22 @@ function readURL(){
 
 /* ── FILTER ────────────────────────────────────────────── */
 function filtered(){
-  const q = state.search.trim().toLowerCase();
-  let list = PROGRAMS.filter(p=>{
+  const q = state.search.trim();
+  /* When searching, relevance decides the order and the same ranked matcher
+     that produced the suggestions decides membership, so the grid can never
+     contradict the dropdown. */
+  let rank = null, list;
+  if(q){
+    const hits = searchPrograms(q);
+    rank = new Map(hits.map((h,i)=>[h.p.id,i]));
+    list = hits.map(h=>h.p);
+  } else {
+    list = PROGRAMS.slice();
+  }
+  list = list.filter(p=>{
     if(state.critical && !isCritical(p)) return false;
     if(state.field && p.field!==state.field) return false;
     if(state.action && verdict(p)!==state.action) return false;
-    if(q){
-      const hay = (p.name+" "+fieldOf(p.field).name+" "+(p.socTitle||"")+" "+p.degree+" "+p.cip).toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
     return true;
   });
   const s = state.sort;
@@ -1108,6 +1576,7 @@ function filtered(){
   else if(s==="runway")  list.sort((a,b)=>a.halfLife-b.halfLife);
   else if(s==="faculty") list.sort((a,b)=>facOf(a)-facOf(b));
   else if(s==="name")    list.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(rank)          list.sort((a,b)=>rank.get(a.id)-rank.get(b.id));
   return list;
 }
 
@@ -1176,7 +1645,8 @@ function syncControls(){
   byId("vw-prog").setAttribute("aria-pressed", String(state.view==="programs"));
   byId("vw-field").setAttribute("aria-pressed", String(state.view==="fields"));
   byId("clearBtn").hidden = !(state.search||state.field||state.action||state.critical);
-  if(byId("hsearch").value !== state.search) byId("hsearch").value = state.search;
+  const sb=byId("hsearch");
+  if(document.activeElement!==sb && sb.value!==state.search) sb.value = state.search;
 }
 
 function cardLine(p){
@@ -1212,9 +1682,27 @@ function renderResults(){
   say(list.length + " programs shown");
 
   if(!list.length){
+    /* Offer a way forward rather than a dead end: the nearest programs by a
+       relaxed match, or the example searches when nothing is close. */
+    let near = [];
+    if(state.search.trim()){
+      const q = norm(state.search).slice(0,4);
+      near = SEARCH_INDEX
+        .filter(e=>e.name.includes(q)||e.synText.includes(q)||e.occ.includes(q)||e.field.includes(q))
+        .slice(0,4).map(e=>e.p);
+    }
+    const chips = near.length
+      ? `<p style="margin-top:12px;font-size:13px">Did you mean:</p>
+         <p style="margin-top:7px;display:flex;gap:7px;flex-wrap:wrap;justify-content:center">
+         ${near.map(p=>`<button class="fb" onclick="openDrawer(${p.id})">${esc(p.name)}</button>`).join("")}</p>`
+      : `<p style="margin-top:12px;font-size:13px">Search by job title, skill or field — try:</p>
+         <p style="margin-top:7px;display:flex;gap:7px;flex-wrap:wrap;justify-content:center">
+         ${EXAMPLES.slice(0,5).map(x=>`<button class="fb" onclick="runExample('${esc(x)}')">${esc(x)}</button>`).join("")}</p>`;
     grid.innerHTML = `<li class="empty" style="grid-column:1/-1">
-      <p class="em-ic" aria-hidden="true">🔍</p><p class="em-title">Nothing matches those filters</p>
-      <p>Try a different search, or <button class="clr-btn" onclick="clearAll()">clear all filters</button>.</p></li>`;
+      <p class="em-ic" aria-hidden="true">🔍</p>
+      <p class="em-title">Nothing matches${state.search?` “${esc(state.search)}”`:" those filters"}</p>
+      ${chips}
+      <p style="margin-top:14px"><button class="clr-btn" onclick="clearAll()">Clear all filters</button></p></li>`;
     return;
   }
 
@@ -1802,8 +2290,15 @@ function copyAI(){
 
 /* ── INTERACTIONS ──────────────────────────────────────── */
 function setLens(id){ state.lens=id; save(LS.l,id); render(); if(state.open) openDrawer(state.open,true); }
-function focusSearch(){ const s=byId("hsearch"); s.scrollIntoView({block:"center"}); s.focus(); }
-function onSearch(v){ state.search=v; state.field=""; render(); }
+function focusSearch(){
+  const s=byId("hsearch");
+  /* focus first so the caret lands immediately, then let the page catch up */
+  try{ s.focus({preventScroll:true}); }catch(e){ s.focus(); }
+  s.select();
+  window.scrollTo({top:0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  onSearchFocus();
+}
+function onSearch(v){ state.search=v; state.field=""; render(); }  /* programmatic use only; the box calls onSearchInput */
 function setField(id){ state.field = state.field===id?"":id; state.search=""; render(); }
 function setAction(a){ state.action = state.action===a?"":a; state.critical=false; render(); scrollResults(); }
 function setSort(s){ state.sort=s; render(); scrollResults(); }
@@ -1811,6 +2306,8 @@ function setView(v){ state.view=v; render(); }
 function toggleCritical(){ state.critical=!state.critical; state.action=""; render(); scrollResults(); }
 function clearAll(){
   Object.assign(state,{search:"",field:"",action:"",critical:false,sort:"default",view:"programs"});
+  const s=byId("hsearch"); if(s) s.value="";
+  closeSuggestions();
   render(); window.scrollTo({top:0});
 }
 function scrollResults(){
@@ -2053,13 +2550,14 @@ function trapFocus(e){
 }
 document.addEventListener("keydown", e=>{
   if(e.key==="Escape"){
+    if(sugOpen){ closeSuggestions(); return; }
     const m = openModals().slice(-1)[0];
     if(m){ closeModal(m.dataset.modal); return; }
     if(byId("drawer").classList.contains("on")) closeDrawer();
     return;
   }
   if(e.key==="Tab") trapFocus(e);
-  if(e.key==="/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); focusSearch(); }
+  if(e.key==="/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){ e.preventDefault(); focusSearch(); }
 });
 window.addEventListener("popstate", ()=>{
   const hash = location.hash.replace("#","");
@@ -2258,6 +2756,11 @@ function exportPDF(){
   dz.addEventListener("click", ()=>fi.click());
   dz.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fi.click(); } });
   fi.addEventListener("change", e=>handleFile(e.target.files[0]));
+
+  document.addEventListener("click", e=>{
+    if(sugOpen && !e.target.closest(".sw")) closeSuggestions();
+  });
+  if(state.search) byId("hsearch").value = state.search;
 
   const deepLink = state.open;
   state.open = null;
